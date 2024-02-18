@@ -100,7 +100,4 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 
-  public RobotContainer getRobotContainer(){
-    return m_robotContainer;
-  }
 }
