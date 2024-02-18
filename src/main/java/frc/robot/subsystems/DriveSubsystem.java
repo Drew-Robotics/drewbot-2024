@@ -26,6 +26,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import com.kauailabs.navx.frc.AHRS;
 
 public class DriveSubsystem extends SubsystemBase {
+
+  // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
+
   // Create field for the NavX
   private final AHRS m_gyro = new AHRS(SerialPort.Port.kMXP, AHRS.SerialDataType.kProcessedData, (byte) 50);
 
@@ -72,10 +75,25 @@ public class DriveSubsystem extends SubsystemBase {
     
 
   /** 
-   * constructor.
+   * Constructor.
    */
-  public DriveSubsystem() {
+  private DriveSubsystem() {
   }
+
+  private static DriveSubsystem m_instance;
+
+  /**
+   * Returns an instance of robot, this is an implementation of the singleton design pattern.
+   * @return instance
+   */
+  public static DriveSubsystem getInstance(){
+    if (m_instance == null){
+      m_instance = new DriveSubsystem();
+    }
+    return m_instance;
+  }
+
+  // - - - - - - - - - - GENERIC FUNCTIONS - - - - - - - - - -
 
   @Override
   public void periodic() {
@@ -96,6 +114,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
   }
+
+  // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   /**
    * Returns the currently-estimated pose of the robot.
@@ -282,10 +302,17 @@ public class DriveSubsystem extends SubsystemBase {
 
   /**
    * Sets the yaw of the gyroscope to zero.
-   * 
-   * @return void.
    */
   public void zeroYaw() { 
     m_gyro.zeroYaw(); 
+  }
+
+  /**
+   * Returns if the robot is moving or not.
+   * 
+   * @return is moving
+   */
+  public boolean isMoving(){
+    return m_gyro.isMoving();
   }
 }

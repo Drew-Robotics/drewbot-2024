@@ -18,8 +18,10 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.TurnToAngleCommand;
-import frc.robot.commands.ZeroYaw;
+import frc.robot.commands.DriveCommands.DriveCommand;
+import frc.robot.commands.DriveCommands.TurnToAngleCommand;
+import frc.robot.commands.DriveCommands.ZeroYawCommand;
+import frc.robot.controllers.DriverController;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -36,47 +38,37 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+  // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
+
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem m_robotDrive = DriveSubsystem.getInstance();
+
+  /**
+   * Constructor.
+   */
+  private RobotContainer(){
+    // Configure the button bindings
+    configureDriverCommands();
+  }
+
+  private static RobotContainer m_instance;
+
+  /**
+   * Returns an instance of robot, this is an implementation of the singleton design pattern.
+   * @return instance
+   */
+  public static RobotContainer getInstance(){
+    if (m_instance == null){
+      m_instance = new RobotContainer();
+    }
+    return m_instance;
+  }
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-
-
-  public HashMap<String, Double> getDriveInput(){
-    HashMap<String, Double> returnMap = new HashMap<String,Double>();
-    returnMap.put("xSpeed", -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband));
-    returnMap.put("ySpeed", -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband));
-    returnMap.put("rot", -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband));
-    return returnMap;
-  }
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
-
-    // Configure default commands
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                getDriveInput().get("xSpeed"),
-                getDriveInput().get("ySpeed"),
-                getDriveInput().get("rot"),
-                true, true),
-            m_robotDrive));
-        /*
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
-            m_robotDrive)); */
-  }
+  DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
+  
+  // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -87,17 +79,39 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
-  private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kB.value)
-        .whileTrue(new ZeroYaw(m_robotDrive));
+  private void configureDriverCommands() {
+    // Configure default commands
+
+    m_robotDrive.setDefaultCommand(
+      new DriveCommand(
+        m_driverController::getXSpeed,
+        m_driverController::getYSpeed,
+        m_driverController::getRotation,
+        true, true
+      ));
+
+    // Configure buttons
+
+    new JoystickButton(m_driverController, m_driverController.getZeroYawButton().value)
+        .whileTrue(new ZeroYawCommand());
         
-    new JoystickButton(m_driverController, Button.kY.value)
-        .whileTrue(new TurnToAngleCommand(m_robotDrive, 0));
+    new JoystickButton(m_driverController, m_driverController.getTurnToZeroButton().value)
+        .whileTrue(new TurnToAngleCommand(0));
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+  }
+  
+  // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
+
+  /**
+   * Gets xSpeed, ySpeed, and rotation in a HashMap.
+   * @return HashMap with the input
+   */
+  public DriverController getDriverContoller(){
+    return m_driverController;
   }
 
   /**

@@ -12,13 +12,13 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  
-  // - - - - - - - - - - FIELDS - - - - - - - - - -
+  // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
   private CANSparkFlex m_leftShooterMotor;
   private CANSparkFlex m_rightShooterMotor;
@@ -34,7 +34,7 @@ public class ShooterSubsystem extends SubsystemBase {
   PeriodicIO m_periodicIO;
 
   /**
-   * constructor.
+   * Constructor.
    */
   public ShooterSubsystem(){
     m_leftShooterMotor = new CANSparkFlex(ShooterConstants.kLeftShooterCanId, MotorType.kBrushless);
@@ -67,6 +67,19 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftShooterMotor.setInverted(false);
 
     m_periodicIO = new PeriodicIO();
+  }
+
+  private static ShooterSubsystem m_instance;
+
+  /**
+   * Returns an instance of robot, this is an implementation of the singleton design pattern.
+   * @return instance
+   */
+  public static ShooterSubsystem getInstance(){
+    if (m_instance == null){
+      m_instance = new ShooterSubsystem();
+    }
+    return m_instance;
   }
 
   private static class PeriodicIO{
