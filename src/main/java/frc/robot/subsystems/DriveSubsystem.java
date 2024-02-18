@@ -49,16 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
-
-  // The gyro sensor
-  //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-  //try {
-  //  m_gyro = new AHRS(SerialPort.Port.kMXP, AHRS.SerialDataType.kProcessedData, (byte) 50);
-  //} catch (RuntimeException ex) {
-  //    DriverStation.reportError("Error instantiating NavX: " + ex.getMessage(), true);
-  //}
-
-
+  
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
@@ -80,28 +71,10 @@ public class DriveSubsystem extends SubsystemBase {
       });
     
 
-  /** Creates a new DriveSubsystem. */
+  /** 
+   * constructor.
+   */
   public DriveSubsystem() {
-   
-    /* smartdashboard navx data, temporary place
-    / Display 6-axis Processed Angle Data /
-    SmartDashboard.putBoolean("IMU_Connected", m_gyro.isConnected());
-    SmartDashboard.putBoolean("IMU_IsCalibrating", m_gyro.isCalibrating());
-    SmartDashboard.putNumber("IMU_Yaw", m_gyro.getYaw());
-    SmartDashboard.putNumber("IMU_Pitch", m_gyro.getPitch());
-    SmartDashboard.putNumber("IMU_Roll", m_gyro.getRoll());
-
-    / These functions are compatible w/the WPI Gyro Class, providing a simple  /
-    / path for upgrading from the Kit-of-Parts gyro to the navx MXP            /
-    SmartDashboard.putNumber("IMU_TotalYaw", m_gyro.getAngle());
-    SmartDashboard.putNumber("IMU_YawRateDPS", m_gyro.getRate());
-
-    / Display Processed Acceleration Data (Linear Acceleration, Motion Detect) /
-    SmartDashboard.putNumber("IMU_Accel_X", m_gyro.getWorldLinearAccelX());
-    SmartDashboard.putNumber("IMU_Accel_Y", m_gyro.getWorldLinearAccelY());
-    SmartDashboard.putBoolean("IMU_IsMoving", m_gyro.isMoving());
-    SmartDashboard.putBoolean("IMU_IsRotating", m_gyro.isRotating());
-     */
   }
 
   @Override
@@ -149,20 +122,30 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
+  
+  /**
+   * sets a rotation angle that will override controller input.
+   * set to zero to disable.
+   * 
+   * @param angle
+   */
 
   /**
    * Method to drive the robot using joystick info.
    *
    * @param xSpeed        Speed of the robot in the x direction (forward).
    * @param ySpeed        Speed of the robot in the y direction (sideways).
-   * @param rot           Angular rate of the robot.
+   * @param rot      Angular rate of the robot input.
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
+
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
     double xSpeedCommanded;
     double ySpeedCommanded;
+    
+    System.out.println("drive");
 
     SmartDashboard.putNumber("X Speed", xSpeed);
     SmartDashboard.putNumber("Y Speed", ySpeed);
@@ -172,6 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
       // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
       double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
+
 
       // Calculate the direction slew rate based on an estimate of the lateral acceleration
       double directionSlewRate;

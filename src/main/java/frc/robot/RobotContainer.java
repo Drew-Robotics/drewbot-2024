@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+import java.util.HashMap;
 import java.util.List;
 
 /*
@@ -40,6 +42,14 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
+
+  public HashMap<String, Double> getDriveInput(){
+    HashMap<String, Double> returnMap = new HashMap<String,Double>();
+    returnMap.put("xSpeed", -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband));
+    returnMap.put("ySpeed", -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband));
+    returnMap.put("rot", -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband));
+    return returnMap;
+  }
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -53,11 +63,19 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
+                getDriveInput().get("xSpeed"),
+                getDriveInput().get("ySpeed"),
+                getDriveInput().get("rot"),
+                true, true),
+            m_robotDrive));
+        /*
+        new RunCommand(
+            () -> m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
-            m_robotDrive));
+            m_robotDrive)); */
   }
 
   /**
@@ -74,7 +92,7 @@ public class RobotContainer {
         .whileTrue(new ZeroYaw(m_robotDrive));
         
     new JoystickButton(m_driverController, Button.kY.value)
-        .whileTrue(new TurnToAngleCommand(m_robotDrive, 90));
+        .whileTrue(new TurnToAngleCommand(m_robotDrive, 0));
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whileTrue(new RunCommand(
