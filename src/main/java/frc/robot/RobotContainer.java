@@ -18,15 +18,29 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.DriveCommands.DriveCommand;
-import frc.robot.commands.DriveCommands.TurnToAngleCommand;
-import frc.robot.commands.DriveCommands.ZeroYawCommand;
-import frc.robot.controllers.DriverController;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+
+import frc.robot.controllers.DriverController;
+import frc.robot.controllers.OperatorController;
+
+import frc.robot.commands.DriveCommands.DriveDriveCommand;
+import frc.robot.commands.DriveCommands.DriveTurnToAngleCommand;
+import frc.robot.commands.DriveCommands.DriveZeroYawCommand;
+import frc.robot.commands.DriveCommands.DriveStopCommand;
+
+import frc.robot.commands.ShooterCommands.ShooterShootCommand;
+
+import frc.robot.commands.IntakeCommands.IntakePivotAmpCommand;
+import frc.robot.commands.IntakeCommands.IntakePivotGroundCommand;
+import frc.robot.commands.IntakeCommands.IntakePivotStowCommand;
+import frc.robot.commands.IntakeCommands.IntakeStateEjectCommand;
+import frc.robot.commands.IntakeCommands.IntakeStateFeedCommand;
+import frc.robot.commands.IntakeCommands.IntakeStateIntakeCommand;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,12 +58,16 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = DriveSubsystem.getInstance();
 
+  DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
+  OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
+
   /**
    * Constructor.
    */
   private RobotContainer(){
     // Configure the button bindings
     configureDriverCommands();
+    configureOperatorCommands();
   }
 
   private static RobotContainer m_instance;
@@ -64,26 +82,13 @@ public class RobotContainer {
     }
     return m_instance;
   }
-
-  // The driver's controller
-  DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
   
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
-  private void configureDriverCommands() {
+  private void configureDriverCommands(){
     // Configure default commands
-
     m_robotDrive.setDefaultCommand(
-      new DriveCommand(
+      new DriveDriveCommand(
         m_driverController::getXSpeed,
         m_driverController::getYSpeed,
         m_driverController::getRotation,
@@ -91,24 +96,31 @@ public class RobotContainer {
       ));
 
     // Configure buttons
+    new JoystickButton(m_driverController, m_driverController.getTurnToZeroButton().value)
+      .whileTrue(new DriveTurnToAngleCommand(0));
 
     new JoystickButton(m_driverController, m_driverController.getZeroYawButton().value)
-        .whileTrue(new ZeroYawCommand());
-        
-    new JoystickButton(m_driverController, m_driverController.getTurnToZeroButton().value)
-        .whileTrue(new TurnToAngleCommand(0));
+      .onTrue(new DriveZeroYawCommand());
 
-    new JoystickButton(m_driverController, Button.kRightBumper.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+    new JoystickButton(m_driverController, m_driverController.getStopButton().value)
+      .onTrue(new DriveStopCommand());
   }
+
+  private void configureOperatorCommands(){
+
+    // Shooter
+    new JoystickButton(m_operatorController, m_operatorController.getShootButton().value)
+      .whileTrue(new ShooterShootCommand());
+
+    // Intake
+  }
+
   
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   /**
-   * Gets xSpeed, ySpeed, and rotation in a HashMap.
-   * @return HashMap with the input
+   * Returns the DriverController object.
+   * @return The driver controller
    */
   public DriverController getDriverContoller(){
     return m_driverController;

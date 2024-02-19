@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 
 
-public class StopCommand extends Command{
+public class DriveStopCommand extends Command{
   DriveSubsystem m_drive = DriveSubsystem.getInstance();
 
-  public StopCommand(){}
+  public DriveStopCommand(){}
 
   // Called when the command is initially scheduled.
   @Override

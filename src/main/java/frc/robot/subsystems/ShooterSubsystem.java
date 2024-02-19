@@ -31,7 +31,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1000);
 
-  PeriodicIO m_periodicIO;
+  private static ShooterSubsystem m_instance;
+  
+  private PeriodicIO m_periodicIO;
+    public PeriodicIO getpPeriodicIO(){return m_periodicIO;}
 
   /**
    * Constructor.
@@ -69,7 +72,6 @@ public class ShooterSubsystem extends SubsystemBase {
     m_periodicIO = new PeriodicIO();
   }
 
-  private static ShooterSubsystem m_instance;
 
   /**
    * Returns an instance of robot, this is an implementation of the singleton design pattern.
@@ -107,6 +109,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setSpeed(double rpm){
     m_periodicIO.setShooterRpm(rpm);
+  }
+
+  public void shoot(){
+    m_periodicIO.setShooterRpm(ShooterConstants.kShooterShootRPM);
+  }
+
+  public void stop(){
+    m_periodicIO.setShooterRpm(0);
   }
   
 }
