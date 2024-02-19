@@ -12,13 +12,13 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.controllers.DriverController;
 
-public class TurnToAngleCommand extends Command {
+public class DriveTurnToAngleCommand extends Command {
   private final DriveSubsystem m_drive;
   PIDController m_pid;
   double m_target_angle;
 
   /** Creates a new SetReverseIntakeSpeed. */
-  public TurnToAngleCommand(double angle) {
+  public DriveTurnToAngleCommand(double angle) {
     m_drive = DriveSubsystem.getInstance();
 
     //m_target_angle = clamp_180(m_drive.getYaw() + angle);

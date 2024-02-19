@@ -5,7 +5,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
 
 
-public class DriveCommand extends Command{
+public class DriveDriveCommand extends Command{
   DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private DoubleSupplier m_xSpeed;
   private DoubleSupplier m_ySpeed;
@@ -14,7 +14,7 @@ public class DriveCommand extends Command{
   private boolean m_fieldRelative;
   private boolean m_rateLimit;
 
-  public DriveCommand(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rot, boolean fieldRelative, boolean rateLimit){
+  public DriveDriveCommand(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rot, boolean fieldRelative, boolean rateLimit){
     m_xSpeed = xSpeed;
     m_ySpeed = ySpeed;
     m_rot = rot;

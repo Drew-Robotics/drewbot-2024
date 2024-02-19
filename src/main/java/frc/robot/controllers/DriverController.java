@@ -29,4 +29,8 @@ public class DriverController extends XboxController {
     public Button getTurnToZeroButton(){
         return Button.kY;
     }
+
+    public Button getStopButton(){
+        return Button.kRightBumper;
+    }
 }

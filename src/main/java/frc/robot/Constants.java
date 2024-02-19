@@ -124,7 +124,10 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.05;
+
+    
   }
 
   public static final class AutoConstants {
@@ -157,6 +160,8 @@ public final class Constants {
 
     public static final double kShooterMinOutput = 0;
     public static final double kShooterMaxOutput = 1;
+
+    public static final double kShooterShootRPM = 3000;
     
   }
 
@@ -168,6 +173,20 @@ public final class Constants {
     // Motor IDs
     public static final int kIntakeMotorID = 0;
     public static final int kPivotMotorID = 0;
+
+    public static final int kPivotEncoderId = 0;
+
+    public static final double kPivotEncoderOffset = 0;
+
+    public static final double kPivotAngleGround = 0;
+    public static final double kPivotAngleSource = 0;
+    public static final double kPivotAngleAmp = 0;
+    public static final double kPivotAngleStow = 0;
+
+
+    public static final double kIntakeSpeed = 0;
+    public static final double kEjectSpeed = 0;
+    public static final double kFeedShooterSpeed = 0;
     
   }
 }
