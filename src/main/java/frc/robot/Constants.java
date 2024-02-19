@@ -157,5 +157,17 @@ public final class Constants {
 
     public static final double kShooterMinOutput = 0;
     public static final double kShooterMaxOutput = 1;
+    
+  }
+
+  public static final class IntakeConstants {
+    public static final double kPivotP = 0;
+    public static final double kPivotI = 0;
+    public static final double kPivotD = 0;
+    
+    // Motor IDs
+    public static final int kIntakeMotorID = 0;
+    public static final int kPivotMotorID = 0;
+    
   }
 }
