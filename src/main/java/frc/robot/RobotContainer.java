@@ -120,6 +120,14 @@ public class RobotContainer {
       .whileTrue(new ShooterReverseCommand());
 
     // Intake
+    new POVButton(m_operatorController, m_operatorController.getIntakePivotStowPOVNumber())
+      .onTrue(new IntakePivotStowCommand());
+
+    new POVButton(m_operatorController, m_operatorController.getIntakePivotAmpPOVNumber())
+      .onTrue(new IntakePivotAmpCommand());
+
+    new POVButton(m_operatorController, m_operatorController.getIntakePivotGroundPOVNumber())
+      .onTrue(new IntakePivotGroundCommand());
   }
   
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -

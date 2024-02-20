@@ -16,6 +16,17 @@ public class OperatorController extends XboxController{
     return Button.kRightBumper;
   }
 
+  public int getIntakePivotStowPOVNumber() {
+    return 270;
+  }
+
+  public int getIntakePivotAmpPOVNumber() {
+    return 0;
+  }
+
+  public int getIntakePivotGroundPOVNumber() {
+    return 902;
+  }
   /*
    * INTAKE
    * dpad: l-shooter, u-up, r-intake, d-source

@@ -12,7 +12,7 @@ import com.revrobotics.RelativeEncoder;
 
 import frc.robot.Constants.ClimberConstants;
 
-public class ClimberSubsystem extends SubsystemBase{
+public class ClimberSubsystem extends SubsystemBase {
 
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
