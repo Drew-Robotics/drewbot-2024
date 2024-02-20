@@ -25,7 +25,9 @@ import edu.wpi.first.math.util.Units;
  */
 
 public final class Constants {
+
   public static final class DriveConstants {
+
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
@@ -69,9 +71,11 @@ public final class Constants {
     public static final double kP = 0.4;
     public static final double kI = 0.1;
     public static final double kD = 0;
+
   }
 
   public static final class ModuleConstants {
+
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
     // robot that drives faster).
@@ -120,17 +124,19 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
+
   }
 
   public static final class OIConstants {
+
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.05;
-
     
   }
 
   public static final class AutoConstants {
+
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
@@ -146,10 +152,12 @@ public final class Constants {
   }
 
   public static final class NeoMotorConstants {
+
     public static final double kFreeSpeedRpm = 5676;
   }
 
   public static final class ShooterConstants{
+
     public static final int kLeftShooterCanId = 20;
     public static final int kRightShooterCanId = 21;
 
@@ -167,6 +175,7 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
+
     public static final double kPivotP = 0;
     public static final double kPivotI = 0;
     public static final double kPivotD = 0;
@@ -189,5 +198,26 @@ public final class Constants {
     public static final double kEjectSpeed = -0.1;
     public static final double kFeedShooterSpeed = 0.1;
     
+  }
+  public static final class ClimberConstants {
+    // PIDs 
+    public static final double kClimberP = 0;
+    public static final double kClimberI = 0;
+    public static final double kClimberD = 0;
+
+    // Motor IDs
+    public static final int kLeftClimberMotorID = 0;
+    public static final int kRightClimberMotorID = 0;
+
+    // RPM
+    public static final double kClimberClimbSpeed = 0.0;
+    public static final double kClimberReleaseSpeed = 0.0;
+    
+    // Output Min/Max 
+    public static final double kClimberMinOutput = 0;
+    public static final double kClimberMaxOutput = 0;
+
+    // Gear Ratio
+    public static final double kClimberGearRatio = 0 / 0;
   }
 }

@@ -2,23 +2,21 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.RelativeEncoder;
 
 import frc.robot.Constants.ClimberConstants;
 
-public class ClimberSubsystem extends SubsystemBase {
+public class ClimberSubsystem extends SubsystemBase{
 
-  // Checking Instance
+  // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
+
   private static ClimberSubsystem m_instance;
-  public static ClimberSubsystem getInstance() {
-    if (m_instance == null) {
-      m_instance = new ClimberSubsystem();
-    }
-    return m_instance;
-  }
-
   private PeriodicIO m_periodicIO;
 
   // Defining Motors
@@ -30,8 +28,8 @@ public class ClimberSubsystem extends SubsystemBase {
   private SparkPIDController m_rightClimberMotorPID;
 
   // Defining Motor Encoders
-  private RelativeController m_leftClimberEncoder;
-  private RelativeController m_rightClimberEncoder;
+  private RelativeEncoder m_leftClimberEncoder;
+  private RelativeEncoder m_rightClimberEncoder;
 
   private ClimberSubsystem() {
     
@@ -39,7 +37,7 @@ public class ClimberSubsystem extends SubsystemBase {
     
     // Setting Motor Type/ID
     m_leftClimberMotor = new CANSparkMax(ClimberConstants.kLeftClimberMotorID, MotorType.kBrushless);
-    m_rightClimberMotor = new CANSparkMax(ClimberConstants.kRightClimberMotorId, MotorType.kBrushless);
+    m_rightClimberMotor = new CANSparkMax(ClimberConstants.kRightClimberMotorID, MotorType.kBrushless);
     
     // Left Climber PID
     m_leftClimberMotorPID = m_leftClimberMotor.getPIDController();
@@ -75,42 +73,52 @@ public class ClimberSubsystem extends SubsystemBase {
 
   }
 
+
   // RPM of Spool (whatever that means )
   private static class PeriodicIO {
-    double climber_right_speed = 0.0;
-    double climber_left_speed = 0.0;
+    private double climberRightSpeed = 0.0;
+    private double climberLeftSpeed = 0.0;
+
+    public double getClimberRightSpeed(){
+      return climberRightSpeed;
+    }
+    public void setClimberRightSpeed(double speed){
+      climberRightSpeed = speed;
+    }
+
+    public double getClimberLeftSpeed(){
+      return climberLeftSpeed;
+    }
+    public void setClimberLeftSpeed(double speed){
+      climberLeftSpeed = speed;
+    }
   }
   
-  /* ~ Subsystem Functions ~ */ 
+  /**
+   * Returns an instance of robot, this is an implementation of the singleton design pattern.
+   * @return instance
+   */
+  public static ClimberSubsystem getInstance() {
+    if (m_instance == null) {
+      m_instance = new ClimberSubsystem();
+    }
+    return m_instance;
+  }
+
+  // - - - - - - - - - - GENERIC FUNCTIONS - - - - - - - - - -
   
   @Override
   public void periodic() {
+    m_leftClimberMotorPID.setReference(m_periodicIO.getClimberLeftSpeed(), ControlType.kVelocity);
+    m_rightClimberMotorPID.setReference(m_periodicIO.getClimberRightSpeed(), ControlType.kVelocity);
+
+    SmartDashboard.putNumber("Left speed setpoint:", m_periodicIO.getClimberLeftSpeed());
+    SmartDashboard.putNumber("Left speed:", m_leftClimberEncoder.getVelocity());
+    SmartDashboard.putNumber("Right speed setpoint:", m_periodicIO.getClimberRightSpeed());
+    SmartDashboard.putNumber("Right speed:", m_rightClimberEncoder.getVelocity());
   }
 
-  @Override
-  public void writePeriodicOutputs() {
-    m_leftClimberMotorPID.setReference(m_periodicIO.climber_left_speed, ControlType.kVelocity);
-    m_rightClimberMotorPID.setReference(m_periodicIO.climber_right_speed, ControlType.kVelocity);
-  }
-
-  @Override
-  public void stop() {
-    stopClimber();
-  }
-  
-  @Override
-  public void outputTelemetry() {
-    putNumber("Left speed setpoint:", m_periodicIO.climber_left_speed);
-    putNumber("Left speed:", m_leftClimberEncoder.getVelocity());
-    putNumber("Right speed setpoint:", m_periodicIO.climber_right_speed);
-    putNumber("Right speed:", m_rightClimberEncoder.getVelocity());
-  }
-
-  @Override
-  public void reset() {
-  }
-  
-  /* ~ Custom Functions (by CA) ~ */ 
+  // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   public void setBrakeMode() {
     m_leftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -122,59 +130,29 @@ public class ClimberSubsystem extends SubsystemBase {
     m_rightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
   
-  // Climb :)
   public void climb() {
-    m_periodicIO.climber_left_speed = ClimberConstants.kClimberClimbSpeed;
-    m_periodicIO.climber_right_speed = ClimberConstants.kClimberClimbSpeed;
+    m_periodicIO.setClimberLeftSpeed(ClimberConstants.kClimberClimbSpeed);
+    m_periodicIO.setClimberRightSpeed(ClimberConstants.kClimberClimbSpeed);
   }
   
-  // Release
   public void release() {
-    m_periodicIO.climber_left_speed = ClimberConstants.kClimberReleaseSpeed;
-    m_periodicIO.climber_right_speed = ClimberConstants.kClimberReleaseSpeed;
+    m_periodicIO.setClimberLeftSpeed(ClimberConstants.kClimberReleaseSpeed);
+    m_periodicIO.setClimberRightSpeed(ClimberConstants.kClimberReleaseSpeed);
   }
   
   public void tiltLeft() {
-    m_periodicIO.climber_left_speed = ClimberConstants.kClimberReleaseSpeed;
-    m_periodicIO.climber_right_speed = 0.0;
+    m_periodicIO.setClimberLeftSpeed(ClimberConstants.kClimberReleaseSpeed);
+    m_periodicIO.setClimberRightSpeed(0.0);
   }
 
   public void tiltRight() {
-    m_periodicIO.climber_left_speed = 0.0;
-    m_periodicIO.climber_right_speed = ClimberConstants.kClimberReleaseSpeed;
+    m_periodicIO.setClimberLeftSpeed(0.0);
+    m_periodicIO.setClimberRightSpeed(ClimberConstants.kClimberReleaseSpeed);
   }
 
   public void stopClimber() {
-    m_periodicIO.climber_left_speed = 0.0;
-    m_periodicIO.climber_right_speed = 0.0;
+    m_periodicIO.setClimberLeftSpeed(0.0);
+    m_periodicIO.setClimberRightSpeed(0.0);
   }
 
 }
-
-/* ;-; ClimberConstants Because git ;-; */ 
-
-/*
-
-  public static final class ClimberConstants {
-
-    // PIDs 
-    public static final double kClimberP = 0;
-    public static final double kClimberI = 0;
-    public static final double kClimberD = 0;
-
-    // Motor IDs
-    public static final int kLeftClimberMotorID = 0;
-    public static final int kRightClimberMotorID = 0;
-
-    // RPM
-    public static final double kClimberClimbSpeed = 0.0;
-    public static final double kClimberReleaseSpeed = 0.0;
-    
-    // Output Min/Max 
-    public static final double kClimberMinOutput = 0;
-    public static final double kClimberMaxOutput = 0;
-
-    // Gear Ratio
-    public static final double kClimberGearRatio = 0 / 0;
-  }
-                                                               */
