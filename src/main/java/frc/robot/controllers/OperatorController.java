@@ -9,6 +9,7 @@ public class OperatorController extends CommandXboxController{
     super(port);
   }
 
+  // Shooter
   public Trigger getShooterShootTrigger(){
     return leftBumper();
   }
@@ -17,6 +18,7 @@ public class OperatorController extends CommandXboxController{
     return rightBumper();
   }
 
+  // Intake Pivot
   public Trigger getIntakePivotStowTrigger(){
     return povLeft();
   }
@@ -29,12 +31,30 @@ public class OperatorController extends CommandXboxController{
     return povRight();
   }
 
+  // Intake State
   public Trigger getIntakeIntakeTrigger(){
     return rightTrigger(0.5);
   }
 
   public Trigger getIntakeFeedTrigger(){
     return leftTrigger(0.5);
+  }
+
+  // Climber
+  public Trigger getClimberClimbTrigger(){
+    return y();
+  }
+
+  public Trigger getClimberReleaseTrigger(){
+    return a();
+  }
+
+  public Trigger getClimberTiltLeftTrigger(){
+    return x();
+  }
+
+  public Trigger getClimberTiltRightTrigger(){
+    return b();
   }
   /*
    * INTAKE

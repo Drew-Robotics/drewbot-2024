@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import frc.robot.controllers.DriverController;
 import frc.robot.controllers.OperatorController;
-
 import frc.robot.commands.DriveCommands.DriveDriveCommand;
 import frc.robot.commands.DriveCommands.DriveTurnToAngleCommand;
 import frc.robot.commands.DriveCommands.DriveZeroYawCommand;
@@ -44,6 +43,12 @@ import frc.robot.commands.IntakeCommands.IntakePivotStowCommand;
 import frc.robot.commands.IntakeCommands.IntakeStateEjectCommand;
 import frc.robot.commands.IntakeCommands.IntakeStateFeedCommand;
 import frc.robot.commands.IntakeCommands.IntakeStateIntakeCommand;
+
+
+import frc.robot.commands.ClimberCommands.ClimberClimbCommand;
+import frc.robot.commands.ClimberCommands.ClimberReleaseCommand;
+import frc.robot.commands.ClimberCommands.ClimberTiltLeftCommand;
+import frc.robot.commands.ClimberCommands.ClimberTiltRightCommand;
 
 import java.util.List;
 
@@ -122,6 +127,12 @@ public class RobotContainer {
 
     m_operatorController.getIntakeIntakeTrigger().whileTrue(new IntakeStateIntakeCommand());
     m_operatorController.getIntakeFeedTrigger().whileTrue(new IntakeStateFeedCommand());
+
+    // Climber
+    m_operatorController.getClimberClimbTrigger().whileTrue(new ClimberClimbCommand());
+    m_operatorController.getClimberReleaseTrigger().whileTrue(new ClimberReleaseCommand());
+    m_operatorController.getClimberTiltLeftTrigger().whileTrue(new ClimberTiltLeftCommand());
+    m_operatorController.getClimberTiltRightTrigger().whileTrue(new ClimberTiltRightCommand());
   }
   
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -

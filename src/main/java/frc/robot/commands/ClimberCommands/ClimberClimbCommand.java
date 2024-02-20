@@ -1,21 +1,21 @@
-package frc.robot.commands.ShooterCommands;
+package frc.robot.commands.ClimberCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 
-public class ShooterShootCommand extends Command{
+public class ClimberClimbCommand extends Command {
 
-  ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
-
+  ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
+  
   // Constructor
-  public ShooterShootCommand(){
-    addRequirements(m_shooter);
+  public ClimberClimbCommand() {
+    addRequirements(m_climber);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.shoot();
+    m_climber.climb();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -25,7 +25,7 @@ public class ShooterShootCommand extends Command{
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.stop();
+    m_climber.stopClimber();
   }
 
   // Returns true when the command should end.
