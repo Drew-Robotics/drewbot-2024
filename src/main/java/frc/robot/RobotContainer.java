@@ -89,6 +89,7 @@ public class RobotContainer {
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
   private void configureDriverCommands(){
+    
     // Configure default commands
     DriveDriveCommand defaultDriveCommand = 
       new DriveDriveCommand(
@@ -97,6 +98,7 @@ public class RobotContainer {
           m_driverController::getRotation,
           true, true
       );
+    
     defaultDriveCommand.addRequirements(m_drive);
     m_drive.setDefaultCommand(defaultDriveCommand);
 
