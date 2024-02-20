@@ -14,6 +14,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -104,33 +105,23 @@ public class RobotContainer {
     m_drive.setDefaultCommand(defaultDriveCommand);
 
     // Configure buttons
-    new JoystickButton(m_driverController, m_driverController.getTurnToZeroButton().value)
-      .whileTrue(new DriveTurnToAngleCommand(0));
-
-    new JoystickButton(m_driverController, m_driverController.getZeroYawButton().value)
-      .onTrue(new DriveZeroYawCommand());
-
-    new JoystickButton(m_driverController, m_driverController.getStopButton().value)
-      .onTrue(new DriveStopCommand());
+    m_driverController.getZeroYawButton().whileTrue(new DriveTurnToAngleCommand(0));
+    m_driverController.getTurnToZeroButton().onTrue(new DriveZeroYawCommand());
+    m_driverController.getStopButton().onTrue(new DriveStopCommand());
   }
 
   private void configureOperatorCommands(){
     // Shooter
-    new JoystickButton(m_operatorController, m_operatorController.getShooterShootButton().value)
-      .whileTrue(new ShooterShootCommand());
-
-    new JoystickButton(m_operatorController, m_operatorController.getShooterReverseButton().value)
-      .whileTrue(new ShooterReverseCommand());
+    m_operatorController.getShooterShootTrigger().whileTrue(new ShooterShootCommand());
+    m_operatorController.getShooterShootTrigger().whileTrue(new ShooterReverseCommand());
 
     // Intake
-    new POVButton(m_operatorController, m_operatorController.getIntakePivotStowPOVNumber())
-      .onTrue(new IntakePivotStowCommand());
+    m_operatorController.getIntakePivotGroundTrigger().onTrue(new IntakePivotGroundCommand());
+    m_operatorController.getIntakePivotAmpTrigger().onTrue(new IntakePivotAmpCommand());
+    m_operatorController.getIntakePivotStowTrigger().onTrue(new IntakePivotStowCommand());
 
-    new POVButton(m_operatorController, m_operatorController.getIntakePivotAmpPOVNumber())
-      .onTrue(new IntakePivotAmpCommand());
-
-    new POVButton(m_operatorController, m_operatorController.getIntakePivotGroundPOVNumber())
-      .onTrue(new IntakePivotGroundCommand());
+    m_operatorController.getIntakeIntakeTrigger().whileTrue(new IntakeStateIntakeCommand());
+    m_operatorController.getIntakeFeedTrigger().whileTrue(new IntakeStateFeedCommand());
   }
   
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -

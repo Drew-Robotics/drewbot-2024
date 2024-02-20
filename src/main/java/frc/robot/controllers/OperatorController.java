@@ -1,31 +1,40 @@
 package frc.robot.controllers;
 
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class OperatorController extends XboxController{
+public class OperatorController extends CommandXboxController{
 
   public OperatorController(int port){
     super(port);
   }
 
-  public Button getShooterShootButton(){
-    return Button.kLeftBumper;
+  public Trigger getShooterShootTrigger(){
+    return leftBumper();
   }
 
-  public Button getShooterReverseButton(){
-    return Button.kRightBumper;
+  public Trigger getShooterReverseTrigger(){
+    return rightBumper();
   }
 
-  public int getIntakePivotStowPOVNumber() {
-    return 270;
+  public Trigger getIntakePivotStowTrigger(){
+    return povLeft();
   }
 
-  public int getIntakePivotAmpPOVNumber() {
-    return 0;
+  public Trigger getIntakePivotAmpTrigger(){
+    return povUp();
   }
 
-  public int getIntakePivotGroundPOVNumber() {
-    return 902;
+  public Trigger getIntakePivotGroundTrigger(){
+    return povRight();
+  }
+
+  public Trigger getIntakeIntakeTrigger(){
+    return rightTrigger(0.5);
+  }
+
+  public Trigger getIntakeFeedTrigger(){
+    return leftTrigger(0.5);
   }
   /*
    * INTAKE

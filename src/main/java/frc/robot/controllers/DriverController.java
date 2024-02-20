@@ -1,15 +1,16 @@
 package frc.robot.controllers;
 
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
-import frc.robot.Constants.OIConstants;;
+import frc.robot.Constants.OIConstants;
 
-public class DriverController extends XboxController {
+public class DriverController extends CommandXboxController{
 
     public DriverController(int port){
         super(port);
     }
-
+    
     public double getXSpeed(){
         return -MathUtil.applyDeadband(this.getLeftY(), OIConstants.kDriveDeadband);
     }
@@ -22,15 +23,15 @@ public class DriverController extends XboxController {
         return -MathUtil.applyDeadband(this.getRightX(), OIConstants.kDriveDeadband);
     }
 
-    public Button getZeroYawButton(){
-        return Button.kB;
+    public Trigger getZeroYawButton(){
+        return b();
     }
 
-    public Button getTurnToZeroButton(){
-        return Button.kY;
+    public Trigger getTurnToZeroButton(){
+        return y();
     }
 
-    public Button getStopButton(){
-        return Button.kRightBumper;
+    public Trigger getStopButton(){
+        return rightBumper();
     }
 }
