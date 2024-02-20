@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,7 +21,6 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -45,7 +43,6 @@ import frc.robot.commands.IntakeCommands.IntakeStateEjectCommand;
 import frc.robot.commands.IntakeCommands.IntakeStateFeedCommand;
 import frc.robot.commands.IntakeCommands.IntakeStateIntakeCommand;
 
-import java.util.HashMap;
 import java.util.List;
 
 /*
@@ -115,14 +112,12 @@ public class RobotContainer {
   }
 
   private void configureOperatorCommands(){
-
     // Shooter
     new JoystickButton(m_operatorController, m_operatorController.getShooterShootButton().value)
       .whileTrue(new ShooterShootCommand());
 
     new JoystickButton(m_operatorController, m_operatorController.getShooterReverseButton().value)
       .whileTrue(new ShooterReverseCommand());
-
 
     // Intake
   }
