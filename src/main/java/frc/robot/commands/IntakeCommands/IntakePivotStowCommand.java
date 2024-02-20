@@ -8,7 +8,9 @@ public class IntakePivotStowCommand extends Command{
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakePivotStowCommand(){}
+  public IntakePivotStowCommand(){
+    addRequirements(m_intake);
+  }
 
   // Called when the command is initially scheduled.
   @Override

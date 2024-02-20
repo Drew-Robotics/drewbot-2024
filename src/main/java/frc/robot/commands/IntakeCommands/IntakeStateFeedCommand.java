@@ -8,7 +8,9 @@ public class IntakeStateFeedCommand extends Command{
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakeStateFeedCommand(){}
+  public IntakeStateFeedCommand(){
+    addRequirements(m_intake);
+  }
 
   // Called when the command is initially scheduled.
   @Override

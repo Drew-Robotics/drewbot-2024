@@ -47,6 +47,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightShooterMotor.restoreFactoryDefaults();
 
     m_leftShooterPID = m_leftShooterMotor.getPIDController();
+    m_rightShooterPID = m_rightShooterMotor.getPIDController();
 
     m_leftShooterPID.setP(ShooterConstants.kShooterP);
     m_leftShooterPID.setI(ShooterConstants.kShooterI);
@@ -85,13 +86,13 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   private static class PeriodicIO{
-    private double shooterRpm = 0;
+    private double shooterSpeed = 0;
 
-    public double getShooterRpm(){
-      return shooterRpm;
+    public double getShooterSpeed(){
+      return shooterSpeed;
     }
-    public void setShooterRpm(double rpm){
-      shooterRpm = rpm;
+    public void setShooterSpeed(double speed){
+      shooterSpeed = speed;
     }
   }
 
@@ -99,24 +100,32 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic(){
-    double limitedSpeed = m_speedLimiter.calculate(m_periodicIO.getShooterRpm());
-    m_leftShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
-    m_rightShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
+    double limitedSpeed = m_speedLimiter.calculate(m_periodicIO.getShooterSpeed());
+    
+    // m_leftShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
+    // m_rightShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
+
+    m_leftShooterMotor.set(limitedSpeed);
+    m_rightShooterMotor.set(limitedSpeed);
   }
 
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   public void setSpeed(double rpm){
-    m_periodicIO.setShooterRpm(rpm);
+    m_periodicIO.setShooterSpeed(rpm);
   }
 
   public void shoot(){
-    m_periodicIO.setShooterRpm(ShooterConstants.kShooterShootRPM);
+    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterShootSpeed);
+  }
+
+  public void reverse(){
+    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterReverseSpeed);
   }
 
   public void stop(){
-    m_periodicIO.setShooterRpm(0);
+    m_periodicIO.setShooterSpeed(0);
   }
   
 }

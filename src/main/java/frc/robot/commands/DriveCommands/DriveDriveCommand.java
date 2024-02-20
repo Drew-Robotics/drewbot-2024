@@ -21,6 +21,8 @@ public class DriveDriveCommand extends Command{
 
     m_fieldRelative = fieldRelative;
     m_rateLimit = rateLimit;
+    
+    addRequirements(m_drive);
   }
 
   // Called when the command is initially scheduled.

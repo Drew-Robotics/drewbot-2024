@@ -164,8 +164,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
     double xSpeedCommanded;
     double ySpeedCommanded;
-    
-    System.out.println("drive");
 
     SmartDashboard.putNumber("X Speed", xSpeed);
     SmartDashboard.putNumber("Y Speed", ySpeed);

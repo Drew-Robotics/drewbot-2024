@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveZeroYawCommand extends Command {
-  private final DriveSubsystem m_drive;
+  private final DriveSubsystem m_drive = DriveSubsystem.getInstance();
   double m_target_angle;
 
   /** Creates a new ResetYaw. */
-  public DriveZeroYawCommand() {
-    m_drive = DriveSubsystem.getInstance();
+  public DriveZeroYawCommand(){
+    addRequirements(m_drive);
   }
 
   // Called when the command is initially scheduled.

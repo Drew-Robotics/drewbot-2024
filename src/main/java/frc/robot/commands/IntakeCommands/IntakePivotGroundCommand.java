@@ -8,7 +8,9 @@ public class IntakePivotGroundCommand extends Command{
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakePivotGroundCommand(){}
+  public IntakePivotGroundCommand(){
+    addRequirements(m_intake);
+  }
 
   // Called when the command is initially scheduled.
   @Override

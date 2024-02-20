@@ -8,7 +8,9 @@ public class IntakeStateIntakeCommand extends Command{
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakeStateIntakeCommand(){}
+  public IntakeStateIntakeCommand(){
+    addRequirements(m_intake);
+  }
 
   // Called when the command is initially scheduled.
   @Override

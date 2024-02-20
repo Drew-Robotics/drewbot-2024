@@ -7,7 +7,9 @@ import frc.robot.subsystems.DriveSubsystem;
 public class DriveStopCommand extends Command{
   DriveSubsystem m_drive = DriveSubsystem.getInstance();
 
-  public DriveStopCommand(){}
+  public DriveStopCommand(){
+    addRequirements(m_drive);
+  }
 
   // Called when the command is initially scheduled.
   @Override

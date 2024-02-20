@@ -153,15 +153,16 @@ public final class Constants {
     public static final int kLeftShooterCanId = 20;
     public static final int kRightShooterCanId = 21;
 
-    public static final double kShooterP = 1;
-    public static final double kShooterI = 0;
-    public static final double kShooterD = 0;
+    public static final double kShooterP = 0.1;
+    public static final double kShooterI = 0.1;
+    public static final double kShooterD = 0.1;
     public static final double kShooterFF = 0;
 
     public static final double kShooterMinOutput = 0;
     public static final double kShooterMaxOutput = 1;
 
-    public static final double kShooterShootRPM = 3000;
+    public static final double kShooterShootSpeed = 1;
+    public static final double kShooterReverseSpeed = 0.1;
     
   }
 
@@ -171,22 +172,22 @@ public final class Constants {
     public static final double kPivotD = 0;
     
     // Motor IDs
-    public static final int kIntakeMotorID = 0;
-    public static final int kPivotMotorID = 0;
+    public static final int kIntakeMotorID = 10;
+    public static final int kPivotMotorID = 11;
 
     public static final int kPivotEncoderId = 0;
 
     public static final double kPivotEncoderOffset = 0;
 
-    public static final double kPivotAngleGround = 0;
-    public static final double kPivotAngleSource = 0;
-    public static final double kPivotAngleAmp = 0;
-    public static final double kPivotAngleStow = 0;
+    public static final double kPivotAngleGround = 340;
+    public static final double kPivotAngleSource = 100;
+    public static final double kPivotAngleAmp = 100;
+    public static final double kPivotAngleStow = 170;
 
 
-    public static final double kIntakeSpeed = 0;
-    public static final double kEjectSpeed = 0;
-    public static final double kFeedShooterSpeed = 0;
+    public static final double kIntakeSpeed = 0.1;
+    public static final double kEjectSpeed = -0.1;
+    public static final double kFeedShooterSpeed = 0.1;
     
   }
 }

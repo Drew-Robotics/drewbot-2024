@@ -19,6 +19,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -34,6 +36,7 @@ import frc.robot.commands.DriveCommands.DriveZeroYawCommand;
 import frc.robot.commands.DriveCommands.DriveStopCommand;
 
 import frc.robot.commands.ShooterCommands.ShooterShootCommand;
+import frc.robot.commands.ShooterCommands.ShooterReverseCommand;
 
 import frc.robot.commands.IntakeCommands.IntakePivotAmpCommand;
 import frc.robot.commands.IntakeCommands.IntakePivotGroundCommand;
@@ -56,7 +59,10 @@ public class RobotContainer {
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = DriveSubsystem.getInstance();
+  private final DriveSubsystem m_drive = DriveSubsystem.getInstance();
+  private final ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
+  private final IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
+  
 
   DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
   OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
@@ -87,13 +93,15 @@ public class RobotContainer {
 
   private void configureDriverCommands(){
     // Configure default commands
-    m_robotDrive.setDefaultCommand(
+    DriveDriveCommand defaultDriveCommand  = 
       new DriveDriveCommand(
-        m_driverController::getXSpeed,
-        m_driverController::getYSpeed,
-        m_driverController::getRotation,
-        true, true
-      ));
+          m_driverController::getXSpeed,
+          m_driverController::getYSpeed,
+          m_driverController::getRotation,
+          true, true
+      );
+    defaultDriveCommand.addRequirements(m_drive);
+    m_drive.setDefaultCommand(defaultDriveCommand);
 
     // Configure buttons
     new JoystickButton(m_driverController, m_driverController.getTurnToZeroButton().value)
@@ -109,12 +117,15 @@ public class RobotContainer {
   private void configureOperatorCommands(){
 
     // Shooter
-    new JoystickButton(m_operatorController, m_operatorController.getShootButton().value)
+    new JoystickButton(m_operatorController, m_operatorController.getShooterShootButton().value)
       .whileTrue(new ShooterShootCommand());
+
+    new JoystickButton(m_operatorController, m_operatorController.getShooterReverseButton().value)
+      .whileTrue(new ShooterReverseCommand());
+
 
     // Intake
   }
-
   
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
@@ -155,20 +166,20 @@ public class RobotContainer {
 
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
         exampleTrajectory,
-        m_robotDrive::getPose, // Functional interface to feed supplier
+        m_drive::getPose, // Functional interface to feed supplier
         DriveConstants.kDriveKinematics,
 
         // Position controllers
         new PIDController(AutoConstants.kPXController, 0, 0),
         new PIDController(AutoConstants.kPYController, 0, 0),
         thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
+        m_drive::setModuleStates,
+        m_drive);
 
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+    m_drive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    return swerveControllerCommand.andThen(() -> m_drive.drive(0, 0, 0, false, false));
   }
 }

@@ -6,6 +6,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.util.Units;
 
@@ -40,7 +41,7 @@ public class IntakeSubsystem extends SubsystemBase{
     // Pivot Motor
     m_pivotMotor = new CANSparkMax(IntakeConstants.kPivotMotorID, MotorType.kBrushless);
     m_pivotMotor.restoreFactoryDefaults();
-    m_pivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_pivotMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     m_pivotMotor.setSmartCurrentLimit(10);
 
 
@@ -120,7 +121,6 @@ public class IntakeSubsystem extends SubsystemBase{
   
   @Override
   public void periodic(){
-
     // Pivot control
     double pivotAngle = pivotTargetToAngle(m_periodicIO.getPivotTarget());
     m_periodicIO.setIntakePivotVoltage(m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle));
@@ -132,6 +132,14 @@ public class IntakeSubsystem extends SubsystemBase{
 
     // Intake control
     m_periodicIO.setIntakeSpeed(intakeStateToSpeed(m_periodicIO.getIntakeState()));
+
+
+    // 
+    m_pivotMotor.setVoltage(m_periodicIO.getIntakePivotVoltage());
+    m_intakeMotor.set(m_periodicIO.getIntakeSpeed());
+
+    SmartDashboard.putNumber("getPivotAngleDegrees", getPivotAngleDegrees());
+
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -

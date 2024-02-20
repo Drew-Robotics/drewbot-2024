@@ -8,7 +8,9 @@ public class IntakePivotAmpCommand extends Command{
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakePivotAmpCommand(){}
+  public IntakePivotAmpCommand(){
+    addRequirements(m_intake);
+  }
 
   // Called when the command is initially scheduled.
   @Override

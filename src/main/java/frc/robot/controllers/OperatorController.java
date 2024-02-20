@@ -8,10 +8,13 @@ public class OperatorController extends XboxController{
     super(port);
   }
 
-  public Button getShootButton(){
+  public Button getShooterShootButton(){
+    return Button.kLeftBumper;
+  }
+
+  public Button getShooterReverseButton(){
     return Button.kRightBumper;
   }
-  
 
   /*
    * INTAKE

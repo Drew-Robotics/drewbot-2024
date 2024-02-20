@@ -17,7 +17,6 @@ public class DriveTurnToAngleCommand extends Command {
   PIDController m_pid;
   double m_target_angle;
 
-  /** Creates a new SetReverseIntakeSpeed. */
   public DriveTurnToAngleCommand(double angle) {
     m_drive = DriveSubsystem.getInstance();
 
@@ -31,7 +30,6 @@ public class DriveTurnToAngleCommand extends Command {
     );
 
     m_pid.setTolerance(5f);
-    //m_pid.enableContinuousInput(-180, 180);
 
     SmartDashboard.putData("PID Controller", m_pid);
     //LiveWindow.add(m_pid);
