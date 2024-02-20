@@ -90,7 +90,7 @@ public class RobotContainer {
 
   private void configureDriverCommands(){
     // Configure default commands
-    DriveDriveCommand defaultDriveCommand  = 
+    DriveDriveCommand defaultDriveCommand = 
       new DriveDriveCommand(
           m_driverController::getXSpeed,
           m_driverController::getYSpeed,
