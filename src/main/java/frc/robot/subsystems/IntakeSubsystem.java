@@ -35,15 +35,22 @@ public class IntakeSubsystem extends SubsystemBase{
   private IntakeSubsystem() {
     // Intake Motor
     m_intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorID, MotorType.kBrushless);
+
     m_intakeMotor.restoreFactoryDefaults();
-    m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast); // Maybe have to change this later?
+    m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
+    m_intakeMotor.setInverted(IntakeConstants.kIntakeMotorInverted);
     
     // Pivot Motor
     m_pivotMotor = new CANSparkMax(IntakeConstants.kPivotMotorID, MotorType.kBrushless);
-    m_pivotMotor.restoreFactoryDefaults();
-    m_pivotMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    m_pivotMotor.setSmartCurrentLimit(10);
 
+    m_pivotMotor.restoreFactoryDefaults();
+    m_pivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+    m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartLimit);
+    m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
+
+    m_pivotPID.enableContinuousInput(0, 360);
 
     m_periodicIO = new PeriodicIO(); 
   }
@@ -139,6 +146,8 @@ public class IntakeSubsystem extends SubsystemBase{
     m_intakeMotor.set(m_periodicIO.getIntakeSpeed());
 
     SmartDashboard.putNumber("getPivotAngleDegrees", getPivotAngleDegrees());
+    SmartDashboard.putNumber("getIntakePivotVoltage", m_periodicIO.getIntakePivotVoltage());
+    SmartDashboard.putString("intakePivotTarget", m_periodicIO.getPivotTarget().toString());
 
   }
 

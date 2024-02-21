@@ -35,46 +35,49 @@ public class ClimberSubsystem extends SubsystemBase {
     
     m_periodicIO = new PeriodicIO();
     
-    // Setting Motor Type/ID
+    // Setting motor type/ID
     m_leftClimberMotor = new CANSparkMax(ClimberConstants.kLeftClimberMotorID, MotorType.kBrushless);
     m_rightClimberMotor = new CANSparkMax(ClimberConstants.kRightClimberMotorID, MotorType.kBrushless);
+
+    // Set inverted
+    m_leftClimberMotor.setInverted(ClimberConstants.kLeftClimberMotorInverted);
+    m_rightClimberMotor.setInverted(ClimberConstants.kRightClimberMotorInverted);
     
-    // Left Climber PID
+    // Left climber PID
     m_leftClimberMotorPID = m_leftClimberMotor.getPIDController();
     m_leftClimberMotorPID.setP(ClimberConstants.kClimberP);
     m_leftClimberMotorPID.setI(ClimberConstants.kClimberI);
     m_leftClimberMotorPID.setD(ClimberConstants.kClimberD);
     m_leftClimberMotorPID.setOutputRange(ClimberConstants.kClimberMinOutput, ClimberConstants.kClimberMaxOutput);
 
-    // Right Climber PID
+    // Right climber PID
     m_rightClimberMotorPID = m_rightClimberMotor.getPIDController();
     m_rightClimberMotorPID.setP(ClimberConstants.kClimberP);
     m_rightClimberMotorPID.setI(ClimberConstants.kClimberI);
     m_rightClimberMotorPID.setD(ClimberConstants.kClimberD);  
     m_rightClimberMotorPID.setOutputRange(ClimberConstants.kClimberMinOutput, ClimberConstants.kClimberMaxOutput);
 
-    // Left Climber Encoder
+    // Left climber encoder
     m_leftClimberEncoder = m_leftClimberMotor.getEncoder();
     m_leftClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
     m_leftClimberEncoder.setVelocityConversionFactor(ClimberConstants.kClimberGearRatio);
 
-    // Right Climber Encoder
+    // Right climber encoder
     m_rightClimberEncoder = m_rightClimberMotor.getEncoder();
     m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
     m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
 
-    // Idle Mode 
+    // Idle mode 
     m_leftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_rightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-    // Inverting Motors
+    // Inverting motors
     m_leftClimberMotor.setInverted(false);
     m_rightClimberMotor.setInverted(true);
 
   }
 
 
-  // RPM of Spool (whatever that means )
   private static class PeriodicIO {
     private double climberRightSpeed = 0.0;
     private double climberLeftSpeed = 0.0;
@@ -109,8 +112,11 @@ public class ClimberSubsystem extends SubsystemBase {
   
   @Override
   public void periodic() {
-    m_leftClimberMotorPID.setReference(m_periodicIO.getClimberLeftSpeed(), ControlType.kVelocity);
-    m_rightClimberMotorPID.setReference(m_periodicIO.getClimberRightSpeed(), ControlType.kVelocity);
+    // m_leftClimberMotorPID.setReference(m_periodicIO.getClimberLeftSpeed(), ControlType.kVelocity);
+    // m_rightClimberMotorPID.setReference(m_periodicIO.getClimberRightSpeed(), ControlType.kVelocity);
+
+    m_leftClimberMotor.set(m_periodicIO.getClimberLeftSpeed());
+    m_rightClimberMotor.set(m_periodicIO.getClimberRightSpeed());
 
     SmartDashboard.putNumber("Left speed setpoint:", m_periodicIO.getClimberLeftSpeed());
     SmartDashboard.putNumber("Left speed:", m_leftClimberEncoder.getVelocity());

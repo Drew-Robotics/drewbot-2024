@@ -2,6 +2,7 @@ package frc.robot.commands.IntakeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
 public class IntakeStateEjectCommand extends Command{
 
@@ -24,11 +25,13 @@ public class IntakeStateEjectCommand extends Command{
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_intake.setIntakeState(IntakeState.NONE);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

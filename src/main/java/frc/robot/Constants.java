@@ -176,27 +176,31 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final double kPivotP = 0;
-    public static final double kPivotI = 0;
+    public static final double kPivotP = 0.1;
+    public static final double kPivotI = 0.03;
     public static final double kPivotD = 0;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
     public static final int kPivotMotorID = 11;
 
+    public static final boolean kIntakeMotorInverted = false;
+    public static final boolean kPivotMotorInverted = true;
+
+    public static final double kPivotMotorSmartCurrentLimit = 3;
+
     public static final int kPivotEncoderId = 0;
 
     public static final double kPivotEncoderOffset = 0;
 
-    public static final double kPivotAngleGround = 340;
-    public static final double kPivotAngleSource = 100;
-    public static final double kPivotAngleAmp = 100;
-    public static final double kPivotAngleStow = 170;
+    public static final double kPivotAngleGround = 85;
+    public static final double kPivotAngleSource = 0;
+    public static final double kPivotAngleAmp = 0;
+    public static final double kPivotAngleStow = 240;
 
-
-    public static final double kIntakeSpeed = 0.1;
-    public static final double kEjectSpeed = -0.1;
-    public static final double kFeedShooterSpeed = 0.1;
+    public static final double kIntakeSpeed = 0.5;
+    public static final double kEjectSpeed = -0.5;
+    public static final double kFeedShooterSpeed = -0.25;
     
   }
   public static final class ClimberConstants {
@@ -206,18 +210,22 @@ public final class Constants {
     public static final double kClimberD = 0;
 
     // Motor IDs
-    public static final int kLeftClimberMotorID = 0;
-    public static final int kRightClimberMotorID = 0;
+    public static final int kLeftClimberMotorID = 30;
+    public static final int kRightClimberMotorID = 31;
+
+    // Inverted
+    public static final boolean kLeftClimberMotorInverted = false;
+    public static final boolean kRightClimberMotorInverted = false;
 
     // RPM
-    public static final double kClimberClimbSpeed = 0.0;
-    public static final double kClimberReleaseSpeed = 0.0;
+    public static final double kClimberClimbSpeed = 0.2;
+    public static final double kClimberReleaseSpeed = 0.2;
     
     // Output Min/Max 
     public static final double kClimberMinOutput = 0;
-    public static final double kClimberMaxOutput = 0;
+    public static final double kClimberMaxOutput = 1;
 
     // Gear Ratio
-    public static final double kClimberGearRatio = 0 / 0;
+    public static final double kClimberGearRatio = 1d / 12d;
   }
 }

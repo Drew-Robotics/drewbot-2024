@@ -118,7 +118,7 @@ public class RobotContainer {
   private void configureOperatorCommands(){
     // Shooter
     m_operatorController.getShooterShootTrigger().whileTrue(new ShooterShootCommand());
-    m_operatorController.getShooterShootTrigger().whileTrue(new ShooterReverseCommand());
+    m_operatorController.getShooterReverseTrigger().whileTrue(new ShooterReverseCommand());
 
     // Intake
     m_operatorController.getIntakePivotGroundTrigger().onTrue(new IntakePivotGroundCommand());
