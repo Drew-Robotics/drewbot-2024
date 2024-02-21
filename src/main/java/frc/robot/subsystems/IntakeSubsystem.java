@@ -122,6 +122,7 @@ public class IntakeSubsystem extends SubsystemBase{
     INTAKE,
     EJECT,
     FEED_SHOOTER,
+    AMP
   }
 
   // - - - - - - - - - - GENERIC FUNCTIONS - - - - - - - - - -

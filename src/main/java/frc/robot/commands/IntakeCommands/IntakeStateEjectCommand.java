@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
-public class IntakeStateEjectCommand extends Command{
+public class IntakeStateEjectCommand extends Command {
 
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
@@ -16,7 +16,7 @@ public class IntakeStateEjectCommand extends Command{
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeState(IntakeSubsystem.IntakeState.EJECT);
+    m_intake.setIntakeState(IntakeState.EJECT);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
