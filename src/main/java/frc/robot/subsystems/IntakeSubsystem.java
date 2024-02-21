@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import java.lang.Math;
 
-import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -13,6 +12,8 @@ import edu.wpi.first.math.util.Units;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import com.playingwithfusion.TimeOfFlight;
+
 public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
@@ -20,9 +21,10 @@ public class IntakeSubsystem extends SubsystemBase{
   private final PIDController m_pivotPID = new PIDController(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD);
   private final DutyCycleEncoder m_pivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderId);
 
-  
   private CANSparkMax m_intakeMotor;
   private CANSparkMax m_pivotMotor;
+
+  private TimeOfFlight m_timeOfFlight = new TimeOfFlight(IntakeConstants.kTimeOfFlightSensorID);
 
   private static IntakeSubsystem m_instance;
 
@@ -141,6 +143,9 @@ public class IntakeSubsystem extends SubsystemBase{
     SmartDashboard.putNumber("getPivotAngleDegrees", getPivotAngleDegrees());
     SmartDashboard.putNumber("getIntakePivotVoltage", m_periodicIO.getIntakePivotVoltage());
     SmartDashboard.putString("intakePivotTarget", m_periodicIO.getPivotTarget().toString());
+    
+    SmartDashboard.putNumber("timeOfFlightSensorRange", m_timeOfFlight.getRange());
+    SmartDashboard.putString("timeOfFlightSensorStatus", m_timeOfFlight.getStatus().toString());
 
   }
 
