@@ -191,7 +191,9 @@ public final class Constants {
 
     public static final int kPivotEncoderId = 0;
 
-    public static final double kPivotEncoderZero = 240;
+    public static final double kPivotEncoderZero = 240; 
+    // This should be the point where if the pivot were to move
+    // in a negative direction anymore you would hit a hardstop.
 
     public static final double kPivotAngleGround = 85;
     public static final double kPivotAngleSource = 0;
