@@ -194,16 +194,16 @@ public final class Constants {
     public static final double kPivotEncoderZero = 200;
     // This is any point that the robot can't reach.
 
-    public static final double kPivotAngleGround = 85;
-    public static final double kPivotAngleSource = 0;
-    public static final double kPivotAngleAmp = 0;
-    public static final double kPivotAngleStow = 240;
+    public static final double kPivotAngleGround = 250;
+    public static final double kPivotAngleSource = 130;
+    public static final double kPivotAngleAmp = 130;
+    public static final double kPivotAngleStow = 45;
 
     public static final double kIntakeSpeed = 0.5;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedShooterSpeed = -0.25;
 
-    public static final int kTimeOfFlightSensorID = 1;
+    public static final int kTimeOfFlightSensorID = 40;
     
   }
   public static final class ClimberConstants {
@@ -222,7 +222,7 @@ public final class Constants {
 
     // RPM
     public static final double kClimberClimbSpeed = 0.2;
-    public static final double kClimberReleaseSpeed = 0.2;
+    public static final double kClimberReleaseSpeed = -0.2;
     
     // Output Min/Max 
     public static final double kClimberMinOutput = 0;

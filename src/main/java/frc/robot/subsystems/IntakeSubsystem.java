@@ -158,14 +158,18 @@ public class IntakeSubsystem extends SubsystemBase{
    * @return The angle of the intake pivot
    */
   private double getPivotAngleDegrees() {
-    double value = m_pivotEncoder.getAbsolutePosition() - IntakeConstants.kPivotEncoderZero;
+    double value = m_pivotEncoder.getAbsolutePosition();
 
-    value = Units.rotationsToDegrees(value%1>0?value%1:value%1+1);
-
-    while (value < 0){
-      value += 360;
-    }
+    value = reshiftAngle(Units.rotationsToDegrees(value%1>0?value%1:value%1+1));
     return value;
+  }
+
+  private double reshiftAngle(double angle){
+    angle -= IntakeConstants.kPivotEncoderZero;
+    while (angle < 0){
+      angle += 360;
+    }
+    return angle;
   }
 
   /**

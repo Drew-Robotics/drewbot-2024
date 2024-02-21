@@ -118,10 +118,10 @@ public class ClimberSubsystem extends SubsystemBase {
     m_leftClimberMotor.set(m_periodicIO.getClimberLeftSpeed());
     m_rightClimberMotor.set(m_periodicIO.getClimberRightSpeed());
 
-    SmartDashboard.putNumber("Left speed setpoint:", m_periodicIO.getClimberLeftSpeed());
-    SmartDashboard.putNumber("Left speed:", m_leftClimberEncoder.getVelocity());
-    SmartDashboard.putNumber("Right speed setpoint:", m_periodicIO.getClimberRightSpeed());
-    SmartDashboard.putNumber("Right speed:", m_rightClimberEncoder.getVelocity());
+    //SmartDashboard.putNumber("Left speed setpoint:", m_periodicIO.getClimberLeftSpeed());
+    //SmartDashboard.putNumber("Left speed:", m_leftClimberEncoder.getVelocity());
+    //SmartDashboard.putNumber("Right speed setpoint:", m_periodicIO.getClimberRightSpeed());
+    //SmartDashboard.putNumber("Right speed:", m_rightClimberEncoder.getVelocity());
   }
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
