@@ -191,7 +191,7 @@ public final class Constants {
 
     public static final int kPivotEncoderId = 0;
 
-    public static final double kPivotEncoderOffset = 0;
+    public static final double kPivotEncoderZero = 240;
 
     public static final double kPivotAngleGround = 85;
     public static final double kPivotAngleSource = 0;

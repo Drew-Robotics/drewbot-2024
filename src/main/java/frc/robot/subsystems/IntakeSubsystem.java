@@ -50,8 +50,6 @@ public class IntakeSubsystem extends SubsystemBase{
     m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
 
-    m_pivotPID.enableContinuousInput(0, 360);
-
     m_periodicIO = new PeriodicIO(); 
   }
 
@@ -132,11 +130,6 @@ public class IntakeSubsystem extends SubsystemBase{
     double pivotAngle = pivotTargetToAngle(m_periodicIO.getPivotTarget());
     m_periodicIO.setIntakePivotVoltage(m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle));
 
-    // If the pivot is at exactly 0.0, it's probably not connected, so disable it
-    if (m_pivotEncoder.get() == 0.0) {
-      m_periodicIO.setIntakePivotVoltage(0.0);
-    }
-
     // Intake control
     m_periodicIO.setIntakeSpeed(intakeStateToSpeed(m_periodicIO.getIntakeState()));
 
@@ -159,11 +152,14 @@ public class IntakeSubsystem extends SubsystemBase{
    * @return The angle of the intake pivot
    */
   private double getPivotAngleDegrees() {
-    double value = m_pivotEncoder.getAbsolutePosition() - IntakeConstants.kPivotEncoderOffset;
+    double value = m_pivotEncoder.getAbsolutePosition() - IntakeConstants.kPivotEncoderZero;
 
-    return Units.rotationsToDegrees(
-      value%1 > 0 ? value%1 : value%1 + 1
-    );
+    value = Units.rotationsToDegrees(value%1>0?value%1:value%1+1);
+
+    while (value < 0){
+      value += 360;
+    }
+    return value;
   }
 
   /**
