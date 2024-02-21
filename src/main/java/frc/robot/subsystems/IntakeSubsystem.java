@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase{
     m_pivotMotor.restoreFactoryDefaults();
     m_pivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-    m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartLimit);
+    m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
 
     m_pivotPID.enableContinuousInput(0, 360);
