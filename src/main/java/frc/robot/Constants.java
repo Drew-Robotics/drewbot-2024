@@ -202,6 +202,8 @@ public final class Constants {
     public static final double kIntakeSpeed = 0.5;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedShooterSpeed = -0.25;
+
+    public static final int kTimeOfFlightSensorID = 1;
     
   }
   public static final class ClimberConstants {
