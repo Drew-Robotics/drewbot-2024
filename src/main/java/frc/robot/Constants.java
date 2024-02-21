@@ -187,7 +187,7 @@ public final class Constants {
     public static final boolean kIntakeMotorInverted = false;
     public static final boolean kPivotMotorInverted = true;
 
-    public static final double kPivotMotorSmartCurrentLimit = 3;
+    public static final int kPivotMotorSmartCurrentLimit = 3;
 
     public static final int kPivotEncoderId = 0;
 
