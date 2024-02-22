@@ -1,22 +1,21 @@
-package frc.robot.commands.IntakeCommands;
+package frc.robot.commands.IntakeCommands.IntakeBasicCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
-public class IntakeStateIntakeCommand extends Command{
+public class IntakePivotGroundCommand extends Command{
 
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakeStateIntakeCommand(){
+  public IntakePivotGroundCommand(){
     addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeState(IntakeSubsystem.IntakeState.INTAKE);
+    m_intake.setPivotTarget(IntakeSubsystem.PivotState.GROUND);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -25,13 +24,11 @@ public class IntakeStateIntakeCommand extends Command{
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_intake.setIntakeState(IntakeState.NONE);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

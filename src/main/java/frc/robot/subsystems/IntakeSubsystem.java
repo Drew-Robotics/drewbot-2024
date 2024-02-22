@@ -35,6 +35,8 @@ public class IntakeSubsystem extends SubsystemBase{
    * Constructor.
    */
   private IntakeSubsystem() {
+    m_pivotPID.setTolerance(IntakeConstants.kPivotPIDTolerance);
+
     // Intake Motor
     m_intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorID, MotorType.kBrushless);
 
@@ -59,18 +61,27 @@ public class IntakeSubsystem extends SubsystemBase{
    * Periodic input output javadoc filler
    */
   private static class PeriodicIO {
-    private PivotTarget pivotTarget = PivotTarget.STOW;
+    private PivotState pivotTarget = PivotState.STOW;
+    private PivotState pivotState = PivotState.NONE;
     private IntakeState intakeState = IntakeState.NONE;
 
     private double intakePivotVoltage = 0.0;
     private double intakeSpeed = 0.0;
 
     // Pivot target
-    public PivotTarget getPivotTarget(){
+    public PivotState getPivotTarget(){
       return pivotTarget;
     }
-    public void setPivotTarget(PivotTarget pivotTarget){
+    public void setPivotTarget(PivotState pivotTarget){
       this.pivotTarget = pivotTarget;
+    }
+
+    // Pivot state
+    public PivotState getPivotState(){
+      return pivotState;
+    }
+    public void setPivotState(PivotState pivotState){
+      this.pivotState = pivotState;
     }
 
     // Intake state
@@ -109,7 +120,7 @@ public class IntakeSubsystem extends SubsystemBase{
     return m_instance;
   }
 
-  public enum PivotTarget {
+  public enum PivotState {
     NONE,
     GROUND,
     SOURCE,
@@ -137,16 +148,18 @@ public class IntakeSubsystem extends SubsystemBase{
     m_periodicIO.setIntakeSpeed(intakeStateToSpeed(m_periodicIO.getIntakeState()));
 
 
-    // 
     m_pivotMotor.setVoltage(m_periodicIO.getIntakePivotVoltage());
     m_intakeMotor.set(m_periodicIO.getIntakeSpeed());
+
+    if (m_pivotPID.atSetpoint()){
+      m_periodicIO.setPivotState(m_periodicIO.getPivotTarget());
+    }
 
     SmartDashboard.putNumber("getPivotAngleDegrees", getPivotAngleDegrees());
     SmartDashboard.putNumber("getIntakePivotVoltage", m_periodicIO.getIntakePivotVoltage());
     SmartDashboard.putString("intakePivotTarget", m_periodicIO.getPivotTarget().toString());
     
     SmartDashboard.putNumber("timeOfFlightSensorRange", getTimeOfFlightRange());
-    SmartDashboard.putString("timeOfFlightSensorStatus", m_timeOfFlight.getStatus().toString());
 
   }
 
@@ -178,8 +191,8 @@ public class IntakeSubsystem extends SubsystemBase{
    * @param target The target state of the intake pivot
    * @return The target angle for the intake pivot
    */
-  private double pivotTargetToAngle(PivotTarget target) {
-    switch (target) {
+  private double pivotTargetToAngle(PivotState state) {
+    switch (state) {
       case GROUND:
         return IntakeConstants.kPivotAngleGround;
       case SOURCE:
@@ -207,6 +220,8 @@ public class IntakeSubsystem extends SubsystemBase{
         return IntakeConstants.kEjectSpeed;
       case FEED_SHOOTER:
         return IntakeConstants.kFeedShooterSpeed;
+      case AMP:
+        return IntakeConstants.kAmpSpeed;
       default:
         return 0.0;
     }
@@ -218,8 +233,12 @@ public class IntakeSubsystem extends SubsystemBase{
     m_periodicIO.setIntakeState(state);
   }
 
-  public void setPivotTarget(PivotTarget target){
+  public void setPivotTarget(PivotState target){
     m_periodicIO.setPivotTarget(target);
+  }
+
+  public PivotState getPivotState(){
+    return m_periodicIO.getPivotState();
   }
 
   public double getTimeOfFlightRange(){

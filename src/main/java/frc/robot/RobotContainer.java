@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -32,19 +33,16 @@ import frc.robot.controllers.OperatorController;
 import frc.robot.commands.DriveCommands.DriveDriveCommand;
 import frc.robot.commands.DriveCommands.DriveTurnToAngleCommand;
 import frc.robot.commands.DriveCommands.DriveZeroYawCommand;
+import frc.robot.commands.IntakeCommands.IntakeDetectNoteCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotAmpCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotGroundCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotStowCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateEjectCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateIntakeCommand;
+import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterReverseCommand;
+import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterShootCommand;
 import frc.robot.commands.DriveCommands.DriveStopCommand;
-
-import frc.robot.commands.ShooterCommands.ShooterShootCommand;
-import frc.robot.commands.ShooterCommands.ShooterReverseCommand;
-
-import frc.robot.commands.IntakeCommands.IntakePivotAmpCommand;
-import frc.robot.commands.IntakeCommands.IntakePivotGroundCommand;
-import frc.robot.commands.IntakeCommands.IntakePivotStowCommand;
-import frc.robot.commands.IntakeCommands.IntakeStateEjectCommand;
-import frc.robot.commands.IntakeCommands.IntakeStateFeedCommand;
-import frc.robot.commands.IntakeCommands.IntakeStateIntakeCommand;
-
-
 import frc.robot.commands.ClimberCommands.ClimberClimbCommand;
 import frc.robot.commands.ClimberCommands.ClimberReleaseCommand;
 import frc.robot.commands.ClimberCommands.ClimberTiltLeftCommand;
@@ -66,6 +64,7 @@ public class RobotContainer {
   private final DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private final ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
   private final IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
+  private final ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
   
 
   DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
@@ -118,9 +117,11 @@ public class RobotContainer {
   private void configureOperatorCommands(){
     // Shooter
     m_operatorController.getShooterShootTrigger().whileTrue(new ShooterShootCommand());
-    m_operatorController.getShooterReverseTrigger().whileTrue(new ShooterReverseCommand());
+    //m_operatorController.getShooterReverseTrigger().whileTrue(new ShooterReverseCommand());
 
     // Intake
+    m_operatorController.getIntakeDetectNoteTrigger().onTrue(new IntakeDetectNoteCommand());
+
     m_operatorController.getIntakePivotGroundTrigger().onTrue(new IntakePivotGroundCommand());
     m_operatorController.getIntakePivotAmpTrigger().onTrue(new IntakePivotAmpCommand());
     m_operatorController.getIntakePivotStowTrigger().onTrue(new IntakePivotStowCommand());

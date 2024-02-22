@@ -1,0 +1,50 @@
+---OPERATOR CONTROLLER---
+
+LT: Shoot to amp
+  On press:
+    Intake pivot to stow position
+    Shooter motors rev to amp shoot speed
+  On release:
+    Intake feed to shooter
+  On small delay:
+    Shooter off
+    Intake speed off
+
+RT: Shoot to speaker
+  On press:
+    Intake pivot to stow position
+    Shooter motors rev to speaker shoot speed
+  On release:
+    Intake feed to shooter
+  On small delay:
+    Shooter off
+    Intake speed off
+
+LB: Eject intake
+  On press:
+    Intake pivot to ground position
+    Intake set to eject speed
+  On release:
+    Intake speed off
+
+RB: Run intake
+  On press:
+    Intake pivot to ground position
+    Intake set to intaking speed
+  On note enter:
+    Intake pivot to stow
+    Intake speed off
+
+D UP: Climbers run
+D DOWN: Climbers reverse
+D LEFT: Climbers tilt left
+D RIGHT: Climbers tilt right
+
+X: Intake pivot stow
+Y: Intake pivot amp
+B: Intake pivot ground
+
+A: Cancle intake
+  On press:
+    Intake pivot stow
+    Intake speed off

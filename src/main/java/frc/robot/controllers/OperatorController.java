@@ -9,6 +9,10 @@ public class OperatorController extends CommandXboxController{
     super(port);
   }
 
+  public Trigger getIntakeDetectNoteTrigger(){
+    return rightBumper();
+  }
+
   // Shooter
   public Trigger getShooterShootTrigger(){
     return leftBumper();
@@ -17,6 +21,7 @@ public class OperatorController extends CommandXboxController{
   public Trigger getShooterReverseTrigger(){
     return rightBumper();
   }
+
 
   // Intake Pivot
   public Trigger getIntakePivotStowTrigger(){

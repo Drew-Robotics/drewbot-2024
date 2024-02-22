@@ -1,21 +1,22 @@
-package frc.robot.commands.ShooterCommands;
+package frc.robot.commands.IntakeCommands.IntakeBasicCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
-public class ShooterReverseCommand extends Command{
+public class IntakeStateFeedCommand extends Command{
 
-  ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
+  IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public ShooterReverseCommand(){
-    addRequirements(m_shooter);
+  public IntakeStateFeedCommand(){
+    addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.reverse();
+    m_intake.setIntakeState(IntakeSubsystem.IntakeState.FEED_SHOOTER);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -25,7 +26,7 @@ public class ShooterReverseCommand extends Command{
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.stop();
+    m_intake.setIntakeState(IntakeState.NONE);
   }
 
   // Returns true when the command should end.
