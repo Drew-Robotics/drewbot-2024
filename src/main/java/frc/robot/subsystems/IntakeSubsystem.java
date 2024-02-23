@@ -158,6 +158,7 @@ public class IntakeSubsystem extends SubsystemBase{
     SmartDashboard.putNumber("getPivotAngleDegrees", getPivotAngleDegrees());
     SmartDashboard.putNumber("getIntakePivotVoltage", m_periodicIO.getIntakePivotVoltage());
     SmartDashboard.putString("intakePivotTarget", m_periodicIO.getPivotTarget().toString());
+    SmartDashboard.putString("intakePivotTarget", m_periodicIO.getIntakeState().toString());
     
     SmartDashboard.putNumber("timeOfFlightSensorRange", getTimeOfFlightRange());
 

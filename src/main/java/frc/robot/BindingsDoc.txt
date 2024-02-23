@@ -1,6 +1,6 @@
 ---OPERATOR CONTROLLER---
 
-LT: Shoot to amp
+LT: Shoot to amp ()
   On press:
     Intake pivot to stow position
     Shooter motors rev to amp shoot speed
@@ -10,7 +10,7 @@ LT: Shoot to amp
     Shooter off
     Intake speed off
 
-RT: Shoot to speaker
+RT: Shoot to speaker ()
   On press:
     Intake pivot to stow position
     Shooter motors rev to speaker shoot speed

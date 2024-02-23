@@ -116,8 +116,12 @@ public class ShooterSubsystem extends SubsystemBase {
     m_periodicIO.setShooterSpeed(rpm);
   }
 
-  public void shoot(){
-    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterShootSpeed);
+  public void speakerShoot(){
+    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterSpeakerSpeed);
+  }
+  
+  public void ampShoot(){
+    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterAmpSpeed);
   }
 
   public void reverse(){

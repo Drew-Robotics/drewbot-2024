@@ -14,52 +14,44 @@ public class OperatorController extends CommandXboxController{
   }
 
   // Shooter
-  public Trigger getShooterShootTrigger(){
-    return leftBumper();
+  public Trigger getShooterSpeakerTrigger(){
+    return rightTrigger(0.5);
   }
 
-  public Trigger getShooterReverseTrigger(){
-    return rightBumper();
+  public Trigger getShooterAmpTrigger(){
+    return leftTrigger(0.5);
   }
 
 
   // Intake Pivot
   public Trigger getIntakePivotStowTrigger(){
-    return povLeft();
-  }
-
-  public Trigger getIntakePivotAmpTrigger(){
-    return povUp();
-  }
-
-  public Trigger getIntakePivotGroundTrigger(){
-    return povRight();
-  }
-
-  // Intake State
-  public Trigger getIntakeIntakeTrigger(){
-    return rightTrigger(0.5);
-  }
-
-  public Trigger getIntakeFeedTrigger(){
-    return leftTrigger(0.5);
-  }
-
-  // Climber
-  public Trigger getClimberClimbTrigger(){
-    return y();
-  }
-
-  public Trigger getClimberReleaseTrigger(){
-    return a();
-  }
-
-  public Trigger getClimberTiltLeftTrigger(){
     return x();
   }
 
-  public Trigger getClimberTiltRightTrigger(){
+  public Trigger getIntakePivotAmpTrigger(){
+    return y();
+  }
+
+  public Trigger getIntakePivotGroundTrigger(){
     return b();
+  }
+
+
+  // Climber
+  public Trigger getClimberClimbTrigger(){
+    return povUp();
+  }
+
+  public Trigger getClimberReleaseTrigger(){
+    return povDown();
+  }
+
+  public Trigger getClimberTiltLeftTrigger(){
+    return povLeft();
+  }
+
+  public Trigger getClimberTiltRightTrigger(){
+    return povRight();
   }
   /*
    * INTAKE

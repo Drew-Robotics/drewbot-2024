@@ -169,18 +169,19 @@ public final class Constants {
     public static final double kShooterMinOutput = 0;
     public static final double kShooterMaxOutput = 1;
 
-    public static final double kShooterShootSpeed = 1;
+    public static final double kShooterSpeakerSpeed = 1;
+    public static final double kShooterAmpSpeed = 1;
     public static final double kShooterReverseSpeed = 0.1;
     
   }
 
   public static final class IntakeConstants {
 
-    public static final double kPivotP = 0.1;
-    public static final double kPivotI = 0.03;
+    public static final double kPivotP = 0.3;
+    public static final double kPivotI = 0.1;
     public static final double kPivotD = 0;
 
-    public static final double kPivotPIDTolerance = 5;
+    public static final double kPivotPIDTolerance = 10;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -199,11 +200,11 @@ public final class Constants {
     public static final double kPivotAngleGround = 250;
     public static final double kPivotAngleSource = 130;
     public static final double kPivotAngleAmp = 130;
-    public static final double kPivotAngleStow = 45;
+    public static final double kPivotAngleStow = 40;
 
-    public static final double kIntakeSpeed = 0.5;
+    public static final double kIntakeSpeed = 1;
     public static final double kEjectSpeed = -0.5;
-    public static final double kFeedShooterSpeed = -0.25;
+    public static final double kFeedShooterSpeed = -1;
     public static final double kAmpSpeed = -0.25;
 
     public static final int kTimeOfFlightSensorID = 40;

@@ -23,7 +23,9 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -40,8 +42,11 @@ import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotStowComm
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateEjectCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateIntakeCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateStopCommand;
 import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterReverseCommand;
-import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterShootCommand;
+import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterSpeakerShootCommand;
+import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterStopCommand;
+import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterAmpShootCommand;
 import frc.robot.commands.DriveCommands.DriveStopCommand;
 import frc.robot.commands.ClimberCommands.ClimberClimbCommand;
 import frc.robot.commands.ClimberCommands.ClimberReleaseCommand;
@@ -116,8 +121,17 @@ public class RobotContainer {
 
   private void configureOperatorCommands(){
     // Shooter
-    m_operatorController.getShooterShootTrigger().whileTrue(new ShooterShootCommand());
-    //m_operatorController.getShooterReverseTrigger().whileTrue(new ShooterReverseCommand());
+    m_operatorController.getShooterSpeakerTrigger()
+      .onFalse(Commands.parallel(
+        new ShooterSpeakerShootCommand(),
+        new IntakePivotStowCommand()
+      ));
+    m_operatorController.getShooterSpeakerTrigger()
+      .onFalse(Commands.parallel(
+        new IntakeStateFeedCommand().withTimeout(1),
+        new ShooterSpeakerShootCommand().withTimeout(1)
+      ));
+
 
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger().onTrue(new IntakeDetectNoteCommand());
@@ -126,8 +140,6 @@ public class RobotContainer {
     m_operatorController.getIntakePivotAmpTrigger().onTrue(new IntakePivotAmpCommand());
     m_operatorController.getIntakePivotStowTrigger().onTrue(new IntakePivotStowCommand());
 
-    m_operatorController.getIntakeIntakeTrigger().whileTrue(new IntakeStateIntakeCommand());
-    m_operatorController.getIntakeFeedTrigger().whileTrue(new IntakeStateFeedCommand());
 
     // Climber
     m_operatorController.getClimberClimbTrigger().whileTrue(new ClimberClimbCommand());
