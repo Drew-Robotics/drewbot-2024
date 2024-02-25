@@ -6,7 +6,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class ShooterAmpShootCommand extends Command{
 
   ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
-
+  
   // Constructor
   public ShooterAmpShootCommand(){
     addRequirements(m_shooter);

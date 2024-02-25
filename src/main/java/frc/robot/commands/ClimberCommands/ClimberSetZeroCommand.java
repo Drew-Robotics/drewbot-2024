@@ -1,22 +1,21 @@
-package frc.robot.commands.IntakeCommands.IntakeBasicCommands;
+package frc.robot.commands.ClimberCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.ClimberSubsystem;
 
-public class IntakeStateEjectCommand extends Command {
+public class ClimberSetZeroCommand extends Command {
 
-  IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
-
+  ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
+  
   // Constructor
-  public IntakeStateEjectCommand(){
-    addRequirements(m_intake);
+  public ClimberSetZeroCommand() {
+    addRequirements(m_climber);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeState(IntakeState.EJECT);
+    m_climber.climbersSetZero();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

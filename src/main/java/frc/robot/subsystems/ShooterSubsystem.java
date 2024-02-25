@@ -62,13 +62,13 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightShooterPID.setOutputRange(ShooterConstants.kShooterMinOutput, ShooterConstants.kShooterMaxOutput);
 
     m_leftShooterEncoder = m_leftShooterMotor.getEncoder();
-    m_rightShooterEncoder = m_leftShooterMotor.getEncoder();
+    m_rightShooterEncoder = m_rightShooterMotor.getEncoder();
 
     m_leftShooterMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
     m_rightShooterMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
 
     m_leftShooterMotor.setInverted(true);
-    m_leftShooterMotor.setInverted(false);
+    m_rightShooterMotor.setInverted(false);
 
     m_periodicIO = new PeriodicIO();
   }
@@ -104,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // m_leftShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
     // m_rightShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
-
+    SmartDashboard.putNumber("Shooter Speed", limitedSpeed);
     m_leftShooterMotor.set(limitedSpeed);
     m_rightShooterMotor.set(limitedSpeed);
   }

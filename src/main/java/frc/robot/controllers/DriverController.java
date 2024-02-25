@@ -10,7 +10,7 @@ public class DriverController extends CommandXboxController{
     public DriverController(int port){
         super(port);
     }
-    
+
     public double getXSpeed(){
         return -MathUtil.applyDeadband(this.getLeftY(), OIConstants.kDriveDeadband);
     }
@@ -23,9 +23,9 @@ public class DriverController extends CommandXboxController{
         return -MathUtil.applyDeadband(this.getRightX(), OIConstants.kDriveDeadband);
     }
 
-    public Trigger getZeroYawButton(){
-        return b();
-    }
+    // public Trigger getZeroYawButton(){
+    //     return b();
+    // }
 
     public Trigger getTurnToZeroButton(){
         return y();

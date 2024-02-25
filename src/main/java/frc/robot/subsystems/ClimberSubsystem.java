@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
@@ -24,12 +25,24 @@ public class ClimberSubsystem extends SubsystemBase {
   private CANSparkMax m_rightClimberMotor;
 
   // Defining Motor PIDs
-  private SparkPIDController m_leftClimberMotorPID;
-  private SparkPIDController m_rightClimberMotorPID;
+  private PIDController m_leftClimberMotorPID = new PIDController(
+    ClimberConstants.kClimberP, 
+    ClimberConstants.kClimberI,
+    ClimberConstants.kClimberD
+  );
+
+  private PIDController m_rightClimberMotorPID = new PIDController(
+    ClimberConstants.kClimberP, 
+    ClimberConstants.kClimberI,
+    ClimberConstants.kClimberD
+  );
 
   // Defining Motor Encoders
   private RelativeEncoder m_leftClimberEncoder;
   private RelativeEncoder m_rightClimberEncoder;
+
+  private double m_leftClimberZeroPos = 0;
+  private double m_rightClimberZeroPos = 0;
 
   private ClimberSubsystem() {
     
@@ -42,30 +55,16 @@ public class ClimberSubsystem extends SubsystemBase {
     // Set inverted
     m_leftClimberMotor.setInverted(ClimberConstants.kLeftClimberMotorInverted);
     m_rightClimberMotor.setInverted(ClimberConstants.kRightClimberMotorInverted);
-    
-    // Left climber PID
-    m_leftClimberMotorPID = m_leftClimberMotor.getPIDController();
-    m_leftClimberMotorPID.setP(ClimberConstants.kClimberP);
-    m_leftClimberMotorPID.setI(ClimberConstants.kClimberI);
-    m_leftClimberMotorPID.setD(ClimberConstants.kClimberD);
-    m_leftClimberMotorPID.setOutputRange(ClimberConstants.kClimberMinOutput, ClimberConstants.kClimberMaxOutput);
-
-    // Right climber PID
-    m_rightClimberMotorPID = m_rightClimberMotor.getPIDController();
-    m_rightClimberMotorPID.setP(ClimberConstants.kClimberP);
-    m_rightClimberMotorPID.setI(ClimberConstants.kClimberI);
-    m_rightClimberMotorPID.setD(ClimberConstants.kClimberD);  
-    m_rightClimberMotorPID.setOutputRange(ClimberConstants.kClimberMinOutput, ClimberConstants.kClimberMaxOutput);
 
     // Left climber encoder
     m_leftClimberEncoder = m_leftClimberMotor.getEncoder();
-    m_leftClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
-    m_leftClimberEncoder.setVelocityConversionFactor(ClimberConstants.kClimberGearRatio);
+    // m_leftClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
+    // m_leftClimberEncoder.setVelocityConversionFactor(ClimberConstants.kClimberGearRatio);
 
     // Right climber encoder
     m_rightClimberEncoder = m_rightClimberMotor.getEncoder();
-    m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
-    m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
+    // m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
+    // m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
 
     // Idle mode 
     m_leftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -74,26 +73,25 @@ public class ClimberSubsystem extends SubsystemBase {
     // Inverting motors
     m_leftClimberMotor.setInverted(false);
     m_rightClimberMotor.setInverted(true);
-
   }
 
 
   private static class PeriodicIO {
-    private double climberRightSpeed = 0.0;
-    private double climberLeftSpeed = 0.0;
+    private double climberRightPosition = 0.0;
+    private double climberLeftPosition = 0.0;
 
-    public double getClimberRightSpeed(){
-      return climberRightSpeed;
+    public double getClimberRightPosition(){
+      return climberRightPosition;
     }
-    public void setClimberRightSpeed(double speed){
-      climberRightSpeed = speed;
+    public void setClimberRightPosition(double position){
+      climberRightPosition = position;
     }
 
-    public double getClimberLeftSpeed(){
-      return climberLeftSpeed;
+    public double getClimberLeftPosition(){
+      return climberLeftPosition;
     }
-    public void setClimberLeftSpeed(double speed){
-      climberLeftSpeed = speed;
+    public void setClimberLeftPosition(double position){
+      climberLeftPosition = position;
     }
   }
   
@@ -112,16 +110,31 @@ public class ClimberSubsystem extends SubsystemBase {
   
   @Override
   public void periodic() {
-    // m_leftClimberMotorPID.setReference(m_periodicIO.getClimberLeftSpeed(), ControlType.kVelocity);
-    // m_rightClimberMotorPID.setReference(m_periodicIO.getClimberRightSpeed(), ControlType.kVelocity);
+    //m_leftClimberMotorPID.setReference(m_periodicIO.getClimberLeftPosition(), ControlType.kPosition);
+    //m_rightClimberMotorPID.setReference(m_periodicIO.getClimberRightPosition(), ControlType.kPosition);
 
-    m_leftClimberMotor.set(m_periodicIO.getClimberLeftSpeed());
-    m_rightClimberMotor.set(m_periodicIO.getClimberRightSpeed());
+    double leftSpeed = m_leftClimberMotorPID.calculate(
+      m_leftClimberEncoder.getPosition(),
+      m_periodicIO.getClimberLeftPosition()
+    );
 
-    //SmartDashboard.putNumber("Left speed setpoint:", m_periodicIO.getClimberLeftSpeed());
-    //SmartDashboard.putNumber("Left speed:", m_leftClimberEncoder.getVelocity());
-    //SmartDashboard.putNumber("Right speed setpoint:", m_periodicIO.getClimberRightSpeed());
-    //SmartDashboard.putNumber("Right speed:", m_rightClimberEncoder.getVelocity());
+    double rightSpeed = m_rightClimberMotorPID.calculate(
+      m_rightClimberEncoder.getPosition(),
+      m_periodicIO.getClimberRightPosition()
+    );
+
+    m_leftClimberMotor.set(leftSpeed);
+    m_leftClimberMotor.set(rightSpeed);
+
+    //SmartDashboard.putNumber("Left Speed Setpoint", m_periodicIO.getClimberLeftSpeed());
+    //SmartDashboard.putNumber("Left Speed:", m_leftClimberEncoder.getVelocity());
+    //SmartDashboard.putNumber("Right Speed setpoint", m_periodicIO.getClimberRightSpeed());
+
+    SmartDashboard.putNumber("Climber Left Target", m_periodicIO.getClimberLeftPosition());
+    SmartDashboard.putNumber("Climber Right Target", m_periodicIO.getClimberRightPosition());
+
+    SmartDashboard.putNumber("Climber Left Encoder", m_leftClimberEncoder.getPosition());
+    SmartDashboard.putNumber("Climber Right Encoder", m_rightClimberEncoder.getPosition());
   }
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
@@ -136,29 +149,28 @@ public class ClimberSubsystem extends SubsystemBase {
     m_rightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
   
-  public void climb() {
-    m_periodicIO.setClimberLeftSpeed(ClimberConstants.kClimberClimbSpeed);
-    m_periodicIO.setClimberRightSpeed(ClimberConstants.kClimberClimbSpeed);
+  public void climbersUp() {
+    m_periodicIO.setClimberLeftPosition(ClimberConstants.kRotationsToUpLeft + m_leftClimberZeroPos);
+    m_periodicIO.setClimberRightPosition(ClimberConstants.kRotationsToUpRight + m_leftClimberZeroPos);
   }
   
-  public void release() {
-    m_periodicIO.setClimberLeftSpeed(ClimberConstants.kClimberReleaseSpeed);
-    m_periodicIO.setClimberRightSpeed(ClimberConstants.kClimberReleaseSpeed);
+  public void climbersDown() {
+    m_periodicIO.setClimberLeftPosition(m_leftClimberZeroPos);
+    m_periodicIO.setClimberRightPosition(m_rightClimberZeroPos);
   }
-  
+
+  public void climbersSetZero() {
+    m_leftClimberZeroPos = m_leftClimberEncoder.getPosition();
+    m_rightClimberZeroPos = m_rightClimberEncoder.getPosition();
+  }
+
   public void tiltLeft() {
-    m_periodicIO.setClimberLeftSpeed(ClimberConstants.kClimberReleaseSpeed);
-    m_periodicIO.setClimberRightSpeed(0.0);
+    m_periodicIO.setClimberLeftPosition(m_periodicIO.getClimberLeftPosition() - ClimberConstants.kTiltRPM * 0.02/60);
   }
 
   public void tiltRight() {
-    m_periodicIO.setClimberLeftSpeed(0.0);
-    m_periodicIO.setClimberRightSpeed(ClimberConstants.kClimberReleaseSpeed);
+    m_periodicIO.setClimberRightPosition(m_periodicIO.getClimberRightPosition() - ClimberConstants.kTiltRPM * 0.02/60);
   }
 
-  public void stopClimber() {
-    m_periodicIO.setClimberLeftSpeed(0.0);
-    m_periodicIO.setClimberRightSpeed(0.0);
-  }
 
 }

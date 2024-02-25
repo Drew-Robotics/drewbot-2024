@@ -170,7 +170,7 @@ public final class Constants {
     public static final double kShooterMaxOutput = 1;
 
     public static final double kShooterSpeakerSpeed = 1;
-    public static final double kShooterAmpSpeed = 1;
+    public static final double kShooterAmpSpeed = 0.3;
     public static final double kShooterReverseSpeed = 0.1;
     
   }
@@ -214,7 +214,7 @@ public final class Constants {
   }
   public static final class ClimberConstants {
     // PIDs 
-    public static final double kClimberP = 0;
+    public static final double kClimberP = 0.05;
     public static final double kClimberI = 0;
     public static final double kClimberD = 0;
 
@@ -227,14 +227,20 @@ public final class Constants {
     public static final boolean kRightClimberMotorInverted = false;
 
     // RPM
-    public static final double kClimberClimbSpeed = 0.2;
-    public static final double kClimberReleaseSpeed = -0.2;
+    // public static final double kClimberClimbSpeed = 0.1;
+    // public static final double kClimberReleaseSpeed = -0.1;
     
     // Output Min/Max 
     public static final double kClimberMinOutput = 0;
     public static final double kClimberMaxOutput = 1;
 
     // Gear Ratio
-    public static final double kClimberGearRatio = 1d / 12d;
+    // public static final double kClimberGearRatio = 1d / 12d;
+
+    public static final double kRotationsToUpLeft = 4.7;
+    public static final double kRotationsToUpRight = 4.7;
+
+    public static final double kTiltRPM = 20;
+    
   }
 }

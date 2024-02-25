@@ -155,13 +155,13 @@ public class IntakeSubsystem extends SubsystemBase{
       m_periodicIO.setPivotState(m_periodicIO.getPivotTarget());
     }
 
-    SmartDashboard.putNumber("getPivotAngleDegrees", getPivotAngleDegrees());
-    SmartDashboard.putNumber("getIntakePivotVoltage", m_periodicIO.getIntakePivotVoltage());
-    SmartDashboard.putString("intakePivotTarget", m_periodicIO.getPivotTarget().toString());
-    SmartDashboard.putString("intakePivotTarget", m_periodicIO.getIntakeState().toString());
+    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
+    SmartDashboard.putNumber("Intake Pivot Voltage", m_periodicIO.getIntakePivotVoltage());
+    SmartDashboard.putString("Intake Pivot State", m_periodicIO.getIntakeState().toString());
     
-    SmartDashboard.putNumber("timeOfFlightSensorRange", getTimeOfFlightRange());
-
+    SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
+    
+    SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -

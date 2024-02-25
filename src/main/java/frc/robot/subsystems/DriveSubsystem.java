@@ -4,10 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
-
-import com.kauailabs.navx.frc.AHRS;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,20 +16,24 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.util.WPIUtilJNI;
+//import edu.wpi.first.wpilibj.ADIS16470_IMU;
+//import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj.SerialPort;
+
+import java.util.List;
+
+import com.kauailabs.navx.frc.AHRS;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -107,11 +108,8 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update SmartDashboard with NavX values.
-    SmartDashboard.putBoolean("IMU_Connected", m_gyro.isConnected());
-    SmartDashboard.putBoolean("IMU_IsCalibrating", m_gyro.isCalibrating());
-    SmartDashboard.putNumber("IMU_Yaw", m_gyro.getYaw());
-    SmartDashboard.putNumber("IMU_Pitch", m_gyro.getPitch());
-    SmartDashboard.putNumber("IMU_Roll", m_gyro.getRoll());
+    SmartDashboard.putBoolean("IMU Connected", m_gyro.isConnected());
+    SmartDashboard.putNumber("IMU Yaw", m_gyro.getYaw());
 
     // Update the odometry in the periodic block
     m_odometry.update(
@@ -323,42 +321,52 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.isMoving();
   }
 
-  public Command getAutoTrajectory(Pose2d startPosition, List<Translation2d> translations, Pose2d endPosition) {
+  /**
+   * Returns a command that starts at a position, ends at another position, and hits all the points in between.
+   * 
+   * @param startPose starting point of the robot
+   * @param translations points to hit
+   * @param endPose ending position
+   * @return command that hits all the points
+   */
+  public Command getAutoTrajectory(Pose2d startPose, List<Translation2d> translations, Pose2d endPose) {
     // Create config for trajectory
+
+    
     TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
+      AutoConstants.kMaxSpeedMetersPerSecond,
+      AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+      // Add kinematics to ensure max speed is actually obeyed
+      .setKinematics(DriveConstants.kDriveKinematics
+    );
 
     // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        startPosition, translations, endPosition, config
+      startPose, translations, endPose, config
     );
 
     var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints
+      AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints
     );
-
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        this::getPose, // Functional interface to feed supplier
-        DriveConstants.kDriveKinematics,
+      exampleTrajectory,
+      this::getPose, // Functional interface to feed supplier
+      DriveConstants.kDriveKinematics,
 
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        this::setModuleStates,
-        this
+      // Position controllers
+      new PIDController(AutoConstants.kPXController, 0, 0),
+      new PIDController(AutoConstants.kPYController, 0, 0),
+      thetaController,
+      this::setModuleStates,
+      this
     );
 
     // Reset odometry to the starting pose of the trajectory.
-    this.resetOdometry(exampleTrajectory.getInitialPose());
+    resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> this.drive(0, 0, 0, false, false));
+    return swerveControllerCommand.andThen(() -> drive(0, 0, 0, false, false));
   }
 }

@@ -16,21 +16,12 @@ public class IntakeDetectNoteCommand extends Command{
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_intake.setPivotTarget(IntakeSubsystem.PivotState.GROUND);
-    m_intake.setIntakeState(IntakeSubsystem.IntakeState.INTAKE);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     hasNote = m_intake.getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
-
-    if (hasNote){
-      m_intake.setPivotTarget(IntakeSubsystem.PivotState.STOW);
-      m_intake.setIntakeState(IntakeSubsystem.IntakeState.NONE);
-    }
   }
 
   // Called once the command ends or is interrupted.

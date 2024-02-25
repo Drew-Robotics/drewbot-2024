@@ -9,13 +9,27 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.ClimberCommands.ClimberClimbCommand;
-import frc.robot.commands.ClimberCommands.ClimberReleaseCommand;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.Constants.OIConstants;
+import frc.robot.commands.ClimberCommands.ClimberUpCommand;
+import frc.robot.commands.ClimberCommands.ClimberDownCommand;
 import frc.robot.commands.ClimberCommands.ClimberTiltLeftCommand;
 import frc.robot.commands.ClimberCommands.ClimberTiltRightCommand;
+import frc.robot.commands.ClimberCommands.ClimberSetZeroCommand;
 import frc.robot.commands.DriveCommands.DriveDriveCommand;
 import frc.robot.commands.DriveCommands.DriveStopCommand;
 import frc.robot.commands.DriveCommands.DriveTurnToAngleCommand;
@@ -24,7 +38,11 @@ import frc.robot.commands.IntakeCommands.IntakeDetectNoteCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotAmpCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotGroundCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotStowCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateEjectCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateIntakeCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateStopCommand;
+import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterAmpShootCommand;
 import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterSpeakerShootCommand;
 import frc.robot.controllers.DriverController;
 import frc.robot.controllers.OperatorController;
@@ -92,8 +110,9 @@ public class RobotContainer {
     m_drive.setDefaultCommand(defaultDriveCommand);
 
     // Configure buttons
-    m_driverController.getZeroYawButton().whileTrue(new DriveTurnToAngleCommand(0));
-    m_driverController.getTurnToZeroButton().onTrue(new DriveZeroYawCommand());
+    // m_driverController.getZeroYawButton().onTrue(new DriveZeroYawCommand());
+    SmartDashboard.putData("Zero Yaw", new DriveZeroYawCommand());
+    m_driverController.getTurnToZeroButton().whileTrue(new DriveTurnToAngleCommand(0));
     m_driverController.getStopButton().onTrue(new DriveStopCommand());
   }
 
@@ -103,25 +122,67 @@ public class RobotContainer {
       .onTrue(Commands.parallel(
         new ShooterSpeakerShootCommand(),
         new IntakePivotStowCommand()
-      ));
+      )
+    );
     m_operatorController.getShooterSpeakerTrigger()
-      .onFalse(Commands.parallel(
-        new IntakeStateFeedCommand().withTimeout(1),
+      .onFalse(Commands.sequence(
+        new IntakeStateFeedCommand(),
+        new WaitCommand(1),
+        new IntakeStateStopCommand(),
         new ShooterSpeakerShootCommand().withTimeout(1)
-      ));
+      )
+    );
+
+
+    m_operatorController.getShooterAmpTrigger()
+      .onTrue(Commands.parallel(
+        new ShooterAmpShootCommand(),
+        new IntakePivotStowCommand()
+      )
+    );
+    m_operatorController.getShooterAmpTrigger()
+      .onFalse(Commands.sequence(
+        new IntakeStateFeedCommand(),
+        new WaitCommand(1),
+        new IntakeStateStopCommand(),
+        new ShooterAmpShootCommand().withTimeout(1)
+      )
+    );
 
     // Intake
-    m_operatorController.getIntakeDetectNoteTrigger().onTrue(new IntakeDetectNoteCommand());
+    m_operatorController.getIntakeDetectNoteTrigger()
+    .onTrue(Commands.sequence(
+      new IntakePivotGroundCommand(),
+      new IntakeStateIntakeCommand(),
+      new IntakeDetectNoteCommand(),
+      new IntakePivotStowCommand(),
+      new WaitCommand(0.3),
+      new IntakeStateStopCommand()
+      )
+    );
+
+    
+    m_operatorController.getIntakeEjectNoteTrigger()
+      .onTrue(Commands.sequence(
+        new IntakePivotGroundCommand(),
+        new IntakeStateEjectCommand(),
+        new WaitCommand(1),
+        new IntakeStateStopCommand()
+      )
+    );
 
     m_operatorController.getIntakePivotGroundTrigger().onTrue(new IntakePivotGroundCommand());
     m_operatorController.getIntakePivotAmpTrigger().onTrue(new IntakePivotAmpCommand());
     m_operatorController.getIntakePivotStowTrigger().onTrue(new IntakePivotStowCommand());
 
     // Climber
-    m_operatorController.getClimberClimbTrigger().whileTrue(new ClimberClimbCommand());
-    m_operatorController.getClimberReleaseTrigger().whileTrue(new ClimberReleaseCommand());
-    m_operatorController.getClimberTiltLeftTrigger().whileTrue(new ClimberTiltLeftCommand());
-    m_operatorController.getClimberTiltRightTrigger().whileTrue(new ClimberTiltRightCommand());
+
+    SmartDashboard.putData("Zero Climbers", new ClimberSetZeroCommand());
+
+    m_operatorController.getClimberUpTrigger().onTrue(new ClimberUpCommand());
+    m_operatorController.getClimberDownTrigger().onTrue(new ClimberDownCommand());
+    m_operatorController.getClimberLeftTrigger().whileTrue(new ClimberTiltLeftCommand());
+    m_operatorController.getClimberRightTrigger().whileTrue(new ClimberTiltRightCommand());
   }
   
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
@@ -151,6 +212,8 @@ public class RobotContainer {
   /*
    public Command getAutonomousCommand() {
     // Create config for trajectory
+
+    
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)

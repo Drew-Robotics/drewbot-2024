@@ -31,8 +31,7 @@ public class DriveTurnToAngleCommand extends Command {
 
     m_pid.setTolerance(5f);
 
-    SmartDashboard.putData("PID Controller", m_pid);
-    //LiveWindow.add(m_pid);
+    SmartDashboard.putData("Turn to Angle PID Controller", m_pid);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_drive);

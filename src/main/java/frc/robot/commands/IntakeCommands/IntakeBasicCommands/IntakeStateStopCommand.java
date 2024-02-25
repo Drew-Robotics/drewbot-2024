@@ -16,56 +16,6 @@ public class IntakeStateStopCommand extends Command{
   @Override
   public void initialize() {
     m_intake.setIntakeState(IntakeSubsystem.IntakeState.NONE);
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
-    System.out.println("intake stop intake stop");
   }
 
   // Called every time the scheduler runs while the command is scheduled.

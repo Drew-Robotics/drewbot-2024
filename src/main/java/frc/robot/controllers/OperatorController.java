@@ -12,6 +12,10 @@ public class OperatorController extends CommandXboxController{
   public Trigger getIntakeDetectNoteTrigger(){
     return rightBumper();
   }
+  public Trigger getIntakeEjectNoteTrigger(){
+    return leftBumper();
+  }
+
 
   // Shooter
   public Trigger getShooterSpeakerTrigger(){
@@ -38,19 +42,19 @@ public class OperatorController extends CommandXboxController{
 
 
   // Climber
-  public Trigger getClimberClimbTrigger(){
+  public Trigger getClimberUpTrigger(){
     return povUp();
   }
 
-  public Trigger getClimberReleaseTrigger(){
+  public Trigger getClimberDownTrigger(){
     return povDown();
   }
 
-  public Trigger getClimberTiltLeftTrigger(){
+  public Trigger getClimberLeftTrigger(){
     return povLeft();
   }
 
-  public Trigger getClimberTiltRightTrigger(){
+  public Trigger getClimberRightTrigger(){
     return povRight();
   }
   /*

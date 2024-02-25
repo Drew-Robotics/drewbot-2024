@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ClimberSubsystem;
 
 public class ClimberTiltRightCommand extends Command {
-
   ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
   
   // Constructor
@@ -24,13 +23,12 @@ public class ClimberTiltRightCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_climber.stopClimber();
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
   }
+  
 }
