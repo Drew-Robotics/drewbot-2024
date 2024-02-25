@@ -4,51 +4,34 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import java.util.List;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-
-
-import frc.robot.controllers.DriverController;
-import frc.robot.controllers.OperatorController;
+import frc.robot.Constants.OIConstants;
+import frc.robot.commands.ClimberCommands.ClimberClimbCommand;
+import frc.robot.commands.ClimberCommands.ClimberReleaseCommand;
+import frc.robot.commands.ClimberCommands.ClimberTiltLeftCommand;
+import frc.robot.commands.ClimberCommands.ClimberTiltRightCommand;
 import frc.robot.commands.DriveCommands.DriveDriveCommand;
+import frc.robot.commands.DriveCommands.DriveStopCommand;
 import frc.robot.commands.DriveCommands.DriveTurnToAngleCommand;
 import frc.robot.commands.DriveCommands.DriveZeroYawCommand;
 import frc.robot.commands.IntakeCommands.IntakeDetectNoteCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotAmpCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotGroundCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotStowCommand;
-import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateEjectCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedCommand;
-import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateIntakeCommand;
-import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateStopCommand;
-import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterReverseCommand;
 import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterSpeakerShootCommand;
-import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterStopCommand;
-import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterAmpShootCommand;
-import frc.robot.commands.DriveCommands.DriveStopCommand;
-import frc.robot.commands.ClimberCommands.ClimberClimbCommand;
-import frc.robot.commands.ClimberCommands.ClimberReleaseCommand;
-import frc.robot.commands.ClimberCommands.ClimberTiltLeftCommand;
-import frc.robot.commands.ClimberCommands.ClimberTiltRightCommand;
-
-import java.util.List;
+import frc.robot.controllers.DriverController;
+import frc.robot.controllers.OperatorController;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -158,6 +141,15 @@ public class RobotContainer {
    */
 
   public Command getAutonomousCommand() {
+    Pose2d startPosition = new Pose2d(0, 0, new Rotation2d(0));
+    List<Translation2d> translations = List.of(new Translation2d(1, 1), new Translation2d(2, -1));
+    Pose2d endPosition = new Pose2d(3, 0, new Rotation2d(0));
+
+    return m_drive.getAutoTrajectory(startPosition, translations, endPosition);
+  }
+
+  /*
+   public Command getAutonomousCommand() {
     // Create config for trajectory
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
@@ -197,4 +189,5 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_drive.drive(0, 0, 0, false, false));
   }
+  */
 }
