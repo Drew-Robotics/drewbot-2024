@@ -12,9 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -26,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 
 import frc.robot.controllers.DriverController;
@@ -122,7 +117,7 @@ public class RobotContainer {
   private void configureOperatorCommands(){
     // Shooter
     m_operatorController.getShooterSpeakerTrigger()
-      .onFalse(Commands.parallel(
+      .onTrue(Commands.parallel(
         new ShooterSpeakerShootCommand(),
         new IntakePivotStowCommand()
       ));
@@ -132,14 +127,12 @@ public class RobotContainer {
         new ShooterSpeakerShootCommand().withTimeout(1)
       ));
 
-
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger().onTrue(new IntakeDetectNoteCommand());
 
     m_operatorController.getIntakePivotGroundTrigger().onTrue(new IntakePivotGroundCommand());
     m_operatorController.getIntakePivotAmpTrigger().onTrue(new IntakePivotAmpCommand());
     m_operatorController.getIntakePivotStowTrigger().onTrue(new IntakePivotStowCommand());
-
 
     // Climber
     m_operatorController.getClimberClimbTrigger().whileTrue(new ClimberClimbCommand());
@@ -163,6 +156,7 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+
   public Command getAutonomousCommand() {
     // Create config for trajectory
     TrajectoryConfig config = new TrajectoryConfig(
