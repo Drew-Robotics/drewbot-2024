@@ -58,13 +58,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
     // Left climber encoder
     m_leftClimberEncoder = m_leftClimberMotor.getEncoder();
-    // m_leftClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
-    // m_leftClimberEncoder.setVelocityConversionFactor(ClimberConstants.kClimberGearRatio);
 
     // Right climber encoder
     m_rightClimberEncoder = m_rightClimberMotor.getEncoder();
-    // m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
-    // m_rightClimberEncoder.setPositionConversionFactor(ClimberConstants.kClimberGearRatio);
 
     // Idle mode 
     m_leftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -74,7 +70,6 @@ public class ClimberSubsystem extends SubsystemBase {
     m_leftClimberMotor.setInverted(false);
     m_rightClimberMotor.setInverted(true);
   }
-
 
   private static class PeriodicIO {
     private double climberRightPosition = 0.0;
@@ -110,9 +105,6 @@ public class ClimberSubsystem extends SubsystemBase {
   
   @Override
   public void periodic() {
-    //m_leftClimberMotorPID.setReference(m_periodicIO.getClimberLeftPosition(), ControlType.kPosition);
-    //m_rightClimberMotorPID.setReference(m_periodicIO.getClimberRightPosition(), ControlType.kPosition);
-
     double leftSpeed = m_leftClimberMotorPID.calculate(
       m_leftClimberEncoder.getPosition(),
       m_periodicIO.getClimberLeftPosition()
@@ -125,10 +117,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
     m_leftClimberMotor.set(leftSpeed);
     m_leftClimberMotor.set(rightSpeed);
-
-    //SmartDashboard.putNumber("Left Speed Setpoint", m_periodicIO.getClimberLeftSpeed());
-    //SmartDashboard.putNumber("Left Speed:", m_leftClimberEncoder.getVelocity());
-    //SmartDashboard.putNumber("Right Speed setpoint", m_periodicIO.getClimberRightSpeed());
 
     SmartDashboard.putNumber("Climber Left Target", m_periodicIO.getClimberLeftPosition());
     SmartDashboard.putNumber("Climber Right Target", m_periodicIO.getClimberRightPosition());
