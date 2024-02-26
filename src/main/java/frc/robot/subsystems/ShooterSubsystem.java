@@ -26,8 +26,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkPIDController m_leftShooterPID;
   private SparkPIDController m_rightShooterPID;
 
-  private RelativeEncoder m_leftShooterEncoder;
-  private RelativeEncoder m_rightShooterEncoder;
+  // private RelativeEncoder m_leftShooterEncoder;
+  // private RelativeEncoder m_rightShooterEncoder;
 
   private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1000);
 
@@ -61,8 +61,10 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightShooterPID.setFF(ShooterConstants.kShooterFF);
     m_rightShooterPID.setOutputRange(ShooterConstants.kShooterMinOutput, ShooterConstants.kShooterMaxOutput);
 
-    m_leftShooterEncoder = m_leftShooterMotor.getEncoder();
-    m_rightShooterEncoder = m_rightShooterMotor.getEncoder();
+    // There is a crash issue with these.
+    // https://www.chiefdelphi.com/t/psa-new-crash-bug-in-revlib-2024-2-2/456242?u=jreneew2
+    // m_leftShooterEncoder = m_leftShooterMotor.getEncoder();
+    // m_rightShooterEncoder = m_rightShooterMotor.getEncoder();
 
     m_leftShooterMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
     m_rightShooterMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
