@@ -19,7 +19,7 @@ public class IntakeSubsystem extends SubsystemBase{
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
   private final PIDController m_pivotPID = new PIDController(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD);
-  private final DutyCycleEncoder m_pivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderId);
+  private final DutyCycleEncoder m_pivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderID);
 
   private CANSparkMax m_intakeMotor;
   private CANSparkMax m_pivotMotor;
@@ -132,7 +132,8 @@ public class IntakeSubsystem extends SubsystemBase{
     NONE,
     INTAKE,
     EJECT,
-    FEED_SHOOTER,
+    FEED_SPEAKER_SHOOTER,
+    FEED_AMP_SHOOTER,
     AMP
   }
 
@@ -142,13 +143,13 @@ public class IntakeSubsystem extends SubsystemBase{
   public void periodic(){
     // Pivot control
     double pivotAngle = pivotTargetToAngle(m_periodicIO.getPivotTarget());
-    m_periodicIO.setIntakePivotVoltage(m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle));
+    m_periodicIO.setIntakePivotVoltage(m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50);
 
     // Intake control
     m_periodicIO.setIntakeSpeed(intakeStateToSpeed(m_periodicIO.getIntakeState()));
 
 
-    m_pivotMotor.setVoltage(m_periodicIO.getIntakePivotVoltage());
+    m_pivotMotor.set(m_periodicIO.getIntakePivotVoltage());
     m_intakeMotor.set(m_periodicIO.getIntakeSpeed());
 
     if (m_pivotPID.atSetpoint()){
@@ -203,7 +204,7 @@ public class IntakeSubsystem extends SubsystemBase{
       case STOW:
         return IntakeConstants.kPivotAngleStow;
       default:
-        return 180;
+        return 0;
     }
   }
 
@@ -219,8 +220,10 @@ public class IntakeSubsystem extends SubsystemBase{
         return IntakeConstants.kIntakeSpeed;
       case EJECT:
         return IntakeConstants.kEjectSpeed;
-      case FEED_SHOOTER:
-        return IntakeConstants.kFeedShooterSpeed;
+      case FEED_SPEAKER_SHOOTER:
+        return IntakeConstants.kFeedSpeakerShooterSpeed;
+      case FEED_AMP_SHOOTER:
+        return IntakeConstants.kFeedAmpShooterSpeed;
       case AMP:
         return IntakeConstants.kAmpSpeed;
       default:

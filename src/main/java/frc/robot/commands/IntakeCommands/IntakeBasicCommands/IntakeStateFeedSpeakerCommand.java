@@ -4,19 +4,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
-public class IntakeStateFeedCommand extends Command{
+public class IntakeStateFeedSpeakerCommand extends Command{
 
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   // Constructor
-  public IntakeStateFeedCommand(){
+  public IntakeStateFeedSpeakerCommand(){
     addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeState(IntakeSubsystem.IntakeState.FEED_SHOOTER);
+    m_intake.setIntakeState(IntakeSubsystem.IntakeState.FEED_SPEAKER_SHOOTER);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

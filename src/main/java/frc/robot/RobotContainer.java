@@ -38,8 +38,10 @@ import frc.robot.commands.IntakeCommands.IntakeDetectNoteCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotAmpCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotGroundCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakePivotStowCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeShootAmpCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateEjectCommand;
-import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedSpeakerCommand;
+import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateFeedAmpCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateIntakeCommand;
 import frc.robot.commands.IntakeCommands.IntakeBasicCommands.IntakeStateStopCommand;
 import frc.robot.commands.ShooterCommands.ShooterBasicCommands.ShooterAmpShootCommand;
@@ -125,10 +127,12 @@ public class RobotContainer {
       )
     );
     m_operatorController.getShooterSpeakerTrigger()
-      .onFalse(Commands.sequence(
-        new IntakeStateFeedCommand(),
-        new WaitCommand(1),
-        new IntakeStateStopCommand(),
+      .onFalse(Commands.parallel(
+        Commands.sequence(
+          new IntakeStateFeedSpeakerCommand(),
+          new WaitCommand(1.5),
+          new IntakeStateStopCommand()
+        ),
         new ShooterSpeakerShootCommand().withTimeout(1)
       )
     );
@@ -141,12 +145,24 @@ public class RobotContainer {
       )
     );
     m_operatorController.getShooterAmpTrigger()
-      .onFalse(Commands.sequence(
-        new IntakeStateFeedCommand(),
-        new WaitCommand(1),
-        new IntakeStateStopCommand(),
+      .onFalse(Commands.parallel(
+        Commands.sequence(
+          new IntakeStateFeedAmpCommand(),
+          new WaitCommand(1.5),
+          new IntakeStateStopCommand()
+        ),
         new ShooterAmpShootCommand().withTimeout(1)
       )
+    );
+
+    m_operatorController.getIntakeAmpTrigger()
+      .onTrue(
+        Commands.sequence(
+        new IntakePivotAmpCommand(),
+        new IntakeShootAmpCommand(),
+        new WaitCommand(1),
+        new IntakeStateStopCommand()
+        )
     );
 
     // Intake
@@ -155,9 +171,9 @@ public class RobotContainer {
       new IntakePivotGroundCommand(),
       new IntakeStateIntakeCommand(),
       new IntakeDetectNoteCommand(),
-      new IntakePivotStowCommand(),
-      new WaitCommand(0.3),
-      new IntakeStateStopCommand()
+      new WaitCommand(0.1),
+      new IntakeStateStopCommand(),
+      new IntakePivotStowCommand()
       )
     );
 

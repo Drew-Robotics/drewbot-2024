@@ -20,16 +20,16 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.util.WPIUtilJNI;
-//import edu.wpi.first.wpilibj.ADIS16470_IMU;
-//import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
-import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+//import edu.wpi.first.wpilibj.ADIS16470_IMU;
+//import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.utils.SwerveUtils;
 
 import java.util.List;
 
@@ -81,13 +81,20 @@ public class DriveSubsystem extends SubsystemBase {
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
-      });
-    
+      }
+  );
+
+  SendableChooser<Double> m_offsetChooser = new SendableChooser<Double>();
 
   /** 
    * Constructor.
    */
   private DriveSubsystem() {
+    m_offsetChooser.addOption("Middle", 0d);
+    m_offsetChooser.addOption("Left", -60d);
+    m_offsetChooser.addOption("Right", 60d);
+
+    m_offsetChooser.setDefaultOption("Middle", 0d);
   }
 
   private static DriveSubsystem m_instance;
@@ -110,6 +117,12 @@ public class DriveSubsystem extends SubsystemBase {
     // Update SmartDashboard with NavX values.
     SmartDashboard.putBoolean("IMU Connected", m_gyro.isConnected());
     SmartDashboard.putNumber("IMU Yaw", m_gyro.getYaw());
+    SmartDashboard.putNumber("IMU Angle Clamped", getAngle());
+
+    SmartDashboard.putData("IMU Angle Offset Chooser", m_offsetChooser);
+
+    setAngleAdjustment(m_offsetChooser.getSelected());
+
 
     // Update the odometry in the periodic block
     m_odometry.update(
@@ -149,13 +162,6 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
-  
-  /**
-   * sets a rotation angle that will override controller input.
-   * set to zero to disable.
-   * 
-   * @param angle
-   */
 
   /**
    * Method to drive the robot using joystick info.
@@ -218,7 +224,6 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotation = m_rotLimiter.calculate(rot);
 
-
     } else {
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
@@ -232,7 +237,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(360 - m_gyro.getYaw()))
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(360 - getAngle()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -275,43 +280,64 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /** Zeroes the heading of the robot. */
-  public void zeroHeading() {
-    m_gyro.reset();
-  }
+  //public void zeroHeading() {
+    //m_gyro.reset();
+  //}
 
   /**
    * Returns the heading of the robot.
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
-  }
+  //public double getHeading() {
+  //  return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
+  //}
 
   /**
    * Returns the turn rate of the robot.
    *
    * @return The turn rate of the robot, in degrees per second
    */
-  public double getTurnRate() {
-    return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-  }
+  //public double getTurnRate() {
+  //  return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  //}
+
   /**
    * Returns the robot yaw from the NavX.
    * 
    * @return Returns the current yaw value in degrees from -180 to 180.
    */
-  public Float getYaw() { 
-    return m_gyro.getYaw(); 
+  public double getAngle() {
+    double angle = m_gyro.getAngle();
+
+    angle += 180;
+
+    while (angle > 360){
+      angle -= 360;
+    }
+    while (angle < 0){
+      angle += 360;
+    }
+
+    angle -= 180;
+
+    return angle; 
   }
 
   /**
    * Sets the yaw of the gyroscope to zero.
    */
-  public void zeroYaw() { 
+  public void zeroYaw() {
     m_gyro.zeroYaw(); 
   }
 
+  /**
+   * Sets the angle adjustment of the gyroscope.
+   */
+  public void setAngleAdjustment(double adjustment){
+    m_gyro.setAngleAdjustment(adjustment);
+  }
+  
   /**
    * Returns if the robot is moving or not.
    * 

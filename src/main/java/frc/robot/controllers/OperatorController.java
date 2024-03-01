@@ -9,6 +9,7 @@ public class OperatorController extends CommandXboxController{
     super(port);
   }
 
+  // Intake
   public Trigger getIntakeDetectNoteTrigger(){
     return rightBumper();
   }
@@ -16,6 +17,9 @@ public class OperatorController extends CommandXboxController{
     return leftBumper();
   }
 
+  public Trigger getIntakeAmpTrigger(){
+    return a();
+  }
 
   // Shooter
   public Trigger getShooterSpeakerTrigger(){

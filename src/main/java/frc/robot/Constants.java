@@ -137,8 +137,8 @@ public final class Constants {
 
   public static final class AutoConstants {
 
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxSpeedMetersPerSecond = 0.5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
@@ -192,7 +192,7 @@ public final class Constants {
 
     public static final int kPivotMotorSmartCurrentLimit = 3;
 
-    public static final int kPivotEncoderId = 0;
+    public static final int kPivotEncoderID = 0;
 
     public static final double kPivotEncoderZero = 200;
     // This is any point that the robot can't reach.
@@ -202,21 +202,22 @@ public final class Constants {
     public static final double kPivotAngleAmp = 130;
     public static final double kPivotAngleStow = 40;
 
-    public static final double kIntakeSpeed = 1;
+    public static final double kIntakeSpeed = 0.7;
     public static final double kEjectSpeed = -0.5;
-    public static final double kFeedShooterSpeed = -1;
-    public static final double kAmpSpeed = -0.25;
+    public static final double kFeedSpeakerShooterSpeed = -1;
+    public static final double kFeedAmpShooterSpeed = -0.3;
+    public static final double kAmpSpeed = -1;
 
     public static final int kTimeOfFlightSensorID = 40;
 
-    public static final double kNoteIntakedSensorValue = 300;
+    public static final double kNoteIntakedSensorValue = 200;
     
   }
   public static final class ClimberConstants {
     // PIDs 
-    public static final double kClimberP = 0.05;
-    public static final double kClimberI = 0;
-    public static final double kClimberD = 0;
+    public static final double kClimberP = 1;
+    public static final double kClimberI = 0.2;
+    public static final double kClimberD = 0.1;
 
     // Motor IDs
     public static final int kLeftClimberMotorID = 30;
@@ -224,7 +225,7 @@ public final class Constants {
 
     // Inverted
     public static final boolean kLeftClimberMotorInverted = false;
-    public static final boolean kRightClimberMotorInverted = false;
+    public static final boolean kRightClimberMotorInverted = true;
 
     // RPM
     // public static final double kClimberClimbSpeed = 0.1;
@@ -237,8 +238,8 @@ public final class Constants {
     // Gear Ratio
     // public static final double kClimberGearRatio = 1d / 12d;
 
-    public static final double kRotationsToUpLeft = 4.7;
-    public static final double kRotationsToUpRight = 4.7;
+    public static final double kRotationsToUpLeft = 55;
+    public static final double kRotationsToUpRight = 55;
 
     public static final double kTiltRPM = 20;
     
