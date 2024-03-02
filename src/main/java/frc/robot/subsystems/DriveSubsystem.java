@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,24 +15,22 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-//import edu.wpi.first.wpilibj.ADIS16470_IMU;
-//import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 
-import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -95,6 +92,33 @@ public class DriveSubsystem extends SubsystemBase {
     m_offsetChooser.addOption("Right", 60d);
 
     m_offsetChooser.setDefaultOption("Middle", 0d);
+
+    // Configure AutoBuilder last
+    AutoBuilder.configureHolonomic(
+      this::getPose, // Robot pose supplier
+      this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+      this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+      this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+      new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+        4.5, // Max module speed, in m/s
+        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+        new ReplanningConfig() // Default path replanning config. See the API for the options here
+      ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirement
+    );
   }
 
   private static DriveSubsystem m_instance;
@@ -116,9 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // Update SmartDashboard with NavX values.
     SmartDashboard.putBoolean("IMU Connected", m_gyro.isConnected());
-    SmartDashboard.putNumber("IMU Yaw", m_gyro.getYaw());
-    SmartDashboard.putNumber("IMU Angle Clamped", getAngle());
-
+    SmartDashboard.putNumber("IMU Angle", getAngle());
     SmartDashboard.putData("IMU Angle Offset Chooser", m_offsetChooser);
 
     setAngleAdjustment(m_offsetChooser.getSelected());
@@ -146,6 +168,93 @@ public class DriveSubsystem extends SubsystemBase {
     return m_odometry.getPoseMeters();
   }
 
+
+  /**
+   * Sets the wheels into an X formation to prevent movement.
+   */
+  public void setX() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+  /**
+   * Gets the swerve ModuleStates.
+   * 
+   * @return The SwerveModule states.
+   */
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState()
+      };
+  }
+
+  /**
+   * Sets the swerve ModuleStates.
+   *
+   * @param desiredStates The desired SwerveModule states.
+   */
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    m_frontLeft.setDesiredState(desiredStates[0]);
+    m_frontRight.setDesiredState(desiredStates[1]);
+    m_rearLeft.setDesiredState(desiredStates[2]);
+    m_rearRight.setDesiredState(desiredStates[3]);
+  }
+
+  /**
+   * empty javadoc.
+   * 
+   * @return
+   */
+  public ChassisSpeeds getSpeeds() {
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  /**
+   * Returns the robot yaw from the NavX.
+   * 
+   * @return Returns the current yaw value in degrees from -180 to 180.
+   */
+  public double getAngle() {
+    double angle = m_gyro.getAngle() + 180;
+
+    while (angle > 360){angle -= 360;}
+    while (angle < 0){angle += 360;}
+
+    return angle - 180; 
+  }
+
+  /**
+   * Returns the turn rate of the robot.
+   *
+   * @return The turn rate of the robot, in degrees per second
+   */
+  public double getTurnRate() {
+   return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  /**
+   * Returns if the robot is moving or not.
+   * 
+   * @return is moving
+   */
+  public boolean isMoving(){
+    return m_gyro.isMoving();
+  }  
+  
+  /**
+   * Sets the angle adjustment of the gyroscope.
+   */
+  public void setAngleAdjustment(double adjustment){
+    m_gyro.setAngleAdjustment(adjustment);
+  }
+  
   /**
    * Resets the odometry to the specified pose.
    *
@@ -153,14 +262,44 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        },
-        pose);
+      Rotation2d.fromDegrees(m_gyro.getAngle()),
+      new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+      },
+      pose
+    );
+  }
+
+  /**
+   * Sets the yaw of the gyroscope to zero.
+   */
+  public void zeroYaw() {
+    m_gyro.zeroYaw(); 
+  }
+
+  /** 
+   * Resets the drive encoders to currently read a position of 0. 
+   */
+  public void resetEncoders() {
+    m_frontLeft.resetEncoders();
+    m_rearLeft.resetEncoders();
+    m_frontRight.resetEncoders();
+    m_rearRight.resetEncoders();
+  }
+
+  /**
+   * empty javadoc
+   * 
+   * @param robotRelativeSpeeds
+   */
+  public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
+    ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
+
+    SwerveModuleState[] targetStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(targetSpeeds);
+    setModuleStates(targetStates);
   }
 
   /**
@@ -247,152 +386,4 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  /**
-   * Sets the wheels into an X formation to prevent movement.
-   */
-  public void setX() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-  }
-
-  /**
-   * Sets the swerve ModuleStates.
-   *
-   * @param desiredStates The desired SwerveModule states.
-   */
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(desiredStates[0]);
-    m_frontRight.setDesiredState(desiredStates[1]);
-    m_rearLeft.setDesiredState(desiredStates[2]);
-    m_rearRight.setDesiredState(desiredStates[3]);
-  }
-
-  /** Resets the drive encoders to currently read a position of 0. */
-  public void resetEncoders() {
-    m_frontLeft.resetEncoders();
-    m_rearLeft.resetEncoders();
-    m_frontRight.resetEncoders();
-    m_rearRight.resetEncoders();
-  }
-
-  /** Zeroes the heading of the robot. */
-  //public void zeroHeading() {
-    //m_gyro.reset();
-  //}
-
-  /**
-   * Returns the heading of the robot.
-   *
-   * @return the robot's heading in degrees, from -180 to 180
-   */
-  //public double getHeading() {
-  //  return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
-  //}
-
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second
-   */
-  //public double getTurnRate() {
-  //  return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-  //}
-
-  /**
-   * Returns the robot yaw from the NavX.
-   * 
-   * @return Returns the current yaw value in degrees from -180 to 180.
-   */
-  public double getAngle() {
-    double angle = m_gyro.getAngle();
-
-    angle += 180;
-
-    while (angle > 360){
-      angle -= 360;
-    }
-    while (angle < 0){
-      angle += 360;
-    }
-
-    angle -= 180;
-
-    return angle; 
-  }
-
-  /**
-   * Sets the yaw of the gyroscope to zero.
-   */
-  public void zeroYaw() {
-    m_gyro.zeroYaw(); 
-  }
-
-  /**
-   * Sets the angle adjustment of the gyroscope.
-   */
-  public void setAngleAdjustment(double adjustment){
-    m_gyro.setAngleAdjustment(adjustment);
-  }
-  
-  /**
-   * Returns if the robot is moving or not.
-   * 
-   * @return is moving
-   */
-  public boolean isMoving(){
-    return m_gyro.isMoving();
-  }
-
-  /**
-   * Returns a command that starts at a position, ends at another position, and hits all the points in between.
-   * 
-   * @param startPose starting point of the robot
-   * @param translations points to hit
-   * @param endPose ending position
-   * @return command that hits all the points
-   */
-  public Command getAutoTrajectory(Pose2d startPose, List<Translation2d> translations, Pose2d endPose) {
-    // Create config for trajectory
-
-    
-    TrajectoryConfig config = new TrajectoryConfig(
-      AutoConstants.kMaxSpeedMetersPerSecond,
-      AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-      // Add kinematics to ensure max speed is actually obeyed
-      .setKinematics(DriveConstants.kDriveKinematics
-    );
-
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-      startPose, translations, endPose, config
-    );
-
-    var thetaController = new ProfiledPIDController(
-      AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints
-    );
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-      exampleTrajectory,
-      this::getPose, // Functional interface to feed supplier
-      DriveConstants.kDriveKinematics,
-
-      // Position controllers
-      new PIDController(AutoConstants.kPXController, 0, 0),
-      new PIDController(AutoConstants.kPYController, 0, 0),
-      thetaController,
-      this::setModuleStates,
-      this
-    );
-
-    // Reset odometry to the starting pose of the trajectory.
-    resetOdometry(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> drive(0, 0, 0, false, false));
-  }
 }

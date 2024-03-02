@@ -26,15 +26,15 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkPIDController m_leftShooterPID;
   private SparkPIDController m_rightShooterPID;
 
+  private double m_shooterSpeed = 0;
+  private ShooterState m_shooterState = ShooterState.NONE;
+
   // private RelativeEncoder m_leftShooterEncoder;
   // private RelativeEncoder m_rightShooterEncoder;
 
   private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1000);
 
   private static ShooterSubsystem m_instance;
-  
-  private PeriodicIO m_periodicIO;
-    public PeriodicIO getpPeriodicIO(){return m_periodicIO;}
 
   /**
    * Constructor.
@@ -71,8 +71,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     m_leftShooterMotor.setInverted(true);
     m_rightShooterMotor.setInverted(false);
-
-    m_periodicIO = new PeriodicIO();
   }
 
 
@@ -87,51 +85,44 @@ public class ShooterSubsystem extends SubsystemBase {
     return m_instance;
   }
 
-  private static class PeriodicIO{
-    private double shooterSpeed = 0;
-
-    public double getShooterSpeed(){
-      return shooterSpeed;
-    }
-    public void setShooterSpeed(double speed){
-      shooterSpeed = speed;
-    }
+  public enum ShooterState {
+    SPEAKER,
+    AMP,
+    NONE
   }
 
   // - - - - - - - - - - GENERIC FUNCTIONS - - - - - - - - - -
 
   @Override
   public void periodic(){
-    double limitedSpeed = m_speedLimiter.calculate(m_periodicIO.getShooterSpeed());
-    
-    // m_leftShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
-    // m_rightShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
-    SmartDashboard.putNumber("Shooter Speed", limitedSpeed);
+    m_shooterSpeed = shooterStateToSpeed(m_shooterState);
+    double limitedSpeed = m_speedLimiter.calculate(m_shooterSpeed);
+
     m_leftShooterMotor.set(limitedSpeed);
     m_rightShooterMotor.set(limitedSpeed);
+    
+    SmartDashboard.putNumber("Shooter Speed", limitedSpeed);
   }
 
+  // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
+
+  private double shooterStateToSpeed(ShooterState state){
+    switch (state) {
+      case SPEAKER:
+        return ShooterConstants.kShooterSpeakerSpeed;
+      case AMP:
+        return ShooterConstants.kShooterAmpSpeed;
+      case NONE:
+        return 0;
+      default:
+        return 0;
+    }
+  }
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
-  public void setSpeed(double rpm){
-    m_periodicIO.setShooterSpeed(rpm);
-  }
-
-  public void speakerShoot(){
-    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterSpeakerSpeed);
-  }
-  
-  public void ampShoot(){
-    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterAmpSpeed);
-  }
-
-  public void reverse(){
-    m_periodicIO.setShooterSpeed(ShooterConstants.kShooterReverseSpeed);
-  }
-
-  public void stop(){
-    m_periodicIO.setShooterSpeed(0);
+  public void setShooterState(ShooterState state) {
+    m_shooterState = state;
   }
   
 }

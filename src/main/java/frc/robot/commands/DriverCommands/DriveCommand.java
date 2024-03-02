@@ -1,11 +1,11 @@
-package frc.robot.commands.DriveCommands;
+package frc.robot.commands.DriverCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
 
 
-public class DriveDriveCommand extends Command{
+public class DriveCommand extends Command{
 
   DriveSubsystem m_drive = DriveSubsystem.getInstance();
 
@@ -16,7 +16,7 @@ public class DriveDriveCommand extends Command{
   private boolean m_fieldRelative;
   private boolean m_rateLimit;
 
-  public DriveDriveCommand(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rot, boolean fieldRelative, boolean rateLimit){
+  public DriveCommand(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rot, boolean fieldRelative, boolean rateLimit){
     m_xSpeed = xSpeed;
     m_ySpeed = ySpeed;
     m_rot = rot;

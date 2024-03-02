@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.DriveCommands;
+package frc.robot.commands.DriverCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,8 +12,6 @@ public class DriveZeroYawCommand extends Command {
   private final DriveSubsystem m_drive = DriveSubsystem.getInstance();
   double m_target_angle;
   double m_offSet;
-
-  /** Creates a new ResetYaw. */
 
   public DriveZeroYawCommand(){
     addRequirements(m_drive);

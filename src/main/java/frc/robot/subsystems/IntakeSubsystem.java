@@ -7,6 +7,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Command;
+
 import edu.wpi.first.math.util.Units;
 
 import com.revrobotics.CANSparkMax;
@@ -28,8 +31,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
   private static IntakeSubsystem m_instance;
 
-  public static PeriodicIO m_periodicIO;
-    public PeriodicIO getpPeriodicIO(){return m_periodicIO;}
+
+  private PivotState m_pivotTarget = PivotState.STOW;
+  private PivotState m_pivotState = PivotState.NONE;
+  private IntakeState m_intakeState = IntakeState.NONE;
+
+  private double m_pivotSpeed = 0.0;
+  private double m_intakeSpeed = 0.0;
 
   /**
    * Constructor.
@@ -53,60 +61,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
-
-    m_periodicIO = new PeriodicIO(); 
-  }
-
-  /**
-   * Periodic input output javadoc filler
-   */
-  private static class PeriodicIO {
-    private PivotState pivotTarget = PivotState.STOW;
-    private PivotState pivotState = PivotState.NONE;
-    private IntakeState intakeState = IntakeState.NONE;
-
-    private double intakePivotVoltage = 0.0;
-    private double intakeSpeed = 0.0;
-
-    // Pivot target
-    public PivotState getPivotTarget(){
-      return pivotTarget;
-    }
-    public void setPivotTarget(PivotState pivotTarget){
-      this.pivotTarget = pivotTarget;
-    }
-
-    // Pivot state
-    public PivotState getPivotState(){
-      return pivotState;
-    }
-    public void setPivotState(PivotState pivotState){
-      this.pivotState = pivotState;
-    }
-
-    // Intake state
-    public IntakeState getIntakeState(){
-      return intakeState;
-    }
-    public void setIntakeState(IntakeState intakeState){
-      this.intakeState = intakeState;
-    }
-
-    // Pivot Voltage
-    public double getIntakePivotVoltage(){
-      return intakePivotVoltage;
-    }
-    public void setIntakePivotVoltage(double intakePivotVoltage){
-      this.intakePivotVoltage = intakePivotVoltage;
-    }
-
-    // Intake speed
-    public double getIntakeSpeed(){
-      return intakeSpeed;
-    }
-    public void setIntakeSpeed(double intakeSpeed){
-      this.intakeSpeed = intakeSpeed;
-    }
   }
 
   /**
@@ -142,23 +96,23 @@ public class IntakeSubsystem extends SubsystemBase{
   @Override
   public void periodic(){
     // Pivot control
-    double pivotAngle = pivotTargetToAngle(m_periodicIO.getPivotTarget());
-    m_periodicIO.setIntakePivotVoltage(m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50);
+    double pivotAngle = pivotTargetToAngle(m_pivotTarget);
+    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
 
     // Intake control
-    m_periodicIO.setIntakeSpeed(intakeStateToSpeed(m_periodicIO.getIntakeState()));
+    m_intakeSpeed = (intakeStateToSpeed(m_intakeState));
 
 
-    m_pivotMotor.set(m_periodicIO.getIntakePivotVoltage());
-    m_intakeMotor.set(m_periodicIO.getIntakeSpeed());
+    m_pivotMotor.set(m_pivotSpeed);
+    m_intakeMotor.set(m_intakeSpeed);
 
     if (m_pivotPID.atSetpoint()){
-      m_periodicIO.setPivotState(m_periodicIO.getPivotTarget());
+      m_pivotState = m_pivotTarget;
     }
 
     SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
-    SmartDashboard.putNumber("Intake Pivot Voltage", m_periodicIO.getIntakePivotVoltage());
-    SmartDashboard.putString("Intake Pivot State", m_periodicIO.getIntakeState().toString());
+    SmartDashboard.putNumber("Intake Pivot Voltage", m_pivotSpeed);
+    SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
     
@@ -234,18 +188,32 @@ public class IntakeSubsystem extends SubsystemBase{
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   public void setIntakeState(IntakeState state){
-    m_periodicIO.setIntakeState(state);
+    m_intakeState = state;
   }
 
   public void setPivotTarget(PivotState target){
-    m_periodicIO.setPivotTarget(target);
+    m_pivotTarget = target;
   }
 
   public PivotState getPivotState(){
-    return m_periodicIO.getPivotState();
+    return m_pivotState;
   }
 
   public double getTimeOfFlightRange(){
     return m_timeOfFlight.getRange();
+  }
+
+  public static Command pivotCommand(PivotState state){
+    return new RunCommand(
+      () -> m_instance.setPivotTarget(state),
+      m_instance
+    );
+  }
+
+  public static Command stateCommand(IntakeState state){
+    return new RunCommand(
+      () -> m_instance.setIntakeState(state),
+      m_instance
+    );
   }
 }

@@ -4,7 +4,10 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.math.controller.PIDController;
 
 import com.revrobotics.CANSparkMax;
@@ -18,7 +21,6 @@ public class ClimberSubsystem extends SubsystemBase {
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
   private static ClimberSubsystem m_instance;
-  private PeriodicIO m_periodicIO;
 
   // Defining Motors
   private CANSparkMax m_leftClimberMotor;
@@ -37,6 +39,10 @@ public class ClimberSubsystem extends SubsystemBase {
     ClimberConstants.kClimberD
   );
 
+  private ClimbersState m_climbersState = ClimbersState.DOWN;
+  private double m_leftClimberTargetPos = 0;
+  private double m_rightClimberTargetPos = 0;
+
   // Defining Motor Encoders
   private RelativeEncoder m_leftClimberEncoder;
   private RelativeEncoder m_rightClimberEncoder;
@@ -45,8 +51,6 @@ public class ClimberSubsystem extends SubsystemBase {
   private double m_rightClimberZeroPos = 0;
 
   private ClimberSubsystem() {
-    
-    m_periodicIO = new PeriodicIO();
     
     // Setting motor type/ID
     m_leftClimberMotor = new CANSparkMax(ClimberConstants.kLeftClimberMotorID, MotorType.kBrushless);
@@ -67,23 +71,9 @@ public class ClimberSubsystem extends SubsystemBase {
     climbersSetZero();
   }
 
-  private static class PeriodicIO {
-    private double climberRightPosition = 0.0;
-    private double climberLeftPosition = 0.0;
-
-    public double getClimberRightPosition(){
-      return climberRightPosition;
-    }
-    public void setClimberRightPosition(double position){
-      climberRightPosition = position;
-    }
-
-    public double getClimberLeftPosition(){
-      return climberLeftPosition;
-    }
-    public void setClimberLeftPosition(double position){
-      climberLeftPosition = position;
-    }
+  public enum ClimbersState { 
+    UP,
+    DOWN
   }
   
   /**
@@ -101,21 +91,25 @@ public class ClimberSubsystem extends SubsystemBase {
   
   @Override
   public void periodic() {
+
+    m_leftClimberTargetPos = climberStateToPositions(m_climbersState)[0];
+    m_rightClimberTargetPos = climberStateToPositions(m_climbersState)[1];
+
     double leftSpeed = m_leftClimberMotorPID.calculate(
       getLeftEncoderPos(),
-      m_periodicIO.getClimberLeftPosition()
+      m_leftClimberTargetPos
     )/20;
 
     double rightSpeed = m_rightClimberMotorPID.calculate(
       getRightEncoderPos(),
-      m_periodicIO.getClimberRightPosition()
+      m_rightClimberTargetPos
     )/20;
 
     m_leftClimberMotor.set(leftSpeed);
     m_rightClimberMotor.set(rightSpeed);
 
-    SmartDashboard.putNumber("Climber Left Target", m_periodicIO.getClimberLeftPosition());
-    SmartDashboard.putNumber("Climber Right Target", m_periodicIO.getClimberRightPosition());
+    SmartDashboard.putNumber("Climber Left Target", m_leftClimberTargetPos);
+    SmartDashboard.putNumber("Climber Right Target", m_rightClimberTargetPos);
 
     SmartDashboard.putNumber("Climber Left Encoder", getLeftEncoderPos());
     SmartDashboard.putNumber("Climber Right Encoder", getRightEncoderPos());
@@ -133,6 +127,26 @@ public class ClimberSubsystem extends SubsystemBase {
   private double getRightEncoderPos(){
     return m_rightClimberEncoder.getPosition() + m_rightClimberZeroPos;
   }
+
+  private double[] climberStateToPositions(ClimbersState state) { 
+    switch (state) {
+      case UP:
+        return new double[]{
+          ClimberConstants.kRotationsToUpLeft,
+          ClimberConstants.kRotationsToUpRight
+        };
+      case DOWN:
+        return new double[]{
+          0,
+          0
+        };
+      default:
+        return new double[]{
+          0,
+          0
+        };
+    }
+  }
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   public void setBrakeMode() {
@@ -145,14 +159,8 @@ public class ClimberSubsystem extends SubsystemBase {
     m_rightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
   
-  public void climbersUp() {
-    m_periodicIO.setClimberLeftPosition(ClimberConstants.kRotationsToUpLeft);
-    m_periodicIO.setClimberRightPosition(ClimberConstants.kRotationsToUpRight);
-  }
-  
-  public void climbersDown() {
-    m_periodicIO.setClimberLeftPosition(0);
-    m_periodicIO.setClimberRightPosition(0);
+  public void setClimbersState(ClimbersState state){
+    m_climbersState = state;
   }
 
   public void climbersSetZero() {
@@ -160,11 +168,10 @@ public class ClimberSubsystem extends SubsystemBase {
     m_rightClimberZeroPos = -m_rightClimberEncoder.getPosition();
   }
 
-  public void tiltLeft() {
-    m_periodicIO.setClimberLeftPosition(m_periodicIO.getClimberLeftPosition() - ClimberConstants.kTiltRPM * 0.02/60);
-  }
-
-  public void tiltRight() {
-    m_periodicIO.setClimberRightPosition(m_periodicIO.getClimberRightPosition() - ClimberConstants.kTiltRPM * 0.02/60);
+  public static Command climberCommand(ClimbersState state){
+    return new RunCommand(
+      () -> m_instance.setClimbersState(state),
+      m_instance
+    );
   }
 }

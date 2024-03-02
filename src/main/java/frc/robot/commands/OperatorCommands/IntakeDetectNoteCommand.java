@@ -1,35 +1,38 @@
-package frc.robot.commands.IntakeCommands.IntakeBasicCommands;
+package frc.robot.commands.OperatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
-public class IntakeStateEjectCommand extends Command {
+public class IntakeDetectNoteCommand extends Command{
 
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
+  boolean hasNote;
 
   // Constructor
-  public IntakeStateEjectCommand(){
+  public IntakeDetectNoteCommand(){
     addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_intake.setIntakeState(IntakeState.EJECT);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    hasNote = m_intake.getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_intake.setIntakeState(IntakeSubsystem.IntakeState.NONE);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return hasNote;
   }
 }
