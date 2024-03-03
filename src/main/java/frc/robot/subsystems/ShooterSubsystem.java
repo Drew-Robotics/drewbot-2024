@@ -10,6 +10,8 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
@@ -100,8 +102,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     m_leftShooterMotor.set(limitedSpeed);
     m_rightShooterMotor.set(limitedSpeed);
-    
-    SmartDashboard.putNumber("Shooter Speed", limitedSpeed);
+
+    // SmartDashboard.putNumber("Shooter Speed", limitedSpeed);
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
@@ -123,6 +125,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setShooterState(ShooterState state) {
     m_shooterState = state;
+  }
+
+  public static Command shooterCommand(ShooterState state) {
+    return new RunCommand(
+      () -> m_instance.setShooterState(state),
+      m_instance
+    ).withTimeout(0);
   }
   
 }

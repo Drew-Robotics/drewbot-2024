@@ -110,9 +110,9 @@ public class IntakeSubsystem extends SubsystemBase{
       m_pivotState = m_pivotTarget;
     }
 
-    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
+    // SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
     SmartDashboard.putNumber("Intake Pivot Voltage", m_pivotSpeed);
-    SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
+    // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
     
@@ -207,13 +207,13 @@ public class IntakeSubsystem extends SubsystemBase{
     return new RunCommand(
       () -> m_instance.setPivotTarget(state),
       m_instance
-    );
+    ).withTimeout(0);
   }
 
   public static Command stateCommand(IntakeState state){
     return new RunCommand(
       () -> m_instance.setIntakeState(state),
       m_instance
-    );
+    ).withTimeout(0);
   }
 }

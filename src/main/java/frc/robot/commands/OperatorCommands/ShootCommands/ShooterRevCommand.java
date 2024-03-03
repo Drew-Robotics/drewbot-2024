@@ -14,14 +14,8 @@ public class ShooterRevCommand extends SequentialCommandGroup{
   
   public ShooterRevCommand(ShooterState target){
     addCommands(
-      new RunCommand(
-        () -> m_shooter.setShooterState(target),
-        m_shooter
-      ),
-      new RunCommand(
-        () -> m_intake.setPivotTarget(PivotState.STOW),
-        m_intake
-      )
+      ShooterSubsystem.shooterCommand(target),
+      IntakeSubsystem.pivotCommand(PivotState.STOW)
     );
   }
 }

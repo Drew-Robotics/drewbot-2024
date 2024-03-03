@@ -108,14 +108,14 @@ public class ClimberSubsystem extends SubsystemBase {
     m_leftClimberMotor.set(leftSpeed);
     m_rightClimberMotor.set(rightSpeed);
 
-    SmartDashboard.putNumber("Climber Left Target", m_leftClimberTargetPos);
-    SmartDashboard.putNumber("Climber Right Target", m_rightClimberTargetPos);
+    // SmartDashboard.putNumber("Climber Left Target", m_leftClimberTargetPos);
+    // SmartDashboard.putNumber("Climber Right Target", m_rightClimberTargetPos);
 
-    SmartDashboard.putNumber("Climber Left Encoder", getLeftEncoderPos());
-    SmartDashboard.putNumber("Climber Right Encoder", getRightEncoderPos());
+    // SmartDashboard.putNumber("Climber Left Encoder", getLeftEncoderPos());
+    // SmartDashboard.putNumber("Climber Right Encoder", getRightEncoderPos());
 
-    SmartDashboard.putNumber("Climber Left Speed", leftSpeed);
-    SmartDashboard.putNumber("Climber Right Speed", rightSpeed);
+    // SmartDashboard.putNumber("Climber Left Speed", leftSpeed);
+    // SmartDashboard.putNumber("Climber Right Speed", rightSpeed);
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
@@ -172,6 +172,6 @@ public class ClimberSubsystem extends SubsystemBase {
     return new RunCommand(
       () -> m_instance.setClimbersState(state),
       m_instance
-    );
+    ).withTimeout(0);
   }
 }

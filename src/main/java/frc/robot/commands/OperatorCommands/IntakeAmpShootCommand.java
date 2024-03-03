@@ -13,27 +13,10 @@ public class IntakeAmpShootCommand extends SequentialCommandGroup{
 
   public IntakeAmpShootCommand(){
     addCommands(
-      new RunCommand(
-        () -> m_intake.setPivotTarget(PivotState.AMP),
-        m_intake
-      ),
-      // really dont know if this will work might cause a lot of problem beware
-      new RunCommand(
-        () -> {
-          while (m_intake.getPivotState() != PivotState.AMP){}
-          return;
-        }, 
-        m_intake
-      ),
-      new RunCommand(
-        () -> m_intake.setIntakeState(IntakeState.AMP),
-        m_intake
-      ),
+      IntakeSubsystem.pivotCommand(PivotState.AMP),
+      IntakeSubsystem.stateCommand(IntakeState.AMP),
       new WaitCommand(1),
-      new RunCommand(
-        () -> m_intake.setIntakeState(IntakeState.NONE),
-        m_intake
-      )
+      IntakeSubsystem.stateCommand(IntakeState.NONE)
     );
   }
   

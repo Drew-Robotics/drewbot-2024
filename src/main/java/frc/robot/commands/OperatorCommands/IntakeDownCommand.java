@@ -15,24 +15,13 @@ public class IntakeDownCommand extends SequentialCommandGroup {
 
   public IntakeDownCommand() {
     addCommands(
-      new RunCommand(
-        () -> m_intake.setPivotTarget(PivotState.GROUND),
-        m_intake
-      ),
-      new RunCommand(
-        () -> m_intake.setIntakeState(IntakeState.INTAKE),
-        m_intake
-      ),
+      IntakeSubsystem.pivotCommand(PivotState.GROUND),
+      IntakeSubsystem.stateCommand(IntakeState.INTAKE),
       new IntakeDetectNoteCommand(),
       new WaitCommand(0.1),
-      new RunCommand(
-        () -> m_intake.setIntakeState(IntakeState.NONE),
-        m_intake
-      ),
-      new RunCommand(
-        () -> m_intake.setPivotTarget(PivotState.STOW),
-        m_intake
-      )
+      IntakeSubsystem.stateCommand(IntakeState.NONE),
+      IntakeSubsystem.pivotCommand(PivotState.STOW)
+
     );
   }
 
