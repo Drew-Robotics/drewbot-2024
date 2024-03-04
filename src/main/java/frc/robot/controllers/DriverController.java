@@ -3,6 +3,7 @@ package frc.robot.controllers;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 
 public class DriverController extends CommandXboxController{
@@ -20,12 +21,8 @@ public class DriverController extends CommandXboxController{
     }
 
     public double getRotation(){
-        return -MathUtil.applyDeadband(this.getRightX(), OIConstants.kDriveDeadband);
+        return -MathUtil.applyDeadband(this.getRightX(), OIConstants.kDriveDeadband) * DriveConstants.RotationCoeff;
     }
-
-    // public Trigger getZeroYawButton(){
-    //     return b();
-    // }
 
     public Trigger getTurnToZeroButton(){
         return y();

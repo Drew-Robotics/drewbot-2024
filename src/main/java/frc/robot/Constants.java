@@ -65,12 +65,14 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 8;
     public static final int kRearRightTurningCanId = 6;
 
-    public static final boolean kGyroReversed = false;
+    public static final boolean kGyroReversed = true;
 
     // PID Constants
     public static final double kP = 0.4;
     public static final double kI = 0.1;
     public static final double kD = 0;
+
+    public static final double RotationCoeff = 0.65;
 
   }
 
@@ -131,6 +133,10 @@ public final class Constants {
 
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
+    public static final int kEverythingControllerPort = 2;
+
+    public static final boolean kUseEverythingController = true; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
+
     public static final double kDriveDeadband = 0.05;
     
   }
@@ -177,11 +183,17 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final double kPivotP = 0.3;
-    public static final double kPivotI = 0.1;
-    public static final double kPivotD = 0;
+    public static final double kPivotP = 1;
+    public static final double kPivotI = 0.3;
+    public static final double kPivotD = 0.1;
 
     public static final double kPivotPIDTolerance = 10;
+
+    public static final double kAmpPivotP = 0.5;
+    public static final double kAmpPivotI = 0;
+    public static final double kAmpPivotD = 0;
+
+    public static final double kAmpPivotPIDTolerance = 1;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -190,23 +202,24 @@ public final class Constants {
     public static final boolean kIntakeMotorInverted = false;
     public static final boolean kPivotMotorInverted = true;
 
-    public static final int kPivotMotorSmartCurrentLimit = 3;
+    public static final int kPivotMotorSmartCurrentLimit = 40;
 
     public static final int kPivotEncoderID = 0;
 
     public static final double kPivotEncoderZero = 200;
+
     // This is any point that the robot can't reach.
 
     public static final double kPivotAngleGround = 250;
     public static final double kPivotAngleSource = 130;
-    public static final double kPivotAngleAmp = 130;
+    public static final double kPivotAngleAmp = 120;
     public static final double kPivotAngleStow = 40;
 
     public static final double kIntakeSpeed = 0.7;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedSpeakerShooterSpeed = -1;
     public static final double kFeedAmpShooterSpeed = -0.3;
-    public static final double kAmpSpeed = -1;
+    public static final double kAmpSpeed = -0.55;
 
     public static final int kTimeOfFlightSensorID = 40;
 

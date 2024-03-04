@@ -1,17 +1,19 @@
-package frc.robot.commands.OperatorCommands;
+package frc.robot.commands.OperatorCommands.WaitCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
-public class IntakeDetectNoteCommand extends Command{
+public class WaitForPivotCommand extends Command{
 
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
-  boolean hasNote;
+  PivotState waitForState;
 
   // Constructor
-  public IntakeDetectNoteCommand(){
+  public WaitForPivotCommand(PivotState state){
     addRequirements(m_intake);
+    waitForState = state;
   }
 
   // Called when the command is initially scheduled.
@@ -20,19 +22,15 @@ public class IntakeDetectNoteCommand extends Command{
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    hasNote = m_intake.getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_intake.setIntakeState(IntakeSubsystem.IntakeState.NONE);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return hasNote;
+    return (m_intake.getPivotState() == waitForState);
   }
 }

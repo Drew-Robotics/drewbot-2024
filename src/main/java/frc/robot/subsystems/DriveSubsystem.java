@@ -72,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getAngle()),
+      Rotation2d.fromDegrees(getAngle()),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -100,10 +100,10 @@ public class DriveSubsystem extends SubsystemBase {
       this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+        new PIDConstants(3, 0, 0), // Translation PID constants
+        new PIDConstants(0.5, 0.2, 0.1), // Rotation PID constants
         4.5, // Max module speed, in m/s
-        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+        Math.sqrt(Math.pow(DriveConstants.kTrackWidth, 2) + Math.pow(DriveConstants.kWheelBase, 2)), // Drive base radius in meters. Distance from robot center to furthest module.
         new ReplanningConfig() // Default path replanning config. See the API for the options here
       ),
         () -> {
@@ -140,7 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // Update SmartDashboard with NavX values.
     SmartDashboard.putBoolean("IMU Connected", m_gyro.isConnected());
-    SmartDashboard.putNumber("IMU Angle", getAngle());
+    SmartDashboard.putNumber("IMU Angle", getAngleClamped());
     SmartDashboard.putData("IMU Angle Offset Chooser", m_offsetChooser);
 
     setAngleAdjustment(m_offsetChooser.getSelected());
@@ -148,7 +148,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Update the odometry in the periodic block
     m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
+        Rotation2d.fromDegrees(getAngle()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -221,8 +221,8 @@ public class DriveSubsystem extends SubsystemBase {
    * 
    * @return Returns the current yaw value in degrees from -180 to 180.
    */
-  public double getAngle() {
-    double angle = m_gyro.getAngle() + 180;
+  public double getAngleClamped() {
+    double angle = getAngle() + 180;
 
     while (angle > 360){angle -= 360;}
     while (angle < 0){angle += 360;}
@@ -230,6 +230,10 @@ public class DriveSubsystem extends SubsystemBase {
     return angle - 180; 
   }
 
+
+  public double getAngle() {
+    return m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
   /**
    * Returns the turn rate of the robot.
    *
@@ -262,7 +266,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(
-      Rotation2d.fromDegrees(m_gyro.getAngle()),
+      Rotation2d.fromDegrees(getAngle()),
       new SwerveModulePosition[] {
         m_frontLeft.getPosition(),
         m_frontRight.getPosition(),
@@ -376,7 +380,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(360 - getAngle()))
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getAngleClamped() - 360))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);

@@ -12,27 +12,40 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "startToIntakeDown"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "intakeDown"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "intakeDownToTestPos"
+            "name": "shootSpeakerRev"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "startToTestPos"
+                }
+              }
+            ]
           }
         },
         {

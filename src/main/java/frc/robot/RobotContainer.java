@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -33,12 +34,13 @@ import frc.robot.commands.DriverCommands.DriveStopCommand;
 import frc.robot.commands.DriverCommands.DriveTurnToAngleCommand;
 import frc.robot.commands.DriverCommands.DriveZeroYawCommand;
 import frc.robot.commands.OperatorCommands.IntakeAmpShootCommand;
-import frc.robot.commands.OperatorCommands.IntakeDetectNoteCommand;
 import frc.robot.commands.OperatorCommands.IntakeDownCommand;
 import frc.robot.commands.OperatorCommands.IntakeEjectCommand;
 import frc.robot.commands.OperatorCommands.ShootCommands.ShooterRevCommand;
 import frc.robot.commands.OperatorCommands.ShootCommands.ShooterShootCommand;
+import frc.robot.commands.OperatorCommands.WaitCommands.IntakeDetectNoteCommand;
 import frc.robot.controllers.DriverController;
+import frc.robot.controllers.EverythingController;
 import frc.robot.controllers.OperatorController;
 
 import frc.robot.subsystems.ClimberSubsystem;
@@ -68,18 +70,20 @@ public class RobotContainer {
 
   DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
   OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
+  EverythingController m_everythingController = new EverythingController(OIConstants.kEverythingControllerPort);
 
   /**
    * Constructor.
    */
   private RobotContainer(){
-    // Configure the button bindings
-    configureDriverCommands();
-    configureOperatorCommands();
 
-    autoChooser = AutoBuilder.buildAutoChooser("Default Auto");
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
+    NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand());
+    NamedCommands.registerCommand("driveBack", new DriveCommand(
+      () -> {return -0.15d;}, 
+      () -> {return 0d;}, 
+      () -> {return 0d;}, 
+      true, true
+    ).withTimeout(1));
 
     // Intake
     NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
@@ -96,6 +100,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootSpeaker", new ShooterShootCommand(ShooterState.SPEAKER));
     NamedCommands.registerCommand("shootAmpRev", new ShooterRevCommand(ShooterState.AMP));
     NamedCommands.registerCommand("shootAmp", new ShooterShootCommand(ShooterState.AMP));
+
+    // Configure the button bindings
+    configureDriverCommands();
+    configureOperatorCommands();
+    if (OIConstants.kUseEverythingController){
+      configureEverythingCommands();
+    }
+
+    autoChooser = AutoBuilder.buildAutoChooser("Default Auto");
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    
   }
 
   private static RobotContainer m_instance;
@@ -185,6 +200,59 @@ public class RobotContainer {
       .onTrue(ClimberSubsystem.climberCommand(ClimbersState.DOWN));
   }
   
+  private void configureEverythingCommands(){
+
+    // Shooter
+    m_everythingController.getShooterSpeakerTrigger()
+      .onTrue(new ShooterRevCommand(ShooterState.SPEAKER));
+
+    m_everythingController.getShooterSpeakerTrigger()
+      .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
+
+    m_everythingController.getShooterAmpTrigger()
+      .onTrue(new ShooterRevCommand(ShooterState.AMP));
+
+    m_everythingController.getShooterAmpTrigger()
+      .onFalse(new ShooterShootCommand(ShooterState.AMP));
+
+
+    // Intake Amp Shoot
+    m_everythingController.getIntakeAmpTrigger()
+      .onTrue(new IntakeAmpShootCommand());
+
+    // Intake
+    m_everythingController.getIntakeDetectNoteTrigger()
+      .onTrue(new IntakeDownCommand());
+    
+    m_everythingController.getIntakeEjectNoteTrigger()
+      .onTrue(new IntakeEjectCommand());
+
+
+    // Intake Pivot
+    m_everythingController.getIntakePivotGroundTrigger()
+      .onTrue(IntakeSubsystem.pivotCommand(PivotState.GROUND));
+    m_everythingController.getIntakePivotAmpTrigger()
+      .onTrue(IntakeSubsystem.pivotCommand(PivotState.AMP));
+    m_everythingController.getIntakePivotStowTrigger()
+      .onTrue(IntakeSubsystem.pivotCommand(PivotState.STOW));
+
+    m_everythingController.getClimberUpTrigger()
+      .onTrue(ClimberSubsystem.climberCommand(ClimbersState.UP));
+    m_everythingController.getClimberDownTrigger()
+      .onTrue(ClimberSubsystem.climberCommand(ClimbersState.DOWN));
+
+    DriveCommand defaultDriveCommand = 
+      new DriveCommand(
+          m_everythingController::getXSpeed,
+          m_everythingController::getYSpeed,
+          m_everythingController::getRotation,
+          true, true
+      );
+    
+    defaultDriveCommand.addRequirements(m_drive);
+    m_drive.setDefaultCommand(defaultDriveCommand);
+  }
+
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   /**

@@ -21,7 +21,18 @@ public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
-  private final PIDController m_pivotPID = new PIDController(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD);
+  private final PIDController m_pivotPID = new PIDController(
+    IntakeConstants.kPivotP, 
+    IntakeConstants.kPivotI, 
+    IntakeConstants.kPivotD
+  );
+
+  private final PIDController m_ampPivotPID = new PIDController(
+    IntakeConstants.kAmpPivotP, 
+    IntakeConstants.kAmpPivotI, 
+    IntakeConstants.kAmpPivotD
+  );
+  
   private final DutyCycleEncoder m_pivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderID);
 
   private CANSparkMax m_intakeMotor;
@@ -30,7 +41,6 @@ public class IntakeSubsystem extends SubsystemBase{
   private TimeOfFlight m_timeOfFlight = new TimeOfFlight(IntakeConstants.kTimeOfFlightSensorID);
 
   private static IntakeSubsystem m_instance;
-
 
   private PivotState m_pivotTarget = PivotState.STOW;
   private PivotState m_pivotState = PivotState.NONE;
@@ -44,6 +54,7 @@ public class IntakeSubsystem extends SubsystemBase{
    */
   private IntakeSubsystem() {
     m_pivotPID.setTolerance(IntakeConstants.kPivotPIDTolerance);
+    m_ampPivotPID.setTolerance(IntakeConstants.kAmpPivotPIDTolerance);
 
     // Intake Motor
     m_intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorID, MotorType.kBrushless);
@@ -99,6 +110,10 @@ public class IntakeSubsystem extends SubsystemBase{
     double pivotAngle = pivotTargetToAngle(m_pivotTarget);
     m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
 
+    if (m_pivotTarget == PivotState.AMP){
+      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
+    }
+
     // Intake control
     m_intakeSpeed = (intakeStateToSpeed(m_intakeState));
 
@@ -110,7 +125,7 @@ public class IntakeSubsystem extends SubsystemBase{
       m_pivotState = m_pivotTarget;
     }
 
-    // SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
+    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
     SmartDashboard.putNumber("Intake Pivot Voltage", m_pivotSpeed);
     // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
     
