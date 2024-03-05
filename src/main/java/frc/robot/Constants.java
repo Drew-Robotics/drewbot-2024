@@ -134,6 +134,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
     public static final int kEverythingControllerPort = 2;
+    public static final int kSysIdPort = 3;
 
     public static final boolean kUseEverythingController = true; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
 
@@ -183,17 +184,18 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final double kPivotP = 1;
-    public static final double kPivotI = 0.3;
-    public static final double kPivotD = 0.1;
+    public static final double kS = 0.0;
+    public static final double kG = 0.0;
+    public static final double kV = 0.0;
+    public static final double kA = 0.0;
+    public static final double kPivotP = 0.0;
+    public static final double kPivotI = 0.0;
+    public static final double kPivotD = 0.0;
 
-    public static final double kPivotPIDTolerance = 10;
+    public static final double kMaxVelocityRps = 1.0;
+    public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kAmpPivotP = 0.5;
-    public static final double kAmpPivotI = 0;
-    public static final double kAmpPivotD = 0;
-
-    public static final double kAmpPivotPIDTolerance = 1;
+    public static final double kPivotPIDTolerance = 1;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;

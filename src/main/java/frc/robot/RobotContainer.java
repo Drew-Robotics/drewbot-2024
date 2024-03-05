@@ -12,6 +12,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -71,6 +73,7 @@ public class RobotContainer {
   DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
   OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
   EverythingController m_everythingController = new EverythingController(OIConstants.kEverythingControllerPort);
+  CommandXboxController m_sysidController = new CommandXboxController(OIConstants.kSysIdPort);
 
   /**
    * Constructor.
@@ -251,6 +254,23 @@ public class RobotContainer {
     
     defaultDriveCommand.addRequirements(m_drive);
     m_drive.setDefaultCommand(defaultDriveCommand);
+
+    m_sysidController
+        .a()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_sysidController
+        .b()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_sysidController
+        .x()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_sysidController
+        .y()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
