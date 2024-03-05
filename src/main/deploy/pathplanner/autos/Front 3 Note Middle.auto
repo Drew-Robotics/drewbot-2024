@@ -36,7 +36,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -79,7 +79,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -89,22 +89,9 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "mStartToF2"
-                      }
-                    }
-                  ]
+                  "pathName": "mStartToF2"
                 }
               }
             ]
@@ -135,7 +122,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -145,16 +132,9 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "mStartToF3"
-                      }
-                    }
-                  ]
+                  "pathName": "mStartToF3"
                 }
               }
             ]

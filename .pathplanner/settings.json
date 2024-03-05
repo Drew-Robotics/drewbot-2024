@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.62,
-  "robotLength": 0.6223,
+  "robotWidth": 0.8636,
+  "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
     "Leave",
@@ -9,7 +9,7 @@
   "autoFolders": [
     "Shoot and Leave"
   ],
-  "defaultMaxVel": 2.0,
+  "defaultMaxVel": 0.5,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 360.0,
   "defaultMaxAngAccel": 720.0,
