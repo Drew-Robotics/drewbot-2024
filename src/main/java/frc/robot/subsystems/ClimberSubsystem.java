@@ -163,11 +163,16 @@ public class ClimberSubsystem extends SubsystemBase {
     m_climbersState = state;
   }
 
+  public ClimbersState getClimberState(){
+    return m_climbersState;
+  }
+
   public void climbersSetZero() {
     m_leftClimberZeroPos = -m_leftClimberEncoder.getPosition();
     m_rightClimberZeroPos = -m_rightClimberEncoder.getPosition();
   }
 
+  // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/InstantCommand.html
   public static Command climberCommand(ClimbersState state){
     return new RunCommand(
       () -> m_instance.setClimbersState(state),

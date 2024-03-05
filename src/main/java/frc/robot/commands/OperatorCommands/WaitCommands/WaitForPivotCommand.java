@@ -5,6 +5,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
+// https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/FunctionalCommand.html
+
 public class WaitForPivotCommand extends Command{
 
   IntakeSubsystem m_intake = IntakeSubsystem.getInstance();

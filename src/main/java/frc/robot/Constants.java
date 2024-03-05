@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.led.CANdle;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -183,13 +184,13 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final double kPivotP = 1;
-    public static final double kPivotI = 0.3;
-    public static final double kPivotD = 0.1;
+    public static final double kPivotP = 0.5;
+    public static final double kPivotI = 0.25;
+    public static final double kPivotD = 0.05;
 
     public static final double kPivotPIDTolerance = 10;
 
-    public static final double kAmpPivotP = 0.5;
+    public static final double kAmpPivotP = 0.25;
     public static final double kAmpPivotI = 0;
     public static final double kAmpPivotD = 0;
 
@@ -212,7 +213,7 @@ public final class Constants {
 
     public static final double kPivotAngleGround = 250;
     public static final double kPivotAngleSource = 130;
-    public static final double kPivotAngleAmp = 120;
+    public static final double kPivotAngleAmp = 127.5;
     public static final double kPivotAngleStow = 40;
 
     public static final double kIntakeSpeed = 0.7;
@@ -256,5 +257,9 @@ public final class Constants {
 
     public static final double kTiltRPM = 20;
     
+  }
+
+  public static final class LEDConstants { 
+    public static final int CANdleID = -1;
   }
 }

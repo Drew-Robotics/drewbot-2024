@@ -49,6 +49,8 @@ public class IntakeSubsystem extends SubsystemBase{
   private double m_pivotSpeed = 0.0;
   private double m_intakeSpeed = 0.0;
 
+  private boolean m_hasNote = false;
+
   /**
    * Constructor.
    */
@@ -106,12 +108,15 @@ public class IntakeSubsystem extends SubsystemBase{
   
   @Override
   public void periodic(){
+
+    m_hasNote = getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
+
     // Pivot control
     double pivotAngle = pivotTargetToAngle(m_pivotTarget);
-    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
+    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
 
     if (m_pivotTarget == PivotState.AMP){
-      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
+      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
     }
 
     // Intake control
@@ -126,6 +131,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
+    SmartDashboard.putNumber("Intake Pivot Target", pivotAngle);
     SmartDashboard.putNumber("Intake Pivot Voltage", m_pivotSpeed);
     // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
     
@@ -214,9 +220,19 @@ public class IntakeSubsystem extends SubsystemBase{
     return m_pivotState;
   }
 
+  public IntakeState getIntakeState(){
+    return m_intakeState;
+  }
+
   public double getTimeOfFlightRange(){
     return m_timeOfFlight.getRange();
   }
+
+  public boolean hasNote() {
+    return m_hasNote;
+  }
+
+  // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/InstantCommand.html
 
   public static Command pivotCommand(PivotState state){
     return new RunCommand(

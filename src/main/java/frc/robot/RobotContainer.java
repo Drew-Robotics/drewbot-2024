@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
@@ -12,6 +13,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,6 +31,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
 
 import frc.robot.Constants.OIConstants;
@@ -66,12 +72,26 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  
-
   DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
   OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
   EverythingController m_everythingController = new EverythingController(OIConstants.kEverythingControllerPort);
 
+  List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController, m_everythingController);
+
+  private static RobotContainer m_instance;
+
+  /**
+   * Returns an instance of robot, this is an implementation of the singleton design pattern.
+   * @return instance
+   */
+  public static RobotContainer getInstance() {
+    if (m_instance == null) {
+      m_instance = new RobotContainer();
+    }
+    return m_instance;
+  }
+
+  
   /**
    * Constructor.
    */
@@ -83,7 +103,7 @@ public class RobotContainer {
       () -> {return 0d;}, 
       () -> {return 0d;}, 
       true, true
-    ).withTimeout(1));
+    ).withTimeout(0.0));
 
     // Intake
     NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
@@ -113,19 +133,6 @@ public class RobotContainer {
     
   }
 
-  private static RobotContainer m_instance;
-
-  /**
-   * Returns an instance of robot, this is an implementation of the singleton design pattern.
-   * @return instance
-   */
-  public static RobotContainer getInstance(){
-    if (m_instance == null){
-      m_instance = new RobotContainer();
-    }
-    return m_instance;
-  }
-  
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
   private void configureDriverCommands(){
@@ -253,6 +260,14 @@ public class RobotContainer {
     m_drive.setDefaultCommand(defaultDriveCommand);
   }
 
+  // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
+
+  private void setRumble(double value){
+    for (CommandXboxController controller : m_controllers){
+        controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, value);
+    }
+  }
+
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
   /**
@@ -271,5 +286,13 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public Command rumbleCommand(double strength, double length) {
+    return new SequentialCommandGroup(
+      new RunCommand(() -> setRumble(strength)),
+      new WaitCommand(length),
+      new RunCommand(() -> setRumble(0))
+    );
   }
 }
