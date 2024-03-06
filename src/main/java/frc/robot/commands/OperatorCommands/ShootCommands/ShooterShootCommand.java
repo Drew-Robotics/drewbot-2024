@@ -22,12 +22,12 @@ public class ShooterShootCommand extends ParallelCommandGroup{
             IntakeState.FEED_SPEAKER_SHOOTER : 
             IntakeState.FEED_AMP_SHOOTER
         ),
-        new WaitCommand(1.5),
+        new WaitCommand(0.5),
         IntakeSubsystem.stateCommand(IntakeState.NONE)
       ),
       Commands.sequence(
         ShooterSubsystem.shooterCommand(target),
-        new WaitCommand(1.5),
+        new WaitCommand(0.5),
         ShooterSubsystem.shooterCommand(ShooterState.NONE)
       )
     );

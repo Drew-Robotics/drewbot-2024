@@ -64,7 +64,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_leftClimberEncoder = m_leftClimberMotor.getEncoder();
     m_rightClimberEncoder = m_rightClimberMotor.getEncoder();
 
-    // Idle mode 
+    // Idle Mode 
     m_leftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_rightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 

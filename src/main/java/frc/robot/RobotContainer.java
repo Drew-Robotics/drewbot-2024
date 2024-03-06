@@ -97,14 +97,17 @@ public class RobotContainer {
    */
   private RobotContainer(){
 
-    NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand());
+    NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand().withTimeout(0));
  
     NamedCommands.registerCommand("driveBack", new DriveCommand(
-      () -> {return -0.15d;}, 
+      () -> {return -0.3d;}, 
       () -> {return 0d;}, 
       () -> {return 0d;}, 
       false, true
-    ).withTimeout(0.2));
+    ).withTimeout(0.3).andThen(
+      () -> m_drive.drive(0,0,0,false,false)
+      )
+    );
 
 
     // Intake
@@ -113,9 +116,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("intakeAmpShoot", new IntakeAmpShootCommand());
 
     // Intake Pivot
-    NamedCommands.registerCommand("intakePivotGround", IntakeSubsystem.pivotCommand(PivotState.GROUND));
-    NamedCommands.registerCommand("intakePivotAmp", IntakeSubsystem.pivotCommand(PivotState.AMP));
-    NamedCommands.registerCommand("intakePivotStow", IntakeSubsystem.pivotCommand(PivotState.STOW));
+    NamedCommands.registerCommand("intakePivotGround", IntakeSubsystem.pivotCommand(PivotState.GROUND).withTimeout(0.0));
+    NamedCommands.registerCommand("intakePivotAmp", IntakeSubsystem.pivotCommand(PivotState.AMP).withTimeout(0.0));
+    NamedCommands.registerCommand("intakePivotStow", IntakeSubsystem.pivotCommand(PivotState.STOW).withTimeout(0.0));
 
     // Shooter
     NamedCommands.registerCommand("shootSpeakerRev", new ShooterRevCommand(ShooterState.SPEAKER));
