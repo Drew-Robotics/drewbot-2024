@@ -98,12 +98,14 @@ public class RobotContainer {
   private RobotContainer(){
 
     NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand());
+ 
     NamedCommands.registerCommand("driveBack", new DriveCommand(
       () -> {return -0.15d;}, 
       () -> {return 0d;}, 
       () -> {return 0d;}, 
-      true, true
-    ).withTimeout(0.0));
+      false, true
+    ).withTimeout(0.2));
+
 
     // Intake
     NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
