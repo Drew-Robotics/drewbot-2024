@@ -22,7 +22,6 @@ public class LEDSubsystem extends SubsystemBase{
 
   private Animation m_toAnimate = null;
   private LEDState m_LEDState = LEDState.NONE;
-  
 
   private DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
