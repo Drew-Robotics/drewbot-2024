@@ -97,10 +97,10 @@ public class RobotContainer {
    */
   private RobotContainer(){
 
-    NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand().withTimeout(0));
+    NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand());
  
     NamedCommands.registerCommand("driveBack", new DriveCommand(
-      () -> {return -0.3d;}, 
+      () -> {return -0.2d;}, 
       () -> {return 0d;}, 
       () -> {return 0d;}, 
       false, true

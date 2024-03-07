@@ -25,7 +25,7 @@ public class IntakeDownCommand extends SequentialCommandGroup {
         // RobotContainer.getInstance().rumbleCommand(1, 1),
 
         new SequentialCommandGroup(
-          new WaitCommand(0.3),
+          new WaitCommand(0.5),
           IntakeSubsystem.stateCommand(IntakeState.NONE),
           IntakeSubsystem.pivotCommand(PivotState.STOW)
         )

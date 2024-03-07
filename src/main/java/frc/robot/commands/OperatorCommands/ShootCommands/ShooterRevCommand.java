@@ -10,12 +10,10 @@ import frc.robot.subsystems.ShooterSubsystem.ShooterState;
 
 public class ShooterRevCommand extends SequentialCommandGroup{
   ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
-  IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
   
   public ShooterRevCommand(ShooterState target){
     addCommands(
-      ShooterSubsystem.shooterCommand(target),
-      IntakeSubsystem.pivotCommand(PivotState.STOW)
+      ShooterSubsystem.shooterCommand(target)
     );
   }
 }

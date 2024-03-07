@@ -92,8 +92,8 @@ public class DriveSubsystem extends SubsystemBase {
    */
   private DriveSubsystem() {
     m_offsetChooser.addOption("Middle", 0d);
-    m_offsetChooser.addOption("Left", -60d);
-    m_offsetChooser.addOption("Right", 60d);
+    m_offsetChooser.addOption("Bottom", -60d);
+    m_offsetChooser.addOption("Top", 60d);
 
     m_offsetChooser.setDefaultOption("Middle", 0d);
 

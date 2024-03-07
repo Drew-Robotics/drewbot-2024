@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.85,
-      "y": 4.5
+      "y": 6.6
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -52,7 +52,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "bStartToF3"
+                        "pathName": "tStartToF1"
                       }
                     },
                     {
@@ -64,7 +64,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "f3ToMStart"
+                        "pathName": "f1ToMStart"
                       }
                     }
                   ]
@@ -152,7 +152,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "mStartToF1"
+                        "pathName": "mStartToF3"
                       }
                     },
                     {
@@ -164,7 +164,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "f1ToMStart"
+                        "pathName": "f3ToMStart"
                       }
                     }
                   ]

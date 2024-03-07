@@ -5,7 +5,7 @@
       "x": 1.31,
       "y": 5.55
     },
-    "rotation": 0.018665722121755293
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -46,24 +46,31 @@
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "mStartToF1"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "mStartToF2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "f2ToMStart"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeakerRev"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "f1ToMStart"
           }
         },
         {
@@ -79,7 +86,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -89,24 +96,31 @@
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "mStartToF2U"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "mStartToF3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "f3ToMStart"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeakerRev"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "f2ToMStartU"
           }
         },
         {
@@ -122,7 +136,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -132,24 +146,31 @@
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "mStartToF3U"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "mStartToF1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "f1ToMStart"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeakerRev"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "f3ToMStartU"
           }
         },
         {
