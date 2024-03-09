@@ -42,11 +42,6 @@ public class EverythingController extends CommandXboxController{
     return rightTrigger(0.5);
   }
 
-  public Trigger getShooterAmpTrigger(){
-    return leftTrigger(0.5);
-  }
-
-
   // Intake Pivot
   public Trigger getIntakePivotStowTrigger(){
     return x();

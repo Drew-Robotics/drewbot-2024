@@ -136,7 +136,7 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
     public static final int kEverythingControllerPort = 2;
 
-    public static final boolean kUseEverythingController = true; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
+    public static final boolean kUseEverythingController = false; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
 
     public static final double kDriveDeadband = 0.05;
     
@@ -203,7 +203,7 @@ public final class Constants {
     public static final boolean kIntakeMotorInverted = false;
     public static final boolean kPivotMotorInverted = true;
 
-    public static final int kPivotMotorSmartCurrentLimit = 40;
+    public static final int kPivotMotorSmartCurrentLimit = 50;
 
     public static final int kPivotEncoderID = 0;
 
@@ -211,16 +211,24 @@ public final class Constants {
 
     // This is any point that the robot can't reach.
 
+
+
     public static final double kPivotAngleGround = 250;
     public static final double kPivotAngleSource = 130;
-    public static final double kPivotAngleAmp = 127.5;
+    public static final double kPivotAngleAmp = 130;
     public static final double kPivotAngleStow = 40;
 
+
+    // negative is eject
     public static final double kIntakeSpeed = 0.75;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedSpeakerShooterSpeed = -1;
     public static final double kFeedAmpShooterSpeed = -0.3;
-    public static final double kAmpSpeed = -0.55;
+    public static final double kAmpSpeed = -0.5;
+    public static final double kIntakeHoldSpeed = 0.1;
+
+    public static final int kIntakeDefaultAmps = 40;
+    public static final int kIntakeHoldAmps = 1;
 
     public static final int kTimeOfFlightSensorID = 40;
 

@@ -14,6 +14,12 @@
         {
           "type": "named",
           "data": {
+            "name": "zeroYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "shootSpeakerRev"
           }
         },

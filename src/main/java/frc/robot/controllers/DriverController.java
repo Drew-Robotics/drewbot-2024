@@ -1,14 +1,27 @@
 package frc.robot.controllers;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 
 public class DriverController extends CommandXboxController{
 
-    public DriverController(int port){
+    public static DriverController m_intance;
+
+    public static DriverController getIntance(){
+        if (m_intance == null){
+            m_intance = new DriverController(OIConstants.kDriverControllerPort);
+        }
+        return m_intance;
+    }
+
+    private DriverController(int port){
         super(port);
     }
 
@@ -31,4 +44,18 @@ public class DriverController extends CommandXboxController{
     public Trigger getStopButton(){
         return rightBumper();
     }
+
+    public void rumble(double strength){
+        this.getHID().setRumble(RumbleType.kBothRumble, strength);
+    }
+
+  public Command intakeRumbleCommand(){
+    return new RunCommand(
+      () -> rumble(1), (Subsystem) null
+    ).withTimeout(1).andThen(
+      new RunCommand(
+        () -> rumble(0), (Subsystem) null
+      )
+    );
+  }
 }

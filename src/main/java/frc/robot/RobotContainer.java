@@ -72,8 +72,8 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
-  OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
+  DriverController m_driverController = DriverController.getIntance();
+  OperatorController m_operatorController = OperatorController.getIntance();
   EverythingController m_everythingController = new EverythingController(OIConstants.kEverythingControllerPort);
 
   List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController, m_everythingController);
@@ -170,13 +170,6 @@ public class RobotContainer {
     m_operatorController.getShooterSpeakerTrigger()
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
 
-    m_operatorController.getShooterAmpTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.AMP));
-
-    m_operatorController.getShooterAmpTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.AMP));
-
-
     // Intake Amp Shoot
     m_operatorController.getIntakeAmpTrigger()
       .onTrue(new IntakeAmpShootCommand());
@@ -187,6 +180,11 @@ public class RobotContainer {
     
     m_operatorController.getIntakeEjectNoteTrigger()
       .onTrue(new IntakeEjectCommand());
+    
+    m_operatorController.getIntakeHoldTrigger()
+      .onTrue(IntakeSubsystem.stateCommand(IntakeState.HOLD));
+    m_operatorController.getIntakeHoldTrigger()
+      .onFalse(IntakeSubsystem.stateCommand(IntakeState.NONE));
 
 
     // Intake Pivot
@@ -220,13 +218,6 @@ public class RobotContainer {
 
     m_everythingController.getShooterSpeakerTrigger()
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
-
-    m_everythingController.getShooterAmpTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.AMP));
-
-    m_everythingController.getShooterAmpTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.AMP));
-
 
     // Intake Amp Shoot
     m_everythingController.getIntakeAmpTrigger()

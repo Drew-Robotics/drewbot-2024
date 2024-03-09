@@ -90,7 +90,6 @@ public class IntakeSubsystem extends SubsystemBase{
   public enum PivotState {
     NONE,
     GROUND,
-    SOURCE,
     AMP,
     STOW
   }
@@ -101,6 +100,7 @@ public class IntakeSubsystem extends SubsystemBase{
     EJECT,
     FEED_SPEAKER_SHOOTER,
     FEED_AMP_SHOOTER,
+    HOLD,
     AMP
   }
 
@@ -113,7 +113,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
     // Pivot control
     double pivotAngle = pivotTargetToAngle(m_pivotTarget);
-    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/150;
+    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
 
     if (m_pivotTarget == PivotState.AMP){
       m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
@@ -172,8 +172,6 @@ public class IntakeSubsystem extends SubsystemBase{
     switch (state) {
       case GROUND:
         return IntakeConstants.kPivotAngleGround;
-      case SOURCE:
-        return IntakeConstants.kPivotAngleSource;
       case AMP:
         return IntakeConstants.kPivotAngleAmp;
       case STOW:
@@ -190,6 +188,7 @@ public class IntakeSubsystem extends SubsystemBase{
    * @return Motor speed
    */
   private double intakeStateToSpeed(IntakeState state) {
+    m_intakeMotor.setSmartCurrentLimit(IntakeConstants.kIntakeDefaultAmps);
     switch (state) {
       case INTAKE:
         return IntakeConstants.kIntakeSpeed;
@@ -201,6 +200,9 @@ public class IntakeSubsystem extends SubsystemBase{
         return IntakeConstants.kFeedAmpShooterSpeed;
       case AMP:
         return IntakeConstants.kAmpSpeed;
+      case HOLD:
+        m_intakeMotor.setSmartCurrentLimit(IntakeConstants.kIntakeHoldAmps);
+        return IntakeConstants.kIntakeHoldSpeed;
       default:
         return 0.0;
     }
