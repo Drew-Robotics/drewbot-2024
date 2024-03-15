@@ -2,21 +2,23 @@ package frc.robot.controllers;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 
-public class OperatorController extends CommandXboxController{
+public class OperatorController extends Controller{
 
   public static OperatorController m_intance;
 
   public static OperatorController getIntance(){
-      if (m_intance == null){
-          m_intance = new OperatorController(OIConstants.kOperatorControllerPort);
-      }
-      return m_intance;
+    if (m_intance == null){
+        m_intance = new OperatorController(OIConstants.kOperatorControllerPort);
+    }
+    return m_intance;
   }
 
   private OperatorController(int port){
@@ -42,6 +44,9 @@ public class OperatorController extends CommandXboxController{
   // Shooter
   public Trigger getShooterSpeakerTrigger(){
     return rightTrigger(0.5);
+  }
+  public Trigger getShooterAmpTrigger(){
+    return leftTrigger(0.5);
   }
 
   // Intake Pivot
@@ -75,20 +80,6 @@ public class OperatorController extends CommandXboxController{
     return povRight();
   }
 
-
-  public void rumble(double strength){
-    this.getHID().setRumble(RumbleType.kBothRumble, strength);
-  }
-  
-  public Command intakeRumbleCommand(){
-    return new RunCommand(
-      () -> rumble(1), (Subsystem) null
-    ).withTimeout(1).andThen(
-      new RunCommand(
-        () -> rumble(0), (Subsystem) null
-      )
-    );
-  }
   /*
    * INTAKE
    * dpad: l-shooter, u-up, r-intake, d-source

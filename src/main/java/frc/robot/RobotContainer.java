@@ -46,7 +46,6 @@ import frc.robot.commands.OperatorCommands.ShootCommands.ShooterRevCommand;
 import frc.robot.commands.OperatorCommands.ShootCommands.ShooterShootCommand;
 import frc.robot.commands.OperatorCommands.WaitCommands.IntakeDetectNoteCommand;
 import frc.robot.controllers.DriverController;
-import frc.robot.controllers.EverythingController;
 import frc.robot.controllers.OperatorController;
 
 import frc.robot.subsystems.ClimberSubsystem;
@@ -74,9 +73,8 @@ public class RobotContainer {
 
   DriverController m_driverController = DriverController.getIntance();
   OperatorController m_operatorController = OperatorController.getIntance();
-  EverythingController m_everythingController = new EverythingController(OIConstants.kEverythingControllerPort);
 
-  List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController, m_everythingController);
+  List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController);
 
   private static RobotContainer m_instance;
 
@@ -129,10 +127,6 @@ public class RobotContainer {
     // Configure the button bindings
     configureDriverCommands();
     configureOperatorCommands();
-    if (OIConstants.kUseEverythingController){
-      configureEverythingCommands();
-    }
-
     autoChooser = AutoBuilder.buildAutoChooser("Default Auto");
     SmartDashboard.putData("Auto Chooser", autoChooser);
     
@@ -170,9 +164,16 @@ public class RobotContainer {
     m_operatorController.getShooterSpeakerTrigger()
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
 
+    // Shooter Amp Shoot
+    m_operatorController.getShooterAmpTrigger()
+      .onTrue(new ShooterRevCommand(ShooterState.AMP));
+
+    m_operatorController.getShooterAmpTrigger()
+      .onFalse(new ShooterShootCommand(ShooterState.AMP));
+
     // Intake Amp Shoot
-    m_operatorController.getIntakeAmpTrigger()
-      .onTrue(new IntakeAmpShootCommand());
+    // m_operatorController.getIntakeAmpTrigger()
+    //   .onTrue(new IntakeAmpShootCommand());
 
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger()
@@ -210,52 +211,6 @@ public class RobotContainer {
       .onTrue(ClimberSubsystem.climberCommand(ClimbersState.DOWN));
   }
   
-  private void configureEverythingCommands(){
-
-    // Shooter
-    m_everythingController.getShooterSpeakerTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.SPEAKER));
-
-    m_everythingController.getShooterSpeakerTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
-
-    // Intake Amp Shoot
-    m_everythingController.getIntakeAmpTrigger()
-      .onTrue(new IntakeAmpShootCommand());
-
-    // Intake
-    m_everythingController.getIntakeDetectNoteTrigger()
-      .onTrue(new IntakeDownCommand());
-    
-    m_everythingController.getIntakeEjectNoteTrigger()
-      .onTrue(new IntakeEjectCommand());
-
-
-    // Intake Pivot
-    m_everythingController.getIntakePivotGroundTrigger()
-      .onTrue(IntakeSubsystem.pivotCommand(PivotState.GROUND));
-    m_everythingController.getIntakePivotAmpTrigger()
-      .onTrue(IntakeSubsystem.pivotCommand(PivotState.AMP));
-    m_everythingController.getIntakePivotStowTrigger()
-      .onTrue(IntakeSubsystem.pivotCommand(PivotState.STOW));
-
-    m_everythingController.getClimberUpTrigger()
-      .onTrue(ClimberSubsystem.climberCommand(ClimbersState.UP));
-    m_everythingController.getClimberDownTrigger()
-      .onTrue(ClimberSubsystem.climberCommand(ClimbersState.DOWN));
-
-    DriveCommand defaultDriveCommand = 
-      new DriveCommand(
-          m_everythingController::getXSpeed,
-          m_everythingController::getYSpeed,
-          m_everythingController::getRotation,
-          true, true
-      );
-    
-    defaultDriveCommand.addRequirements(m_drive);
-    m_drive.setDefaultCommand(defaultDriveCommand);
-  }
-
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
   private void setRumble(double value){

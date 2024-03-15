@@ -116,7 +116,7 @@ public class IntakeSubsystem extends SubsystemBase{
     m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
 
     if (m_pivotTarget == PivotState.AMP){
-      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
+      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50 ;
     }
 
     // Intake control

@@ -27,11 +27,11 @@ public class IntakeDownCommand extends SequentialCommandGroup {
       new IntakeDetectNoteCommand(),
 
       new ParallelCommandGroup(
-        // m_driverController.intakeRumbleCommand(),
-        // m_operatorController.intakeRumbleCommand(),
+        m_driverController.intakeRumbleCommand().withTimeout(0.3),
+        m_operatorController.intakeRumbleCommand().withTimeout(0.3),
 
         new SequentialCommandGroup(
-          new WaitCommand(0.5),
+          new WaitCommand(0),
           IntakeSubsystem.stateCommand(IntakeState.NONE),
           IntakeSubsystem.pivotCommand(PivotState.STOW)
         )

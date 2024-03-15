@@ -177,7 +177,7 @@ public final class Constants {
     public static final double kShooterMaxOutput = 1;
 
     public static final double kShooterSpeakerSpeed = 1;
-    public static final double kShooterAmpSpeed = 0.3;
+    public static final double kShooterAmpSpeed = 0.25;
     public static final double kShooterReverseSpeed = 0.1;
     
   }
@@ -194,7 +194,7 @@ public final class Constants {
     public static final double kAmpPivotI = 0;
     public static final double kAmpPivotD = 0;
 
-    public static final double kAmpPivotPIDTolerance = 3;
+    public static final double kAmpPivotPIDTolerance = 5;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -211,8 +211,6 @@ public final class Constants {
 
     // This is any point that the robot can't reach.
 
-
-
     public static final double kPivotAngleGround = 250;
     public static final double kPivotAngleSource = 130;
     public static final double kPivotAngleAmp = 130;
@@ -220,11 +218,11 @@ public final class Constants {
 
 
     // negative is eject
-    public static final double kIntakeSpeed = 0.75;
+    public static final double kIntakeSpeed = 0.5;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedSpeakerShooterSpeed = -1;
-    public static final double kFeedAmpShooterSpeed = -0.3;
-    public static final double kAmpSpeed = -0.5;
+    public static final double kFeedAmpShooterSpeed = -1;
+    public static final double kAmpSpeed = -0.7;
     public static final double kIntakeHoldSpeed = 0.1;
 
     public static final int kIntakeDefaultAmps = 40;
@@ -235,11 +233,12 @@ public final class Constants {
     public static final double kNoteIntakedSensorValue = 200;
     
   }
+
   public static final class ClimberConstants {
     // PIDs 
-    public static final double kClimberP = 1;
-    public static final double kClimberI = 0.2;
-    public static final double kClimberD = 0.1;
+    public static final double kClimberP = 0.5;
+    public static final double kClimberI = 0.1;
+    public static final double kClimberD = 0.05;
 
     // Motor IDs
     public static final int kLeftClimberMotorID = 30;
