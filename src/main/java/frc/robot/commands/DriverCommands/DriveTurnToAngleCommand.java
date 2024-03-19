@@ -4,6 +4,8 @@
 
 package frc.robot.commands.DriverCommands;
 
+// https://docs.wpilib.org/en/stable/docs/software/commandbased/pid-subsystems-commands.html#pidcommand
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
@@ -29,7 +31,7 @@ public class DriveTurnToAngleCommand extends Command {
       DriveConstants.kD
     );
 
-    m_pid.setTolerance(5f);
+    m_pid.setTolerance(5d);
 
     SmartDashboard.putData("Turn to Angle PID Controller", m_pid);
 

@@ -139,7 +139,6 @@ public class IntakeSubsystem extends SubsystemBase{
   public enum PivotState {
     NONE,
     GROUND,
-    SOURCE,
     AMP,
     STOW
   }
@@ -150,6 +149,7 @@ public class IntakeSubsystem extends SubsystemBase{
     EJECT,
     FEED_SPEAKER_SHOOTER,
     FEED_AMP_SHOOTER,
+    HOLD,
     AMP
   }
 
@@ -157,13 +157,22 @@ public class IntakeSubsystem extends SubsystemBase{
   
   @Override
   public void periodic(){
+    m_hasNote = getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
+
     m_currentPivotPosRot = getPivotAngleDegrees() / 360.0;
     m_pivotVelRps = (m_currentPivotPosRot - m_prevPivotPosRot) / TimedRobot.kDefaultPeriod;
     
+
     // Pivot control
     double pivotAngle = pivotTargetToAngle(m_pivotTarget);
+    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
+
     double pivotFF = m_pivotFF.calculate(pivotAngle, 0);
     m_pivotFeedback = m_pivotPID.calculate(m_currentPivotPosRot, pivotAngle);
+
+    if (m_pivotTarget == PivotState.AMP){
+      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
+    }
 
     // Intake control
     m_intakeSpeed = (intakeStateToSpeed(m_intakeState));
@@ -181,6 +190,7 @@ public class IntakeSubsystem extends SubsystemBase{
     SmartDashboard.putNumber("Intake Pivot Setpoint", pivotAngle);
     SmartDashboard.putNumber("Intake Pivot Total Applied Voltage", pivotFF + m_pivotFeedback);
     // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
+    
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
     
@@ -221,8 +231,6 @@ public class IntakeSubsystem extends SubsystemBase{
     switch (state) {
       case GROUND:
         return IntakeConstants.kPivotAngleGround;
-      case SOURCE:
-        return IntakeConstants.kPivotAngleSource;
       case AMP:
         return IntakeConstants.kPivotAngleAmp;
       case STOW:
@@ -239,6 +247,7 @@ public class IntakeSubsystem extends SubsystemBase{
    * @return Motor speed
    */
   private double intakeStateToSpeed(IntakeState state) {
+    m_intakeMotor.setSmartCurrentLimit(IntakeConstants.kIntakeDefaultAmps);
     switch (state) {
       case INTAKE:
         return IntakeConstants.kIntakeSpeed;
@@ -250,6 +259,9 @@ public class IntakeSubsystem extends SubsystemBase{
         return IntakeConstants.kFeedAmpShooterSpeed;
       case AMP:
         return IntakeConstants.kAmpSpeed;
+      case HOLD:
+        m_intakeMotor.setSmartCurrentLimit(IntakeConstants.kIntakeHoldAmps);
+        return IntakeConstants.kIntakeHoldSpeed;
       default:
         return 0.0;
     }
@@ -269,9 +281,19 @@ public class IntakeSubsystem extends SubsystemBase{
     return m_pivotState;
   }
 
+  public IntakeState getIntakeState(){
+    return m_intakeState;
+  }
+
   public double getTimeOfFlightRange(){
     return m_timeOfFlight.getRange();
   }
+
+  public boolean hasNote() {
+    return m_hasNote;
+  }
+
+  // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/InstantCommand.html
 
   public static Command pivotCommand(PivotState state){
     return new RunCommand(

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.led.CANdle;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -110,7 +111,7 @@ public final class Constants {
     public static final double kDrivingP = 0.04;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
-    public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
+    public static final double kDrivingFF = 1.1 / kDriveWheelFreeSpeedRps;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
@@ -136,7 +137,7 @@ public final class Constants {
     public static final int kEverythingControllerPort = 2;
     public static final int kSysIdPort = 3;
 
-    public static final boolean kUseEverythingController = true; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
+    public static final boolean kUseEverythingController = false; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
 
     public static final double kDriveDeadband = 0.05;
     
@@ -177,7 +178,7 @@ public final class Constants {
     public static final double kShooterMaxOutput = 1;
 
     public static final double kShooterSpeakerSpeed = 1;
-    public static final double kShooterAmpSpeed = 0.3;
+    public static final double kShooterAmpSpeed = 0.25;
     public static final double kShooterReverseSpeed = 0.1;
     
   }
@@ -188,14 +189,21 @@ public final class Constants {
     public static final double kG = 0.0;
     public static final double kV = 0.0;
     public static final double kA = 0.0;
-    public static final double kPivotP = 0.0;
-    public static final double kPivotI = 0.0;
-    public static final double kPivotD = 0.0;
+    
+    public static final double kPivotP = 1;
+    public static final double kPivotI = 0.3;
+    public static final double kPivotD = 0.1;
 
     public static final double kMaxVelocityRps = 1.0;
     public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kPivotPIDTolerance = 1;
+    public static final double kPivotPIDTolerance = 10;
+
+    public static final double kAmpPivotP = 0.5;
+    public static final double kAmpPivotI = 0;
+    public static final double kAmpPivotD = 0;
+
+    public static final double kAmpPivotPIDTolerance = 5;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -204,7 +212,7 @@ public final class Constants {
     public static final boolean kIntakeMotorInverted = false;
     public static final boolean kPivotMotorInverted = true;
 
-    public static final int kPivotMotorSmartCurrentLimit = 40;
+    public static final int kPivotMotorSmartCurrentLimit = 50;
 
     public static final int kPivotEncoderID = 0;
 
@@ -214,25 +222,32 @@ public final class Constants {
 
     public static final double kPivotAngleGround = 250;
     public static final double kPivotAngleSource = 130;
-    public static final double kPivotAngleAmp = 120;
+    public static final double kPivotAngleAmp = 130;
     public static final double kPivotAngleStow = 40;
 
-    public static final double kIntakeSpeed = 0.7;
+
+    // negative is eject
+    public static final double kIntakeSpeed = 0.5;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedSpeakerShooterSpeed = -1;
-    public static final double kFeedAmpShooterSpeed = -0.3;
-    public static final double kAmpSpeed = -0.55;
+    public static final double kFeedAmpShooterSpeed = -1;
+    public static final double kAmpSpeed = -0.7;
+    public static final double kIntakeHoldSpeed = 0.1;
+
+    public static final int kIntakeDefaultAmps = 40;
+    public static final int kIntakeHoldAmps = 1;
 
     public static final int kTimeOfFlightSensorID = 40;
 
     public static final double kNoteIntakedSensorValue = 200;
     
   }
+
   public static final class ClimberConstants {
     // PIDs 
-    public static final double kClimberP = 1;
-    public static final double kClimberI = 0.2;
-    public static final double kClimberD = 0.1;
+    public static final double kClimberP = 0.5;
+    public static final double kClimberI = 0.1;
+    public static final double kClimberD = 0.05;
 
     // Motor IDs
     public static final int kLeftClimberMotorID = 30;
@@ -258,5 +273,9 @@ public final class Constants {
 
     public static final double kTiltRPM = 20;
     
+  }
+
+  public static final class LEDConstants { 
+    public static final int CANdleID = -1;
   }
 }

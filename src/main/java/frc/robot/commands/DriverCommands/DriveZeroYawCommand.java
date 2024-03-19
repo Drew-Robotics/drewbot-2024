@@ -5,12 +5,10 @@
 package frc.robot.commands.DriverCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveZeroYawCommand extends Command {
   private final DriveSubsystem m_drive = DriveSubsystem.getInstance();
-  double m_target_angle;
   double m_offSet;
 
   public DriveZeroYawCommand(){

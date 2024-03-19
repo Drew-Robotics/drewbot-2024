@@ -123,9 +123,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
 
+  public ShooterState getShooterState() {
+    return m_shooterState;
+  }
+
   public void setShooterState(ShooterState state) {
     m_shooterState = state;
   }
+
+  // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/InstantCommand.html
+  // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Subsystem.html#runOnce(java.lang.Runnable)
 
   public static Command shooterCommand(ShooterState state) {
     return new RunCommand(

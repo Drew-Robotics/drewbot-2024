@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
@@ -14,6 +15,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -28,6 +33,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
 
 import frc.robot.Constants.OIConstants;
@@ -42,7 +48,6 @@ import frc.robot.commands.OperatorCommands.ShootCommands.ShooterRevCommand;
 import frc.robot.commands.OperatorCommands.ShootCommands.ShooterShootCommand;
 import frc.robot.commands.OperatorCommands.WaitCommands.IntakeDetectNoteCommand;
 import frc.robot.controllers.DriverController;
-import frc.robot.controllers.EverythingController;
 import frc.robot.controllers.OperatorController;
 
 import frc.robot.subsystems.ClimberSubsystem;
@@ -68,12 +73,26 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  
-
-  DriverController m_driverController = new DriverController(OIConstants.kDriverControllerPort);
-  OperatorController m_operatorController = new OperatorController(OIConstants.kOperatorControllerPort);
-  EverythingController m_everythingController = new EverythingController(OIConstants.kEverythingControllerPort);
+  DriverController m_driverController = DriverController.getIntance();
+  OperatorController m_operatorController = OperatorController.getIntance();
   CommandXboxController m_sysidController = new CommandXboxController(OIConstants.kSysIdPort);
+
+
+  List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController, m_sysidController);
+
+  private static RobotContainer m_instance;
+
+  /**
+   * Returns an instance of robot, this is an implementation of the singleton design pattern.
+   * @return instance
+   */
+  public static RobotContainer getInstance() {
+    if (m_instance == null) {
+      m_instance = new RobotContainer();
+    }
+    return m_instance;
+  }
+
 
   /**
    * Constructor.
@@ -81,12 +100,17 @@ public class RobotContainer {
   private RobotContainer(){
 
     NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand());
+ 
     NamedCommands.registerCommand("driveBack", new DriveCommand(
-      () -> {return -0.15d;}, 
+      () -> {return -0.2d;}, 
       () -> {return 0d;}, 
       () -> {return 0d;}, 
-      true, true
-    ).withTimeout(1));
+      false, true
+    ).withTimeout(0.3).andThen(
+      () -> m_drive.drive(0,0,0,false,false)
+      )
+    );
+
 
     // Intake
     NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
@@ -94,9 +118,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("intakeAmpShoot", new IntakeAmpShootCommand());
 
     // Intake Pivot
-    NamedCommands.registerCommand("intakePivotGround", IntakeSubsystem.pivotCommand(PivotState.GROUND));
-    NamedCommands.registerCommand("intakePivotAmp", IntakeSubsystem.pivotCommand(PivotState.AMP));
-    NamedCommands.registerCommand("intakePivotStow", IntakeSubsystem.pivotCommand(PivotState.STOW));
+    NamedCommands.registerCommand("intakePivotGround", IntakeSubsystem.pivotCommand(PivotState.GROUND).withTimeout(0.0));
+    NamedCommands.registerCommand("intakePivotAmp", IntakeSubsystem.pivotCommand(PivotState.AMP).withTimeout(0.0));
+    NamedCommands.registerCommand("intakePivotStow", IntakeSubsystem.pivotCommand(PivotState.STOW).withTimeout(0.0));
 
     // Shooter
     NamedCommands.registerCommand("shootSpeakerRev", new ShooterRevCommand(ShooterState.SPEAKER));
@@ -107,28 +131,11 @@ public class RobotContainer {
     // Configure the button bindings
     configureDriverCommands();
     configureOperatorCommands();
-    if (OIConstants.kUseEverythingController){
-      configureEverythingCommands();
-    }
-
     autoChooser = AutoBuilder.buildAutoChooser("Default Auto");
     SmartDashboard.putData("Auto Chooser", autoChooser);
     
   }
 
-  private static RobotContainer m_instance;
-
-  /**
-   * Returns an instance of robot, this is an implementation of the singleton design pattern.
-   * @return instance
-   */
-  public static RobotContainer getInstance(){
-    if (m_instance == null){
-      m_instance = new RobotContainer();
-    }
-    return m_instance;
-  }
-  
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
   private void configureDriverCommands(){
@@ -150,6 +157,23 @@ public class RobotContainer {
     SmartDashboard.putData("Zero Yaw", new DriveZeroYawCommand());
     m_driverController.getTurnToZeroButton().whileTrue(new DriveTurnToAngleCommand(0));
     m_driverController.getStopButton().onTrue(new DriveStopCommand());
+
+    m_sysidController
+        .a()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_sysidController
+        .b()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_sysidController
+        .x()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_sysidController
+        .y()
+        .and(m_driverController.leftBumper())
+        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   private void configureOperatorCommands(){
@@ -161,16 +185,16 @@ public class RobotContainer {
     m_operatorController.getShooterSpeakerTrigger()
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
 
+    // Shooter Amp Shoot
     m_operatorController.getShooterAmpTrigger()
       .onTrue(new ShooterRevCommand(ShooterState.AMP));
 
     m_operatorController.getShooterAmpTrigger()
       .onFalse(new ShooterShootCommand(ShooterState.AMP));
 
-
     // Intake Amp Shoot
-    m_operatorController.getIntakeAmpTrigger()
-      .onTrue(new IntakeAmpShootCommand());
+    // m_operatorController.getIntakeAmpTrigger()
+    //   .onTrue(new IntakeAmpShootCommand());
 
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger()
@@ -178,6 +202,11 @@ public class RobotContainer {
     
     m_operatorController.getIntakeEjectNoteTrigger()
       .onTrue(new IntakeEjectCommand());
+    
+    m_operatorController.getIntakeHoldTrigger()
+      .onTrue(IntakeSubsystem.stateCommand(IntakeState.HOLD));
+    m_operatorController.getIntakeHoldTrigger()
+      .onFalse(IntakeSubsystem.stateCommand(IntakeState.NONE));
 
 
     // Intake Pivot
@@ -203,74 +232,12 @@ public class RobotContainer {
       .onTrue(ClimberSubsystem.climberCommand(ClimbersState.DOWN));
   }
   
-  private void configureEverythingCommands(){
+  // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
 
-    // Shooter
-    m_everythingController.getShooterSpeakerTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.SPEAKER));
-
-    m_everythingController.getShooterSpeakerTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
-
-    m_everythingController.getShooterAmpTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.AMP));
-
-    m_everythingController.getShooterAmpTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.AMP));
-
-
-    // Intake Amp Shoot
-    m_everythingController.getIntakeAmpTrigger()
-      .onTrue(new IntakeAmpShootCommand());
-
-    // Intake
-    m_everythingController.getIntakeDetectNoteTrigger()
-      .onTrue(new IntakeDownCommand());
-    
-    m_everythingController.getIntakeEjectNoteTrigger()
-      .onTrue(new IntakeEjectCommand());
-
-
-    // Intake Pivot
-    m_everythingController.getIntakePivotGroundTrigger()
-      .onTrue(IntakeSubsystem.pivotCommand(PivotState.GROUND));
-    m_everythingController.getIntakePivotAmpTrigger()
-      .onTrue(IntakeSubsystem.pivotCommand(PivotState.AMP));
-    m_everythingController.getIntakePivotStowTrigger()
-      .onTrue(IntakeSubsystem.pivotCommand(PivotState.STOW));
-
-    m_everythingController.getClimberUpTrigger()
-      .onTrue(ClimberSubsystem.climberCommand(ClimbersState.UP));
-    m_everythingController.getClimberDownTrigger()
-      .onTrue(ClimberSubsystem.climberCommand(ClimbersState.DOWN));
-
-    DriveCommand defaultDriveCommand = 
-      new DriveCommand(
-          m_everythingController::getXSpeed,
-          m_everythingController::getYSpeed,
-          m_everythingController::getRotation,
-          true, true
-      );
-    
-    defaultDriveCommand.addRequirements(m_drive);
-    m_drive.setDefaultCommand(defaultDriveCommand);
-
-    m_sysidController
-        .a()
-        .and(m_driverController.leftBumper())
-        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_sysidController
-        .b()
-        .and(m_driverController.leftBumper())
-        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_sysidController
-        .x()
-        .and(m_driverController.leftBumper())
-        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_sysidController
-        .y()
-        .and(m_driverController.leftBumper())
-        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+  private void setRumble(double value){
+    for (CommandXboxController controller : m_controllers){
+        controller.getHID().setRumble(GenericHID.RumbleType.kBothRumble, value);
+    }
   }
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
@@ -291,5 +258,13 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public Command rumbleCommand(double strength, double length) {
+    return new SequentialCommandGroup(
+      new RunCommand(() -> setRumble(strength)),
+      new WaitCommand(length),
+      new RunCommand(() -> setRumble(0))
+    );
   }
 }

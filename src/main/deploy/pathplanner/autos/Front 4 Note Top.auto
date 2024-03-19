@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2526858201864555,
-      "y": 5.55
+      "x": 0.85,
+      "y": 6.6
     },
-    "rotation": 0.018665722121755293
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -26,7 +26,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.5
           }
         },
         {
@@ -46,24 +46,31 @@
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "mStartToF1"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "tStartToF1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "f1ToMStart"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeakerRev"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "f1ToMStart"
           }
         },
         {
@@ -93,33 +100,27 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 0.5
+                        "pathName": "mStartToF2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "mStartToF2"
+                        "pathName": "f2ToMStart"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeakerRev"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "f2ToMStart"
           }
         },
         {
@@ -153,23 +154,23 @@
                       "data": {
                         "pathName": "mStartToF3"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "f3ToMStart"
+                      }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeakerRev"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "f3ToMStart"
           }
         },
         {
@@ -187,6 +188,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Front 4 Note",
   "choreoAuto": false
 }

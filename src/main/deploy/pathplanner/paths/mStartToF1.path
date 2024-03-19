@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2526858201864555,
+        "x": 1.31,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2526858201864555,
-        "y": 6.05
+        "x": 1.31,
+        "y": 6.55
       },
       "isLocked": false,
       "linkedName": "Start Middle"
@@ -20,8 +20,8 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 1.0689903087347397,
-        "y": 7.217060222083663
+        "x": 1.2999999999999998,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "New Folder",
+  "folder": "mStartToF",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
