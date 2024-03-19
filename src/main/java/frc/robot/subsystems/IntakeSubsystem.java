@@ -205,7 +205,7 @@ public class IntakeSubsystem extends SubsystemBase{
    * 
    * @return The angle of the intake pivot
    */
-  private double p() {
+  private double getPivotAngleDegrees() {
     return Units.rotationsToDegrees(
       m_pivotEncoder.get()
     );
