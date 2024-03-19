@@ -2,5 +2,8 @@
   "download": {
     "serverTeam": "8852",
     "username": ""
+  },
+  "output": {
+    "outputFolder": "/Users/natemurphy/Downloads"
   }
 }

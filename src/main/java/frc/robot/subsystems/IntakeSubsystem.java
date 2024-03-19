@@ -122,6 +122,8 @@ public class IntakeSubsystem extends SubsystemBase{
 
     m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
+
+    m_pivotEncoder.setPositionOffset(0.67);
   }
 
   /**
@@ -180,7 +182,8 @@ public class IntakeSubsystem extends SubsystemBase{
       m_pivotState = m_pivotTarget;
     }
 
-    SmartDashboard.putNumber("Intake Pivot Rot", getPivotAngleDegrees() / 360);
+    SmartDashboard.putNumber("Intake Pivot Rot", m_pivotEncoder.get());
+    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
     SmartDashboard.putNumber("Intake Pivot Setpoint", targetPivotRot);
     SmartDashboard.putNumber("Intake Pivot Total Applied Voltage", pivotFF + m_pivotFeedback);
     SmartDashboard.putNumber("Intake Pivot FF Applied Voltage", pivotFF);
@@ -202,20 +205,12 @@ public class IntakeSubsystem extends SubsystemBase{
    * 
    * @return The angle of the intake pivot
    */
-  private double getPivotAngleDegrees() {
-    double value = m_pivotEncoder.getAbsolutePosition();
-
-    value = reshiftAngle(Units.rotationsToDegrees(value%1>0?value%1:value%1+1));
-    return value;
+  private double p() {
+    return Units.rotationsToDegrees(
+      m_pivotEncoder.get()
+    );
   }
 
-  private double reshiftAngle(double angle){
-    angle -= IntakeConstants.kPivotEncoderZero;
-    while (angle < 0){
-      angle += 360;
-    }
-    return angle;
-  }
 
   /**
    * Converts PivotTarget enum to a target angle for the intake.

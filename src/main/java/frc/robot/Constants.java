@@ -213,14 +213,14 @@ public final class Constants {
 
     public static final int kPivotEncoderID = 0;
 
-    public static final double kPivotEncoderZero = 200;
+    public static final double kPivotEncoderZeroRot = 0.67; // rotations
 
     // This is any point that the robot can't reach.
 
-    public static final double kPivotAngleGround = 250;
-    public static final double kPivotAngleSource = 130;
-    public static final double kPivotAngleAmp = 130;
-    public static final double kPivotAngleStow = 40;
+    public static final double kPivotAngleGround = 210;
+    public static final double kPivotAngleSource = 100;
+    public static final double kPivotAngleAmp = 100;
+    public static final double kPivotAngleStow = 0;
 
 
     // negative is eject
