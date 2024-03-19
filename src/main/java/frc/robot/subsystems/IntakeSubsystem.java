@@ -54,6 +54,8 @@ public class IntakeSubsystem extends SubsystemBase{
   private PivotState m_pivotState = PivotState.NONE;
   private IntakeState m_intakeState = IntakeState.NONE;
 
+  private boolean m_hasNote = false;
+
   private double m_pivotFeedback = 0.0;
   private double m_intakeSpeed = 0.0;
   private double m_currentPivotPosRot = 0.0;
@@ -90,12 +92,9 @@ public class IntakeSubsystem extends SubsystemBase{
               log -> {
                 // Record a frame for the shooter motor.
                 log.motor("pivot-motor")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    .voltage(m_appliedVoltage.mut_replace(m_pivotMotor.getAppliedOutput() * m_pivotMotor.getBusVoltage(), Volts))
                     .angularPosition(m_angle.mut_replace(m_currentPivotPosRot, Rotations))
-                    .angularVelocity(
-                        m_velocity.mut_replace(m_pivotVelRps, RotationsPerSecond));
+                    .angularVelocity(m_velocity.mut_replace(m_pivotVelRps, RotationsPerSecond));
               },
               // Tell SysId to make generated commands require this subsystem, suffix test state in
               // WPILog with this subsystem's name ("intake")
@@ -164,21 +163,16 @@ public class IntakeSubsystem extends SubsystemBase{
     
 
     // Pivot control
-    double pivotAngle = pivotTargetToAngle(m_pivotTarget);
-    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
+    double targetPivotRot = pivotTargetToDeg(m_pivotTarget) / 360;
 
-    double pivotFF = m_pivotFF.calculate(pivotAngle, 0);
-    m_pivotFeedback = m_pivotPID.calculate(m_currentPivotPosRot, pivotAngle);
-
-    if (m_pivotTarget == PivotState.AMP){
-      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50;
-    }
+    double pivotFF = m_pivotFF.calculate(targetPivotRot, 0);
+    m_pivotFeedback = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
 
     // Intake control
     m_intakeSpeed = (intakeStateToSpeed(m_intakeState));
 
     if(!m_characterizing) {
-      m_pivotMotor.setVoltage(pivotFF + m_pivotFeedback);
+      m_pivotMotor.setVoltage((pivotFF + m_pivotFeedback));
       m_intakeMotor.set(m_intakeSpeed);
     }
 
@@ -186,9 +180,11 @@ public class IntakeSubsystem extends SubsystemBase{
       m_pivotState = m_pivotTarget;
     }
 
-    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
-    SmartDashboard.putNumber("Intake Pivot Setpoint", pivotAngle);
+    SmartDashboard.putNumber("Intake Pivot Rot", getPivotAngleDegrees() / 360);
+    SmartDashboard.putNumber("Intake Pivot Setpoint", targetPivotRot);
     SmartDashboard.putNumber("Intake Pivot Total Applied Voltage", pivotFF + m_pivotFeedback);
+    SmartDashboard.putNumber("Intake Pivot FF Applied Voltage", pivotFF);
+    SmartDashboard.putNumber("Intake Pivot PID Applied Voltage", m_pivotFeedback);
     // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
     
     
@@ -227,7 +223,7 @@ public class IntakeSubsystem extends SubsystemBase{
    * @param target The target state of the intake pivot
    * @return The target angle for the intake pivot
    */
-  private double pivotTargetToAngle(PivotState state) {
+  private double pivotTargetToDeg(PivotState state) {
     switch (state) {
       case GROUND:
         return IntakeConstants.kPivotAngleGround;
@@ -315,7 +311,13 @@ public class IntakeSubsystem extends SubsystemBase{
    * @param direction The direction (forward or reverse) to run the test in
    */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.quasistatic(direction).beforeStarting(() -> { m_characterizing = true; }, this).andThen(() -> { m_characterizing = false; });
+    return m_sysIdRoutine.quasistatic(direction)
+      .beforeStarting(() -> { 
+        m_characterizing = true; 
+      }, this)
+      .andThen(() -> { 
+        m_characterizing = false; 
+      });
   }
 
   /**
@@ -324,6 +326,12 @@ public class IntakeSubsystem extends SubsystemBase{
    * @param direction The direction (forward or reverse) to run the test in
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.dynamic(direction).beforeStarting(() -> { m_characterizing = true; }, this).andThen(() -> { m_characterizing = false; });
+    return m_sysIdRoutine.dynamic(direction)
+    .beforeStarting(() -> { 
+      m_characterizing = true; 
+    }, this)
+    .andThen(() -> { 
+      m_characterizing = false; 
+    });
   }
 }

@@ -134,10 +134,7 @@ public final class Constants {
 
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
-    public static final int kEverythingControllerPort = 2;
-    public static final int kSysIdPort = 3;
-
-    public static final boolean kUseEverythingController = false; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
+    public static final int kSysIdControllerPort = 3;
 
     public static final double kDriveDeadband = 0.05;
     
