@@ -14,7 +14,8 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
   private final ArmFeedforward m_pivotFF = new ArmFeedforward(IntakeConstants.kS, IntakeConstants.kG, IntakeConstants.kV, IntakeConstants.kA);
 
-  private final DutyCycleEncoder m_pivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderID);
+  private final DutyCycle m_pivotEncoder = new DutyCycle(new DigitalInput(IntakeConstants.kPivotEncoderID));
 
   private CANSparkMax m_intakeMotor;
   private CANSparkMax m_pivotMotor;
@@ -123,7 +124,6 @@ public class IntakeSubsystem extends SubsystemBase{
     m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
 
-    m_pivotEncoder.setPositionOffset(0.67);
   }
 
   /**
@@ -182,7 +182,7 @@ public class IntakeSubsystem extends SubsystemBase{
       m_pivotState = m_pivotTarget;
     }
 
-    SmartDashboard.putNumber("Intake Pivot Rot", m_pivotEncoder.get());
+    SmartDashboard.putNumber("Intake Pivot Rot", m_pivotEncoder.getOutput());
     SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
     SmartDashboard.putNumber("Intake Pivot Setpoint", targetPivotRot);
     SmartDashboard.putNumber("Intake Pivot Total Applied Voltage", pivotFF + m_pivotFeedback);
@@ -206,9 +206,19 @@ public class IntakeSubsystem extends SubsystemBase{
    * @return The angle of the intake pivot
    */
   private double getPivotAngleDegrees() {
-    return Units.rotationsToDegrees(
-      m_pivotEncoder.get()
-    );
+    return Units.rotationsToDegrees(getPivotRot());
+  }
+
+  private double getPivotRot(){
+    // assumes that stow is the zero position and positive rotation MUST be from stow to ground.
+
+    double encoderReading = m_pivotEncoder.getOutput();
+
+    if (encoderReading < IntakeConstants.kPivotStowRotRaw - 0.1){ // 0.1 is tolerance for extending beyond the hardstop
+      encoderReading++;
+    }
+    
+    return encoderReading - IntakeConstants.kPivotStowRotRaw;
   }
 
 

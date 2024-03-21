@@ -14,7 +14,7 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/IMU Angle Offset Chooser": "String Chooser",
-      "/SmartDashboard/Intake Pivot PID": "PIDController",
+      "/SmartDashboard/Intake Pivot PID": "ProfiledPIDController",
       "/SmartDashboard/Turn to Angle PID Controller": "PIDController",
       "/SmartDashboard/Zero Climbers": "Command",
       "/SmartDashboard/Zero Yaw": "Command"
