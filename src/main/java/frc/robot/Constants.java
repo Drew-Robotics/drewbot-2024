@@ -222,7 +222,6 @@ public final class Constants {
     public static final double kPivotAngleAmp = 100;
     public static final double kPivotAngleStow = 0;
 
-
     // negative is eject
     public static final double kIntakeSpeed = 0.5;
     public static final double kEjectSpeed = -0.5;

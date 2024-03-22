@@ -40,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
-  private final ArmFeedforward m_pivotFF = new ArmFeedforward(IntakeConstants.kS, IntakeConstants.kG, IntakeConstants.kV, IntakeConstants.kA);
+  private ArmFeedforward m_pivotFF = new ArmFeedforward(IntakeConstants.kS, IntakeConstants.kG, IntakeConstants.kV, IntakeConstants.kA);
 
   private final DutyCycle m_pivotEncoder = new DutyCycle(new DigitalInput(IntakeConstants.kPivotEncoderID));
 
@@ -124,6 +124,8 @@ public class IntakeSubsystem extends SubsystemBase{
     m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
 
+    SmartDashboard.putNumber("Pivot FF: kV", 0);
+    SmartDashboard.putNumber("Pivot FF: kG", 0);
   }
 
   /**
@@ -194,6 +196,10 @@ public class IntakeSubsystem extends SubsystemBase{
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
     
     SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
+
+    m_pivotFF = new ArmFeedforward(0, 
+    (double) SmartDashboard.getEntry("Pivot FF: kG").getValue().getValue(),
+    (double) SmartDashboard.getEntry("Pivot FF: kV").getValue().getValue());
 
     m_prevPivotPosRot = m_currentPivotPosRot;
   }
