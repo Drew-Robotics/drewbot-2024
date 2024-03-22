@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -127,7 +127,7 @@ public class MAXSwerveModule {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
 
-    SmartDashboard.putNumber(moduleName + " Measured Velocity", m_drivingEncoder.getVelocity());
+    // SmartDashboard.putNumber(moduleName + " Measured Velocity", m_drivingEncoder.getVelocity());
 
     return new SwerveModuleState(m_drivingEncoder.getVelocity(),
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
@@ -167,7 +167,7 @@ public class MAXSwerveModule {
 
     m_desiredState = desiredState;
 
-    SmartDashboard.putNumber(moduleName + " Commanded Velocity", optimizedDesiredState.speedMetersPerSecond);
+    // SmartDashboard.putNumber(moduleName + " Commanded Velocity", optimizedDesiredState.speedMetersPerSecond);
   }
 
   /** Zeroes all the SwerveModule encoders. */

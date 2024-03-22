@@ -1,10 +1,14 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.leds;
 
 import java.time.Period;
+import java.util.function.BooleanSupplier;
+import java.util.ArrayList;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.RainbowAnimation;
 
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -12,16 +16,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.Constants.LEDConstants;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class LEDSubsystem extends SubsystemBase{
   private final int LEDS_PER_ANIMATION = 30;
   private final CANdle m_candle = new CANdle(LEDConstants.CANdleID, "rio");
 
   private Animation m_toAnimate = null;
-  private LEDState m_LEDState = LEDState.NONE;
 
   private DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
@@ -30,14 +37,17 @@ public class LEDSubsystem extends SubsystemBase{
 
   private static LEDSubsystem m_instance;
 
-  Trigger shooterAmpTrigger = new Trigger(() -> m_shooter.getShooterState() == ShooterState.AMP);
-  Trigger shooterSpeakTrigger = new Trigger(() -> m_shooter.getShooterState() == ShooterState.SPEAKER);
 
-  Trigger intakeHasNoteTrigger = new Trigger(m_intake::hasNote);
-  Trigger intakeAmpTrigger = new Trigger(() -> m_intake.getPivotState() == PivotState.AMP);
-  Trigger intakeGroundTrigger = new Trigger(() -> m_intake.getPivotState() == PivotState.GROUND);
+  private ArrayList<LEDState> m_LEDStates = new ArrayList<LEDState>();
 
-  Trigger climbersUpTrigger = new Trigger(() -> m_climber.getClimberState() == ClimbersState.UP);
+  BooleanSupplier shooterAmpSupplier = () -> m_shooter.getShooterState() == ShooterState.AMP;
+  BooleanSupplier shooterSpeakSupplier = () -> m_shooter.getShooterState() == ShooterState.SPEAKER;
+
+  BooleanSupplier intakeHasNoteSupplier = m_intake::hasNote;
+  BooleanSupplier intakeAmpSupplier = () -> m_intake.getPivotState() == PivotState.AMP;
+  BooleanSupplier intakeGroundSupplier = () -> m_intake.getPivotState() == PivotState.GROUND;
+
+  BooleanSupplier climbersUpSupplier = () -> m_climber.getClimberState() == ClimbersState.UP;
   
   /**
    * Returns an instance of robot, this is an implementation of the singleton design pattern.
@@ -50,19 +60,8 @@ public class LEDSubsystem extends SubsystemBase{
     return m_instance;
   }
 
-
-  public enum LEDState { 
-    NONE,
-    HAS_NOTE,
-    NO_NOTE,
-    NOTE_RECENT,
-    INTAKE_AMP_SHOOT,
-    SHOOTER_SHOOT,
-    CLIMBING
-  }
-
   public LEDSubsystem() {
-
+    m_LEDStates.add(new LEDState(intakeHasNoteSupplier, new RainbowAnimation()));
   }
 
   public Command setLEDCommand() {
@@ -76,7 +75,24 @@ public class LEDSubsystem extends SubsystemBase{
   }
 
   @Override
-  public void periodic(){}
+  public void periodic(){
+    for (LEDState LEDstateI : m_LEDStates){
+      if (LEDstateI.isActive()){
+        if (m_toAnimate == LEDstateI.getAnimation()){
+          m_toAnimate = null;
+        } else{
+          m_toAnimate = LEDstateI.getAnimation();
+        }
+        continue;
+      } else{ 
+        m_toAnimate = null;
+      }
+    }
+
+    if (m_toAnimate != null){
+      m_candle.animate(m_toAnimate);
+    }
+  }
 
 
 }
