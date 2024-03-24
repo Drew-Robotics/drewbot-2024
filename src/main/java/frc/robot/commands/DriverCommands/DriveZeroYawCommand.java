@@ -5,7 +5,7 @@
 package frc.robot.commands.DriverCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class DriveZeroYawCommand extends Command {
   private final DriveSubsystem m_drive = DriveSubsystem.getInstance();

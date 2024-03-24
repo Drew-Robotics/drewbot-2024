@@ -64,6 +64,8 @@ public class IntakeSubsystem extends SubsystemBase{
   private double m_pivotVelRps = 0.0;
   private boolean m_characterizing = false;
 
+  private double m_targetRot = 0;
+
   // Create a PID controller whose setpoint's change is subject to maximum
   // velocity and acceleration constraints.
   private final TrapezoidProfile.Constraints m_constraints =
@@ -123,9 +125,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     m_pivotMotor.setSmartCurrentLimit(IntakeConstants.kPivotMotorSmartCurrentLimit);
     m_pivotMotor.setInverted(IntakeConstants.kPivotMotorInverted);
-
-    SmartDashboard.putNumber("Pivot FF: kV", 0);
-    SmartDashboard.putNumber("Pivot FF: kG", 0);
   }
 
   /**
@@ -158,6 +157,10 @@ public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - GENERIC FUNCTIONS - - - - - - - - - -
   
+  public void setTarget(double target){
+    m_targetRot = target;
+  }
+
   @Override
   public void periodic(){
     m_hasNote = getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
@@ -168,8 +171,9 @@ public class IntakeSubsystem extends SubsystemBase{
 
     // Pivot control
     double targetPivotRot = pivotTargetToDeg(m_pivotTarget) / 360;
+    // targetPivotRot = m_targetRot;
 
-    double pivotFF = m_pivotFF.calculate(targetPivotRot, 0);
+    double pivotFF = m_pivotFF.calculate(targetPivotRot * 2 * Math.PI, targetPivotRot - m_currentPivotPosRot);
     m_pivotFeedback = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
 
     // Intake control
@@ -184,22 +188,21 @@ public class IntakeSubsystem extends SubsystemBase{
       m_pivotState = m_pivotTarget;
     }
 
-    SmartDashboard.putNumber("Intake Pivot Rot", m_pivotEncoder.getOutput());
-    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
-    SmartDashboard.putNumber("Intake Pivot Setpoint", targetPivotRot);
     SmartDashboard.putNumber("Intake Pivot Total Applied Voltage", pivotFF + m_pivotFeedback);
     SmartDashboard.putNumber("Intake Pivot FF Applied Voltage", pivotFF);
     SmartDashboard.putNumber("Intake Pivot PID Applied Voltage", m_pivotFeedback);
-    // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
-    
+    SmartDashboard.putNumber("Intake Pivot Target", targetPivotRot);
+    SmartDashboard.putNumber("Intake Pivot Current", m_currentPivotPosRot);
+
+    SmartDashboard.putNumber("Intake Pivot FF kV", m_pivotFF.kv);
+    SmartDashboard.putNumber("Intake Pivot FF kG", m_pivotFF.kg);
+    SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
-    
-    SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
 
-    m_pivotFF = new ArmFeedforward(0, 
-    (double) SmartDashboard.getEntry("Pivot FF: kG").getValue().getValue(),
-    (double) SmartDashboard.getEntry("Pivot FF: kV").getValue().getValue());
+    // m_pivotFF = new ArmFeedforward(0, 
+    // (double) SmartDashboard.getEntry("Pivot FF: kG").getValue().getValue(),
+    // (double) SmartDashboard.getEntry("Pivot FF: kV").getValue().getValue());
 
     m_prevPivotPosRot = m_currentPivotPosRot;
   }

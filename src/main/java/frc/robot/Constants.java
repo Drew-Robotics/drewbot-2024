@@ -182,25 +182,25 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final double kS = 0.0;
-    public static final double kG = 0.0;
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
+    public static final double kS = 0;
+    public static final double kG = 0;
+    public static final double kV = 10;
+    public static final double kA = 0;
     
-    public static final double kPivotP = 1;
-    public static final double kPivotI = 0.3;
-    public static final double kPivotD = 0.1;
+    public static final double kPivotP = 5;
+    public static final double kPivotI = 10;
+    public static final double kPivotD = 0.3;
 
     public static final double kMaxVelocityRps = 1.0;
     public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kPivotPIDTolerance = 10;
+    public static final double kPivotPIDTolerance = 0.003;
 
-    public static final double kAmpPivotP = 0.5;
-    public static final double kAmpPivotI = 0;
-    public static final double kAmpPivotD = 0;
+    // public static final double kAmpPivotP = 0.5;
+    // public static final double kAmpPivotI = 0;
+    // public static final double kAmpPivotD = 0;
 
-    public static final double kAmpPivotPIDTolerance = 5;
+    // public static final double kAmpPivotPIDTolerance = 5;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -219,7 +219,7 @@ public final class Constants {
 
     public static final double kPivotAngleGround = 210;
     public static final double kPivotAngleSource = 100;
-    public static final double kPivotAngleAmp = 100;
+    public static final double kPivotAngleAmp = 80;
     public static final double kPivotAngleStow = 0;
 
     // negative is eject
@@ -227,7 +227,7 @@ public final class Constants {
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedSpeakerShooterSpeed = -1;
     public static final double kFeedAmpShooterSpeed = -1;
-    public static final double kAmpSpeed = -0.7;
+    public static final double kAmpSpeed = -0.5;
     public static final double kIntakeHoldSpeed = 0.1;
 
     public static final int kIntakeDefaultAmps = 40;

@@ -25,18 +25,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
-
+import frc.robot.subsystems.leds.LEDSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DriverCommands.DriveCommand;
 import frc.robot.commands.DriverCommands.DriveStopCommand;
@@ -52,7 +52,6 @@ import frc.robot.controllers.DriverController;
 import frc.robot.controllers.OperatorController;
 
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -112,7 +111,6 @@ public class RobotContainer {
       )
     );
 
-
     // Intake
     NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
     NamedCommands.registerCommand("intakeEject", new IntakeEjectCommand());
@@ -134,7 +132,6 @@ public class RobotContainer {
     configureOperatorCommands();
     autoChooser = AutoBuilder.buildAutoChooser("Default Auto");
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
@@ -187,15 +184,15 @@ public class RobotContainer {
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
 
     // Shooter Amp Shoot
-    m_operatorController.getShooterAmpTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.AMP));
+    // m_operatorController.getShooterAmpTrigger()
+    //   .onTrue(new ShooterRevCommand(ShooterState.AMP));
 
-    m_operatorController.getShooterAmpTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.AMP));
+    // m_operatorController.getShooterAmpTrigger()
+    //   .onFalse(new ShooterShootCommand(ShooterState.AMP));
 
     // Intake Amp Shoot
-    // m_operatorController.getIntakeAmpTrigger()
-    //   .onTrue(new IntakeAmpShootCommand());
+    m_operatorController.getIntakeAmpTrigger()
+      .onTrue(new IntakeAmpShootCommand());
 
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger()
@@ -218,6 +215,17 @@ public class RobotContainer {
     m_operatorController.getIntakePivotStowTrigger()
       .onTrue(IntakeSubsystem.pivotCommand(PivotState.STOW));
 
+      SmartDashboard.putData("Pivot Ground", IntakeSubsystem.pivotCommand(PivotState.GROUND));
+      SmartDashboard.putData("Pivot Amp", IntakeSubsystem.pivotCommand(PivotState.AMP));
+      SmartDashboard.putData("Pivot Stow", IntakeSubsystem.pivotCommand(PivotState.STOW));
+
+    m_intake.setDefaultCommand(new RunCommand(() -> {
+      m_intake.setTarget(
+        (m_operatorController.getLeftX() + 1)/2 * IntakeConstants.kPivotAngleGround/360
+      );
+    
+    }, m_intake));
+
     // Climber
     SmartDashboard.putData(
       "Zero Climbers", 
@@ -226,6 +234,7 @@ public class RobotContainer {
         m_climber
       )
     );
+
 
     m_operatorController.getClimberUpTrigger()
       .onTrue(ClimberSubsystem.climberCommand(ClimbersState.UP));
