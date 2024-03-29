@@ -111,8 +111,8 @@ public class ClimberSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Climber Left Target", m_leftClimberTargetPos);
     // SmartDashboard.putNumber("Climber Right Target", m_rightClimberTargetPos);
 
-    // SmartDashboard.putNumber("Climber Left Encoder", getLeftEncoderPos());
-    // SmartDashboard.putNumber("Climber Right Encoder", getRightEncoderPos());
+    SmartDashboard.putNumber("Climber Left Encoder", getLeftEncoderPos());
+    SmartDashboard.putNumber("Climber Right Encoder", getRightEncoderPos());
 
     // SmartDashboard.putNumber("Climber Left Speed", leftSpeed);
     // SmartDashboard.putNumber("Climber Right Speed", rightSpeed);

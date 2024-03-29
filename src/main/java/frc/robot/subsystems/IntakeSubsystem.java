@@ -40,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
-  private ArmFeedforward m_pivotFF = new ArmFeedforward(IntakeConstants.kS, IntakeConstants.kG, IntakeConstants.kV, IntakeConstants.kA);
+  // private ArmFeedforward m_pivotFF = new ArmFeedforward(IntakeConstants.kS, IntakeConstants.kG, IntakeConstants.kV, IntakeConstants.kA);
 
   private final DutyCycle m_pivotEncoder = new DutyCycle(new DigitalInput(IntakeConstants.kPivotEncoderID));
 
@@ -57,7 +57,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
   private boolean m_hasNote = false;
 
-  private double m_pivotFeedback = 0.0;
+  private double m_pivotVoltage = 0.0;
   private double m_intakeSpeed = 0.0;
   private double m_currentPivotPosRot = 0.0;
   private double m_prevPivotPosRot = 0.0;
@@ -72,6 +72,8 @@ public class IntakeSubsystem extends SubsystemBase{
       new TrapezoidProfile.Constraints(IntakeConstants.kMaxVelocityRps, IntakeConstants.kMaxAccelerationRpsps);
   private final ProfiledPIDController m_pivotPID =
       new ProfiledPIDController(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD, m_constraints, TimedRobot.kDefaultPeriod);
+  private final ProfiledPIDController m_pivotAmpPID =
+      new ProfiledPIDController(IntakeConstants.kAmpPivotP, IntakeConstants.kAmpPivotI, IntakeConstants.kAmpPivotD, m_constraints, TimedRobot.kDefaultPeriod);
 
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -173,29 +175,32 @@ public class IntakeSubsystem extends SubsystemBase{
     double targetPivotRot = pivotTargetToDeg(m_pivotTarget) / 360;
     // targetPivotRot = m_targetRot;
 
-    double pivotFF = m_pivotFF.calculate(targetPivotRot * 2 * Math.PI, targetPivotRot - m_currentPivotPosRot);
-    m_pivotFeedback = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
+    // double pivotFF = m_pivotFF.calculate(targetPivotRot * 2 * Math.PI, targetPivotRot - m_currentPivotPosRot);
+    double pivotNonAmpVoltage = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
+    double pivotAmpVoltage = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
+
+    m_pivotVoltage = (m_pivotTarget == PivotState.AMP) ? pivotAmpVoltage : pivotNonAmpVoltage;
 
     // Intake control
     m_intakeSpeed = (intakeStateToSpeed(m_intakeState));
 
     if(!m_characterizing) {
-      m_pivotMotor.setVoltage((pivotFF + m_pivotFeedback));
+      m_pivotMotor.setVoltage((m_pivotVoltage));
       m_intakeMotor.set(m_intakeSpeed);
     }
 
-    if (m_pivotPID.atSetpoint()){
-      m_pivotState = m_pivotTarget;
+    if (m_pivotTarget == PivotState.AMP){
+      m_pivotState = m_pivotAmpPID.atSetpoint() ? m_pivotTarget : m_pivotState;
+    } else{
+      m_pivotState = m_pivotPID.atSetpoint() ? m_pivotTarget : m_pivotState;
     }
 
-    SmartDashboard.putNumber("Intake Pivot Total Applied Voltage", pivotFF + m_pivotFeedback);
-    SmartDashboard.putNumber("Intake Pivot FF Applied Voltage", pivotFF);
-    SmartDashboard.putNumber("Intake Pivot PID Applied Voltage", m_pivotFeedback);
-    SmartDashboard.putNumber("Intake Pivot Target", targetPivotRot);
-    SmartDashboard.putNumber("Intake Pivot Current", m_currentPivotPosRot);
 
-    SmartDashboard.putNumber("Intake Pivot FF kV", m_pivotFF.kv);
-    SmartDashboard.putNumber("Intake Pivot FF kG", m_pivotFF.kg);
+    SmartDashboard.putNumber("Intake Pivot Target", targetPivotRot);
+    SmartDashboard.putString("Intake Pivot State", m_pivotState.toString());
+    SmartDashboard.putBoolean("Intake Pivot At Setpoint", m_pivotPID.atSetpoint());
+    SmartDashboard.putBoolean("Intake Amp Pivot At Setpoint", m_pivotAmpPID.atSetpoint());
+
     SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());

@@ -186,21 +186,21 @@ public final class Constants {
     public static final double kG = 0;
     public static final double kV = 10;
     public static final double kA = 0;
-    
-    public static final double kPivotP = 5;
-    public static final double kPivotI = 10;
-    public static final double kPivotD = 0.3;
 
     public static final double kMaxVelocityRps = 1.0;
     public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kPivotPIDTolerance = 0.003;
+    public static final double kPivotP = 35;
+    public static final double kPivotI = 10;
+    public static final double kPivotD = 3.5;
 
-    // public static final double kAmpPivotP = 0.5;
-    // public static final double kAmpPivotI = 0;
-    // public static final double kAmpPivotD = 0;
+    public static final double kPivotPIDTolerance = 10d / 360d;
 
-    // public static final double kAmpPivotPIDTolerance = 5;
+    public static final double kAmpPivotP = 15;
+    public static final double kAmpPivotI = 30;
+    public static final double kAmpPivotD = 0.15;
+
+    public static final double kAmpPivotPIDTolerance =  1d / 360d;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -264,14 +264,14 @@ public final class Constants {
     // Gear Ratio
     // public static final double kClimberGearRatio = 1d / 12d;
 
-    public static final double kRotationsToUpLeft = 55;
-    public static final double kRotationsToUpRight = 55;
+    public static final double kRotationsToUpLeft = 66;
+    public static final double kRotationsToUpRight = 66;
 
     public static final double kTiltRPM = 20;
     
   }
 
   public static final class LEDConstants { 
-    public static final int CANdleID = -1;
+    public static final int CANdleID = 50;
   }
 }
