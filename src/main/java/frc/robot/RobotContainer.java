@@ -27,7 +27,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
-
+import frc.robot.subsystems.AmpBarSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -70,6 +70,7 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
   private final IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
   private final ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
+  private final AmpBarSubsystem m_ampBar = AmpBarSubsystem.getInstance();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -184,15 +185,15 @@ public class RobotContainer {
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
 
     // Shooter Amp Shoot
-    // m_operatorController.getShooterAmpTrigger()
-    //   .onTrue(new ShooterRevCommand(ShooterState.AMP));
+    m_operatorController.getShooterAmpTrigger()
+      .onTrue(new ShooterRevCommand(ShooterState.AMP).alongWith(m_ampBar.DeployAmpBar()));
 
-    // m_operatorController.getShooterAmpTrigger()
-    //   .onFalse(new ShooterShootCommand(ShooterState.AMP));
+    m_operatorController.getShooterAmpTrigger()
+      .onFalse(new ShooterShootCommand(ShooterState.AMP).andThen(m_ampBar.StowAmpBar()));
 
     // Intake Amp Shoot
-    m_operatorController.getIntakeAmpTrigger()
-      .onTrue(new IntakeAmpShootCommand());
+    // m_operatorController.getIntakeAmpTrigger()
+    //   .onTrue(new IntakeAmpShootCommand());
 
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger()

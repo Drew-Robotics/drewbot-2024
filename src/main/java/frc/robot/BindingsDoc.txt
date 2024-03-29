@@ -4,11 +4,13 @@ LT: Shoot to amp ()
   On press:
     Intake pivot to stow position
     Shooter motors rev to amp shoot speed
+    Amp bar to deploy position
   On release:
     Intake feed to shooter
   On small delay:
     Shooter off
     Intake speed off
+    Amp bar to stow position
 
 RT: Shoot to speaker ()
   On press:

@@ -274,4 +274,16 @@ public final class Constants {
   public static final class LEDConstants { 
     public static final int CANdleID = -1;
   }
+
+  public static final class AmpBarConstants {
+    public static final int kAmpBarPivotSparkCANId = 25;
+    public static final boolean kAmpSparkInverted = false;
+    public static final double kAmpBarGearReduction = 100;
+    public static final double kAmpBarStowAngleRadians = 0;
+    public static final double kAmpBarOutAngleRadians = 1.22173;
+    public static final double kAmpBarAllowableError = 0.0349066; //2 deg
+    public static final double kAmpBarP = 1;
+    public static final double kAmpBarI = 0;
+    public static final double kAmpBarD = 0;
+  }
 }
