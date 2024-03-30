@@ -27,7 +27,6 @@ import frc.robot.subsystems.ShooterSubsystem.ShooterState;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class LEDSubsystem extends SubsystemBase{
-  private final int LEDS_PER_ANIMATION = 30;
   private final CANdle m_candle = new CANdle(LEDConstants.CANdleID, "rio");
 
   // private Animation m_toAnimate = null;

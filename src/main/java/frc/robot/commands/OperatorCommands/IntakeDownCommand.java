@@ -31,7 +31,7 @@ public class IntakeDownCommand extends SequentialCommandGroup {
         m_operatorController.intakeRumbleCommand().withTimeout(0.3),
 
         new SequentialCommandGroup(
-          new WaitCommand(0),
+          new WaitCommand(0.25),
           IntakeSubsystem.stateCommand(IntakeState.NONE),
           IntakeSubsystem.pivotCommand(PivotState.STOW)
         )

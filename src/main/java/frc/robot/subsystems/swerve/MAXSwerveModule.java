@@ -127,7 +127,7 @@ public class MAXSwerveModule {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
 
-    // SmartDashboard.putNumber(moduleName + " Measured Velocity", m_drivingEncoder.getVelocity());
+    SmartDashboard.putNumber(moduleName + " Measured Velocity", m_drivingEncoder.getVelocity());
 
     return new SwerveModuleState(m_drivingEncoder.getVelocity(),
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
@@ -167,7 +167,7 @@ public class MAXSwerveModule {
 
     m_desiredState = desiredState;
 
-    // SmartDashboard.putNumber(moduleName + " Commanded Velocity", optimizedDesiredState.speedMetersPerSecond);
+    SmartDashboard.putNumber(moduleName + " Commanded Velocity", optimizedDesiredState.speedMetersPerSecond);
   }
 
   /** Zeroes all the SwerveModule encoders. */
