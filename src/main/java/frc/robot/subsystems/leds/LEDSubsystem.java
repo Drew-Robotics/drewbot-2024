@@ -67,7 +67,6 @@ public class LEDSubsystem extends SubsystemBase{
   }
 
   public LEDSubsystem() {
-
     m_LEDStates.add(new LEDState(shooterSpeakerShootingSupplier, 255, 0, 0));
     m_LEDStates.add(new LEDState(shooterSpeakSupplier, 100, 0, 100));
 

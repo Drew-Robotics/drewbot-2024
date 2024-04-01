@@ -40,7 +40,7 @@ public class LEDState {
   public LEDState(BooleanSupplier isActive, Animation animation){
     m_isActive = isActive;
 
-    m_ledStateType = LEDStateType.COLOR;
+    m_ledStateType = LEDStateType.ANIMATION;
     m_Animation = animation;
   }
 
