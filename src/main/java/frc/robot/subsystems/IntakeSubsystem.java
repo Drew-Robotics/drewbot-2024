@@ -1,14 +1,33 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.lang.Math;
+import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 
 import edu.wpi.first.math.util.Units;
 
@@ -21,19 +40,9 @@ public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
-  private final PIDController m_pivotPID = new PIDController(
-    IntakeConstants.kPivotP, 
-    IntakeConstants.kPivotI, 
-    IntakeConstants.kPivotD
-  );
+  // private ArmFeedforward m_pivotFF = new ArmFeedforward(IntakeConstants.kS, IntakeConstants.kG, IntakeConstants.kV, IntakeConstants.kA);
 
-  private final PIDController m_ampPivotPID = new PIDController(
-    IntakeConstants.kAmpPivotP, 
-    IntakeConstants.kAmpPivotI, 
-    IntakeConstants.kAmpPivotD
-  );
-  
-  private final DutyCycleEncoder m_pivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderID);
+  private final DutyCycle m_pivotEncoder = new DutyCycle(new DigitalInput(IntakeConstants.kPivotEncoderID));
 
   private CANSparkMax m_intakeMotor;
   private CANSparkMax m_pivotMotor;
@@ -46,17 +55,61 @@ public class IntakeSubsystem extends SubsystemBase{
   private PivotState m_pivotState = PivotState.NONE;
   private IntakeState m_intakeState = IntakeState.NONE;
 
-  private double m_pivotSpeed = 0.0;
-  private double m_intakeSpeed = 0.0;
-
   private boolean m_hasNote = false;
+
+  private double m_pivotVoltage = 0.0;
+  private double m_intakeSpeed = 0.0;
+  private double m_currentPivotPosRot = 0.0;
+  private double m_prevPivotPosRot = 0.0;
+  private double m_pivotVelRps = 0.0;
+  private boolean m_characterizing = false;
+
+  private double m_targetRot = 0;
+
+  // Create a PID controller whose setpoint's change is subject to maximum
+  // velocity and acceleration constraints.
+  private final TrapezoidProfile.Constraints m_constraints =
+      new TrapezoidProfile.Constraints(IntakeConstants.kMaxVelocityRps, IntakeConstants.kMaxAccelerationRpsps);
+  private final ProfiledPIDController m_pivotPID =
+      new ProfiledPIDController(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD, m_constraints, TimedRobot.kDefaultPeriod);
+  private final ProfiledPIDController m_pivotAmpPID =
+      new ProfiledPIDController(IntakeConstants.kAmpPivotP, IntakeConstants.kAmpPivotI, IntakeConstants.kAmpPivotD, m_constraints, TimedRobot.kDefaultPeriod);
+
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+
+  // Create a new SysId routine for characterizing the shooter.
+  private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              (Measure<Voltage> volts) -> {
+                m_pivotMotor.setVoltage(volts.in(Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("pivot-motor")
+                    .voltage(m_appliedVoltage.mut_replace(m_pivotMotor.getAppliedOutput() * m_pivotMotor.getBusVoltage(), Volts))
+                    .angularPosition(m_angle.mut_replace(m_currentPivotPosRot, Rotations))
+                    .angularVelocity(m_velocity.mut_replace(m_pivotVelRps, RotationsPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("intake")
+              this));
 
   /**
    * Constructor.
    */
   private IntakeSubsystem() {
     m_pivotPID.setTolerance(IntakeConstants.kPivotPIDTolerance);
-    m_ampPivotPID.setTolerance(IntakeConstants.kAmpPivotPIDTolerance);
 
     // Intake Motor
     m_intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorID, MotorType.kBrushless);
@@ -106,38 +159,57 @@ public class IntakeSubsystem extends SubsystemBase{
 
   // - - - - - - - - - - GENERIC FUNCTIONS - - - - - - - - - -
   
+  public void setTarget(double target){
+    m_targetRot = target;
+  }
+
   @Override
   public void periodic(){
-
     m_hasNote = getTimeOfFlightRange() < IntakeConstants.kNoteIntakedSensorValue;
 
-    // Pivot control
-    double pivotAngle = pivotTargetToAngle(m_pivotTarget);
-    m_pivotSpeed = m_pivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/100;
+    m_currentPivotPosRot = getPivotAngleDegrees() / 360.0;
+    m_pivotVelRps = (m_currentPivotPosRot - m_prevPivotPosRot) / TimedRobot.kDefaultPeriod;
+    
 
-    if (m_pivotTarget == PivotState.AMP){
-      m_pivotSpeed = m_ampPivotPID.calculate(getPivotAngleDegrees(), pivotAngle)/50 ;
-    }
+    // Pivot control
+    double targetPivotRot = pivotTargetToDeg(m_pivotTarget) / 360;
+    // targetPivotRot = m_targetRot;
+
+    // double pivotFF = m_pivotFF.calculate(targetPivotRot * 2 * Math.PI, targetPivotRot - m_currentPivotPosRot);
+    double pivotNonAmpVoltage = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
+    double pivotAmpVoltage = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
+
+    m_pivotVoltage = (m_pivotTarget == PivotState.AMP) ? pivotAmpVoltage : pivotNonAmpVoltage;
 
     // Intake control
     m_intakeSpeed = (intakeStateToSpeed(m_intakeState));
 
-
-    m_pivotMotor.set(m_pivotSpeed);
-    m_intakeMotor.set(m_intakeSpeed);
-
-    if (m_pivotPID.atSetpoint()){
-      m_pivotState = m_pivotTarget;
+    if(!m_characterizing) {
+      m_pivotMotor.setVoltage((m_pivotVoltage));
+      m_intakeMotor.set(m_intakeSpeed);
     }
 
-    SmartDashboard.putNumber("Intake Pivot Angle", getPivotAngleDegrees());
-    SmartDashboard.putNumber("Intake Pivot Target", pivotAngle);
-    SmartDashboard.putNumber("Intake Pivot Voltage", m_pivotSpeed);
-    // SmartDashboard.putString("Intake Pivot State", m_intakeState.toString());
+    if (m_pivotTarget == PivotState.AMP){
+      m_pivotState = m_pivotAmpPID.atSetpoint() ? m_pivotTarget : m_pivotState;
+    } else{
+      m_pivotState = m_pivotPID.atSetpoint() ? m_pivotTarget : m_pivotState;
+    }
+
+
+    SmartDashboard.putNumber("Intake Pivot Target", targetPivotRot);
+    SmartDashboard.putString("Intake Pivot State", m_pivotState.toString());
+    SmartDashboard.putBoolean("Intake Pivot At Setpoint", m_pivotPID.atSetpoint());
+    SmartDashboard.putBoolean("Intake Amp Pivot At Setpoint", m_pivotAmpPID.atSetpoint());
+
+    SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
-    
-    SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
+
+    // m_pivotFF = new ArmFeedforward(0, 
+    // (double) SmartDashboard.getEntry("Pivot FF: kG").getValue().getValue(),
+    // (double) SmartDashboard.getEntry("Pivot FF: kV").getValue().getValue());
+
+    m_prevPivotPosRot = m_currentPivotPosRot;
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
@@ -148,19 +220,21 @@ public class IntakeSubsystem extends SubsystemBase{
    * @return The angle of the intake pivot
    */
   private double getPivotAngleDegrees() {
-    double value = m_pivotEncoder.getAbsolutePosition();
-
-    value = reshiftAngle(Units.rotationsToDegrees(value%1>0?value%1:value%1+1));
-    return value;
+    return Units.rotationsToDegrees(getPivotRot());
   }
 
-  private double reshiftAngle(double angle){
-    angle -= IntakeConstants.kPivotEncoderZero;
-    while (angle < 0){
-      angle += 360;
+  private double getPivotRot(){
+    // assumes that stow is the zero position and positive rotation MUST be from stow to ground.
+
+    double encoderReading = m_pivotEncoder.getOutput();
+
+    if (encoderReading < IntakeConstants.kPivotStowRotRaw - 0.1){ // 0.1 is tolerance for extending beyond the hardstop
+      encoderReading++;
     }
-    return angle;
+    
+    return encoderReading - IntakeConstants.kPivotStowRotRaw;
   }
+
 
   /**
    * Converts PivotTarget enum to a target angle for the intake.
@@ -168,7 +242,7 @@ public class IntakeSubsystem extends SubsystemBase{
    * @param target The target state of the intake pivot
    * @return The target angle for the intake pivot
    */
-  private double pivotTargetToAngle(PivotState state) {
+  private double pivotTargetToDeg(PivotState state) {
     switch (state) {
       case GROUND:
         return IntakeConstants.kPivotAngleGround;
@@ -248,5 +322,35 @@ public class IntakeSubsystem extends SubsystemBase{
       () -> m_instance.setIntakeState(state),
       m_instance
     ).withTimeout(0);
+  }
+
+  /**
+   * Returns a command that will execute a quasistatic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction)
+      .beforeStarting(() -> { 
+        m_characterizing = true; 
+      }, this)
+      .andThen(() -> { 
+        m_characterizing = false; 
+      });
+  }
+
+  /**
+   * Returns a command that will execute a dynamic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction)
+    .beforeStarting(() -> { 
+      m_characterizing = true; 
+    }, this)
+    .andThen(() -> { 
+      m_characterizing = false; 
+    });
   }
 }

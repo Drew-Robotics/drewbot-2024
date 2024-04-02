@@ -12,7 +12,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -22,18 +25,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
-
+import frc.robot.subsystems.leds.LEDSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DriverCommands.DriveCommand;
 import frc.robot.commands.DriverCommands.DriveStopCommand;
@@ -49,9 +52,9 @@ import frc.robot.controllers.DriverController;
 import frc.robot.controllers.OperatorController;
 
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.leds.LEDSubsystem;;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -68,13 +71,16 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
   private final IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
   private final ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
+  private final LEDSubsystem m_led = LEDSubsystem.getInstance();
 
   private final SendableChooser<Command> autoChooser;
 
   DriverController m_driverController = DriverController.getIntance();
   OperatorController m_operatorController = OperatorController.getIntance();
+  CommandXboxController m_sysidController = new CommandXboxController(OIConstants.kSysIdControllerPort);
 
-  List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController);
+
+  List<CommandXboxController> m_controllers = Arrays.asList(m_driverController, m_operatorController, m_sysidController);
 
   private static RobotContainer m_instance;
 
@@ -89,7 +95,7 @@ public class RobotContainer {
     return m_instance;
   }
 
-  
+
   /**
    * Constructor.
    */
@@ -106,7 +112,6 @@ public class RobotContainer {
       () -> m_drive.drive(0,0,0,false,false)
       )
     );
-
 
     // Intake
     NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
@@ -129,7 +134,6 @@ public class RobotContainer {
     configureOperatorCommands();
     autoChooser = AutoBuilder.buildAutoChooser("Default Auto");
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
@@ -153,6 +157,23 @@ public class RobotContainer {
     SmartDashboard.putData("Zero Yaw", new DriveZeroYawCommand());
     m_driverController.getTurnToZeroButton().whileTrue(new DriveTurnToAngleCommand(0));
     m_driverController.getStopButton().onTrue(new DriveStopCommand());
+
+    m_sysidController
+        .a()
+        .and(m_sysidController.leftBumper())
+        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_sysidController
+        .b()
+        .and(m_sysidController.leftBumper())
+        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_sysidController
+        .x()
+        .and(m_sysidController.leftBumper())
+        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_sysidController
+        .y()
+        .and(m_sysidController.leftBumper())
+        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   private void configureOperatorCommands(){
@@ -165,15 +186,15 @@ public class RobotContainer {
       .onFalse(new ShooterShootCommand(ShooterState.SPEAKER));
 
     // Shooter Amp Shoot
-    m_operatorController.getShooterAmpTrigger()
-      .onTrue(new ShooterRevCommand(ShooterState.AMP));
+    // m_operatorController.getShooterAmpTrigger()
+    //   .onTrue(new ShooterRevCommand(ShooterState.AMP));
 
-    m_operatorController.getShooterAmpTrigger()
-      .onFalse(new ShooterShootCommand(ShooterState.AMP));
+    // m_operatorController.getShooterAmpTrigger()
+    //   .onFalse(new ShooterShootCommand(ShooterState.AMP));
 
     // Intake Amp Shoot
-    // m_operatorController.getIntakeAmpTrigger()
-    //   .onTrue(new IntakeAmpShootCommand());
+    m_operatorController.getIntakeAmpTrigger()
+      .onTrue(new IntakeAmpShootCommand());
 
     // Intake
     m_operatorController.getIntakeDetectNoteTrigger()
@@ -196,6 +217,17 @@ public class RobotContainer {
     m_operatorController.getIntakePivotStowTrigger()
       .onTrue(IntakeSubsystem.pivotCommand(PivotState.STOW));
 
+      SmartDashboard.putData("Pivot Ground", IntakeSubsystem.pivotCommand(PivotState.GROUND));
+      SmartDashboard.putData("Pivot Amp", IntakeSubsystem.pivotCommand(PivotState.AMP));
+      SmartDashboard.putData("Pivot Stow", IntakeSubsystem.pivotCommand(PivotState.STOW));
+
+    m_intake.setDefaultCommand(new RunCommand(() -> {
+      m_intake.setTarget(
+        (m_operatorController.getLeftX() + 1)/2 * IntakeConstants.kPivotAngleGround/360
+      );
+    
+    }, m_intake));
+
     // Climber
     SmartDashboard.putData(
       "Zero Climbers", 
@@ -204,6 +236,7 @@ public class RobotContainer {
         m_climber
       )
     );
+
 
     m_operatorController.getClimberUpTrigger()
       .onTrue(ClimberSubsystem.climberCommand(ClimbersState.UP));

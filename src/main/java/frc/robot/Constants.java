@@ -93,7 +93,7 @@ public final class Constants {
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
@@ -115,7 +115,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 2;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -134,9 +134,7 @@ public final class Constants {
 
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
-    public static final int kEverythingControllerPort = 2;
-
-    public static final boolean kUseEverythingController = false; // MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED, MAKE SURE THIS IS CHANGED.
+    public static final int kSysIdControllerPort = 3;
 
     public static final double kDriveDeadband = 0.05;
     
@@ -184,17 +182,25 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final double kPivotP = 0.5;
-    public static final double kPivotI = 0.25;
-    public static final double kPivotD = 0.05;
+    public static final double kS = 0;
+    public static final double kG = 0;
+    public static final double kV = 10;
+    public static final double kA = 0;
 
-    public static final double kPivotPIDTolerance = 10;
+    public static final double kMaxVelocityRps = 1.0;
+    public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kAmpPivotP = 0.25;
-    public static final double kAmpPivotI = 0;
-    public static final double kAmpPivotD = 0;
+    public static final double kPivotP = 45;
+    public static final double kPivotI = 25;
+    public static final double kPivotD = 3.5;
 
-    public static final double kAmpPivotPIDTolerance = 5;
+    public static final double kPivotPIDTolerance = 10d / 360d;
+
+    public static final double kAmpPivotP = 15;
+    public static final double kAmpPivotI = 30;
+    public static final double kAmpPivotD = 0.15;
+
+    public static final double kAmpPivotPIDTolerance =  1d / 360d;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -207,22 +213,21 @@ public final class Constants {
 
     public static final int kPivotEncoderID = 0;
 
-    public static final double kPivotEncoderZero = 200;
-
+    public static final double kPivotStowRotRaw = 0.67; // rotations
+    
     // This is any point that the robot can't reach.
 
-    public static final double kPivotAngleGround = 250;
-    public static final double kPivotAngleSource = 130;
-    public static final double kPivotAngleAmp = 130;
-    public static final double kPivotAngleStow = 40;
-
+    public static final double kPivotAngleGround = 210;
+    public static final double kPivotAngleSource = 100;
+    public static final double kPivotAngleAmp = 80;
+    public static final double kPivotAngleStow = 0;
 
     // negative is eject
     public static final double kIntakeSpeed = 0.5;
     public static final double kEjectSpeed = -0.5;
     public static final double kFeedSpeakerShooterSpeed = -1;
     public static final double kFeedAmpShooterSpeed = -1;
-    public static final double kAmpSpeed = -0.7;
+    public static final double kAmpSpeed = -0.5;
     public static final double kIntakeHoldSpeed = 0.1;
 
     public static final int kIntakeDefaultAmps = 40;
@@ -259,14 +264,14 @@ public final class Constants {
     // Gear Ratio
     // public static final double kClimberGearRatio = 1d / 12d;
 
-    public static final double kRotationsToUpLeft = 55;
-    public static final double kRotationsToUpRight = 55;
+    public static final double kRotationsToUpLeft = 66;
+    public static final double kRotationsToUpRight = 66;
 
     public static final double kTiltRPM = 20;
     
   }
 
   public static final class LEDConstants { 
-    public static final int CANdleID = -1;
+    public static final int CANdleID = 50;
   }
 }
