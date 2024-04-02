@@ -67,13 +67,13 @@ public class LEDSubsystem extends SubsystemBase{
   }
 
   public LEDSubsystem() {
-    m_LEDStates.add(new LEDState(shooterSpeakerShootingSupplier, 255, 0, 0));
-    m_LEDStates.add(new LEDState(shooterSpeakSupplier, 100, 0, 100));
+    m_LEDStates.add(new LEDState(shooterSpeakerShootingSupplier, 231, 130, 132));
+    m_LEDStates.add(new LEDState(shooterSpeakSupplier, 186, 187, 241));
 
-    m_LEDStates.add(new LEDState(intakeHasNoteSupplier, 0, 255, 255));
+    m_LEDStates.add(new LEDState(intakeHasNoteSupplier, 129, 200, 190));
 
-    m_LEDStates.add(new LEDState(climbersUpSupplier, 255, 0, 255));
-    m_LEDStates.add(new LEDState(trueSupplier, 0, 255, 0));
+    m_LEDStates.add(new LEDState(climbersUpSupplier, 202, 158, 230));
+    m_LEDStates.add(new LEDState(trueSupplier, 166, 209, 137));
   }
 
   public Command setLEDCommand() {
