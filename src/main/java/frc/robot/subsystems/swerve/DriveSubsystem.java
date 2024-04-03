@@ -6,6 +6,7 @@ package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +26,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Volts;
 
 
@@ -87,6 +90,17 @@ public class DriveSubsystem extends SubsystemBase {
       }
   );
 
+  SwerveDrivePoseEstimator m_PoseEstimator = new SwerveDrivePoseEstimator(
+    DriveConstants.kDriveKinematics, 
+    Rotation2d.fromDegrees(getAngle()), 
+    new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+      }, 
+    getPose());
+
   SendableChooser<Double> m_offsetChooser = new SendableChooser<Double>();
 
   /** 
@@ -101,7 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
-      this::getPose, // Robot pose supplier
+      this::getEstimPose, // Robot pose supplier
       this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
       this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -161,6 +175,15 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
+    m_PoseEstimator.update(
+      Rotation2d.fromRotations(getAngle()),
+      new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
   }
 
   // - - - - - - - - - - PUBLIC FUNCTIONS - - - - - - - - - -
@@ -172,6 +195,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+  }
+
+  public Pose2d getEstimPose() {
+    return m_PoseEstimator.getEstimatedPosition();
   }
 
 
@@ -272,6 +299,16 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(
+      Rotation2d.fromDegrees(getAngle()),
+      new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+      },
+      pose
+    );
+    m_PoseEstimator.resetPosition(
       Rotation2d.fromDegrees(getAngle()),
       new SwerveModulePosition[] {
         m_frontLeft.getPosition(),
