@@ -67,12 +67,13 @@ public class RobotContainer {
   // - - - - - - - - - - FIELDS AND CONSTRUCTORS - - - - - - - - - -
 
   // The robot's subsystems
-  private final DriveSubsystem m_drive = DriveSubsystem.getInstance();
+  public final DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private final ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
   private final IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
   private final ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
   private final AmpBarSubsystem m_ampBar = AmpBarSubsystem.getInstance();
   private final LEDSubsystem m_led = LEDSubsystem.getInstance();
+  public final Vision m_vision;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -101,6 +102,8 @@ public class RobotContainer {
    * Constructor.
    */
   private RobotContainer(){
+
+    m_vision = new Vision();
 
     NamedCommands.registerCommand("zeroYaw", new DriveZeroYawCommand());
  

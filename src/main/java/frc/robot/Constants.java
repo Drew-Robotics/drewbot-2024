@@ -7,8 +7,17 @@ package frc.robot;
 import com.ctre.phoenix.led.CANdle;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -285,5 +294,22 @@ public final class Constants {
     public static final double kAmpBarP = 1;
     public static final double kAmpBarI = 0;
     public static final double kAmpBarD = 0;
+  }
+
+  public static final class VisionConstants {
+    public static final AprilTagFieldLayout LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
+
+    public static final String FL_CAM_NAME = "str_fl_cam";
+    public static final String FR_CAM_NAME = "str_fr_cam";
+    public static final String BL_CAM_NAME = "str_bl_cam";
+    public static final String BR_CAM_NAME = "str_br_cam";
+
+    public static final Transform3d flRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(30)));
+    public static final Transform3d frRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-30)));
+    public static final Transform3d blRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)));
+    public static final Transform3d brRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-150)));
+
   }
 }
