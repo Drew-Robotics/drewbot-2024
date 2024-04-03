@@ -28,7 +28,6 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
   public static final class DriveConstants {
-
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
@@ -68,17 +67,11 @@ public final class Constants {
 
     public static final boolean kGyroReversed = true;
 
-    // PID Constants
-    public static final double kP = 0.4;
-    public static final double kI = 0.1;
-    public static final double kD = 0;
-
     public static final double RotationCoeff = 0.65;
 
   }
 
   public static final class ModuleConstants {
-
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
     // robot that drives faster).
@@ -112,10 +105,11 @@ public final class Constants {
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1.1 / kDriveWheelFreeSpeedRps;
+    
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 2;
+    public static final double kTurningP = 1;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -127,21 +121,17 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
-
   }
 
   public static final class OIConstants {
-
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
     public static final int kSysIdControllerPort = 3;
 
     public static final double kDriveDeadband = 0.05;
-    
   }
 
   public static final class AutoConstants {
-
     public static final double kMaxSpeedMetersPerSecond = 0.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
@@ -150,6 +140,14 @@ public final class Constants {
     public static final double kPXController = 1;
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
+
+    public static final double kDrivingP = 3;
+    public static final double kDrivingI = 0;
+    public static final double kDrivingD = 0;
+
+    public static final double kTurningP = 1;
+    public static final double kTurningI = 0.3;
+    public static final double kTurningD = 0.1;
 
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
@@ -235,7 +233,7 @@ public final class Constants {
 
     public static final int kTimeOfFlightSensorID = 40;
 
-    public static final double kNoteIntakedSensorValue = 200;
+    public static final double kNoteIntakedSensorValue = 300;
     
   }
 
@@ -252,10 +250,6 @@ public final class Constants {
     // Inverted
     public static final boolean kLeftClimberMotorInverted = false;
     public static final boolean kRightClimberMotorInverted = true;
-
-    // RPM
-    // public static final double kClimberClimbSpeed = 0.1;
-    // public static final double kClimberReleaseSpeed = -0.1;
     
     // Output Min/Max 
     public static final double kClimberMinOutput = 0;
