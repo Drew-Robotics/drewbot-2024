@@ -18,12 +18,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import static edu.wpi.first.units.Units.Volts;
 
 
 import com.kauailabs.navx.frc.AHRS;
@@ -106,7 +108,7 @@ public class DriveSubsystem extends SubsystemBase {
       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
         new PIDConstants(3, 0, 0), // Translation PID constants
         new PIDConstants(0.5, 0.2, 0.1), // Rotation PID constants
-        4.5, // Max module speed, in m/s
+        5.28, // Max module speed, in m/s
         Math.sqrt(Math.pow(DriveConstants.kTrackWidth, 2) + Math.pow(DriveConstants.kWheelBase, 2)), // Drive base radius in meters. Distance from robot center to furthest module.
         new ReplanningConfig() // Default path replanning config. See the API for the options here
       ),
@@ -394,4 +396,46 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  SysIdRoutine steerRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(), 
+    new SysIdRoutine.Mechanism((voltage) -> m_frontLeft.setSteerToVoltage(voltage.in(Volts)), null, this)
+  );
+
+  SysIdRoutine driveRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(), 
+    new SysIdRoutine.Mechanism((voltage) -> {
+      double voltageToSend = voltage.in(Volts);
+      m_frontLeft.setDriveToVoltage(voltageToSend);
+      m_frontRight.setDriveToVoltage(voltageToSend);
+      m_rearLeft.setDriveToVoltage(voltageToSend);
+      m_rearRight.setDriveToVoltage(voltageToSend);
+    }, null, this)
+  );
+
+    // The methods below return Command objects
+  public Command steerQFwd() {
+    return steerRoutine.quasistatic(SysIdRoutine.Direction.kForward);
+  }
+  public Command steerQRev() {
+    return steerRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
+  }
+  public Command steerDFwd() {
+    return steerRoutine.dynamic(SysIdRoutine.Direction.kForward);
+  }
+  public Command steerDRev() {
+    return steerRoutine.dynamic(SysIdRoutine.Direction.kReverse);
+  }
+
+  public Command driveQFwd() {
+    return driveRoutine.quasistatic(SysIdRoutine.Direction.kForward);
+  }
+  public Command driveQRev() {
+    return driveRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
+  }
+  public Command driveDFwd() {
+    return driveRoutine.dynamic(SysIdRoutine.Direction.kForward);
+  }
+  public Command driveDRev() {
+    return driveRoutine.dynamic(SysIdRoutine.Direction.kReverse);
+  }
 }

@@ -159,22 +159,56 @@ public class RobotContainer {
     m_driverController.getTurnToZeroButton().whileTrue(new DriveTurnToAngleCommand(0));
     m_driverController.getStopButton().onTrue(new DriveStopCommand());
 
+    // m_sysidController
+    //     .a()
+    //     .and(m_sysidController.leftBumper())
+    //     .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // m_sysidController
+    //     .b()
+    //     .and(m_sysidController.leftBumper())
+    //     .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // m_sysidController
+    //     .x()
+    //     .and(m_sysidController.leftBumper())
+    //     .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // m_sysidController
+    //     .y()
+    //     .and(m_sysidController.leftBumper())
+    //     .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     m_sysidController
         .a()
         .and(m_sysidController.leftBumper())
-        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        .whileTrue(m_drive.steerQFwd());
     m_sysidController
         .b()
         .and(m_sysidController.leftBumper())
-        .whileTrue(m_intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        .whileTrue(m_drive.steerQRev());
     m_sysidController
         .x()
         .and(m_sysidController.leftBumper())
-        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        .whileTrue(m_drive.steerDFwd());
     m_sysidController
         .y()
         .and(m_sysidController.leftBumper())
-        .whileTrue(m_intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        .whileTrue(m_drive.steerDRev());
+
+    m_sysidController
+        .a()
+        .and(m_sysidController.rightBumper())
+        .whileTrue(m_drive.driveQFwd());
+    m_sysidController
+        .b()
+        .and(m_sysidController.rightBumper())
+        .whileTrue(m_drive.driveQRev());
+    m_sysidController
+        .x()
+        .and(m_sysidController.rightBumper())
+        .whileTrue(m_drive.driveDFwd());
+    m_sysidController
+        .y()
+        .and(m_sysidController.rightBumper())
+        .whileTrue(m_drive.driveDRev());
   }
 
   private void configureOperatorCommands(){

@@ -174,4 +174,12 @@ public class MAXSwerveModule {
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
   }
+
+  public void setSteerToVoltage(double volts) {
+    m_turningSparkMax.setVoltage(volts);
+  }
+
+  public void setDriveToVoltage(double volts) {
+    m_drivingSparkMax.setVoltage(volts);
+  }
 }
