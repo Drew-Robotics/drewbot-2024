@@ -93,7 +93,7 @@ public final class Constants {
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
@@ -115,7 +115,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 2;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -186,21 +186,21 @@ public final class Constants {
     public static final double kG = 0;
     public static final double kV = 10;
     public static final double kA = 0;
-    
-    public static final double kPivotP = 5;
-    public static final double kPivotI = 10;
-    public static final double kPivotD = 0.3;
 
     public static final double kMaxVelocityRps = 1.0;
     public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kPivotPIDTolerance = 0.003;
+    public static final double kPivotP = 45;
+    public static final double kPivotI = 25;
+    public static final double kPivotD = 3.5;
 
-    // public static final double kAmpPivotP = 0.5;
-    // public static final double kAmpPivotI = 0;
-    // public static final double kAmpPivotD = 0;
+    public static final double kPivotPIDTolerance = 10d / 360d;
 
-    // public static final double kAmpPivotPIDTolerance = 5;
+    public static final double kAmpPivotP = 15;
+    public static final double kAmpPivotI = 30;
+    public static final double kAmpPivotD = 0.15;
+
+    public static final double kAmpPivotPIDTolerance =  1d / 360d;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -264,15 +264,15 @@ public final class Constants {
     // Gear Ratio
     // public static final double kClimberGearRatio = 1d / 12d;
 
-    public static final double kRotationsToUpLeft = 55;
-    public static final double kRotationsToUpRight = 55;
+    public static final double kRotationsToUpLeft = 66;
+    public static final double kRotationsToUpRight = 66;
 
     public static final double kTiltRPM = 20;
     
   }
 
   public static final class LEDConstants { 
-    public static final int CANdleID = -1;
+    public static final int CANdleID = 50;
   }
 
   public static final class AmpBarConstants {

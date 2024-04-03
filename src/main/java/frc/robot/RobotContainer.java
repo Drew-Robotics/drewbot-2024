@@ -54,6 +54,7 @@ import frc.robot.controllers.OperatorController;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.leds.LEDSubsystem;;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -71,6 +72,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
   private final ClimberSubsystem m_climber = ClimberSubsystem.getInstance();
   private final AmpBarSubsystem m_ampBar = AmpBarSubsystem.getInstance();
+  private final LEDSubsystem m_led = LEDSubsystem.getInstance();
 
   private final SendableChooser<Command> autoChooser;
 

@@ -9,6 +9,7 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
 
 import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -20,15 +21,15 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
+import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class LEDSubsystem extends SubsystemBase{
-  private final int LEDS_PER_ANIMATION = 30;
   private final CANdle m_candle = new CANdle(LEDConstants.CANdleID, "rio");
 
-  private Animation m_toAnimate = null;
+  // private Animation m_toAnimate = null;
 
   private DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
@@ -37,11 +38,16 @@ public class LEDSubsystem extends SubsystemBase{
 
   private static LEDSubsystem m_instance;
 
-
   private ArrayList<LEDState> m_LEDStates = new ArrayList<LEDState>();
 
+  BooleanSupplier trueSupplier = () -> true;
   BooleanSupplier shooterAmpSupplier = () -> m_shooter.getShooterState() == ShooterState.AMP;
   BooleanSupplier shooterSpeakSupplier = () -> m_shooter.getShooterState() == ShooterState.SPEAKER;
+
+
+  BooleanSupplier shooterSpeakerShootingSupplier = () -> 
+    (m_intake.getIntakeState() == IntakeState.FEED_SPEAKER_SHOOTER) &&
+    (m_shooter.getShooterState() == ShooterState.SPEAKER);
 
   BooleanSupplier intakeHasNoteSupplier = m_intake::hasNote;
   BooleanSupplier intakeAmpSupplier = () -> m_intake.getPivotState() == PivotState.AMP;
@@ -61,7 +67,13 @@ public class LEDSubsystem extends SubsystemBase{
   }
 
   public LEDSubsystem() {
-    m_LEDStates.add(new LEDState(intakeHasNoteSupplier, new RainbowAnimation()));
+    m_LEDStates.add(new LEDState(shooterSpeakerShootingSupplier, 231, 130, 132));
+    m_LEDStates.add(new LEDState(shooterSpeakSupplier, 186, 187, 241));
+
+    m_LEDStates.add(new LEDState(intakeHasNoteSupplier, 129, 200, 190));
+
+    m_LEDStates.add(new LEDState(climbersUpSupplier, 202, 158, 230));
+    m_LEDStates.add(new LEDState(trueSupplier, 166, 209, 137));
   }
 
   public Command setLEDCommand() {
@@ -76,21 +88,20 @@ public class LEDSubsystem extends SubsystemBase{
 
   @Override
   public void periodic(){
-    for (LEDState LEDstateI : m_LEDStates){
-      if (LEDstateI.isActive()){
-        if (m_toAnimate == LEDstateI.getAnimation()){
-          m_toAnimate = null;
-        } else{
-          m_toAnimate = LEDstateI.getAnimation();
-        }
-        continue;
-      } else{ 
-        m_toAnimate = null;
-      }
-    }
+    checkLEDStates();
+  }
 
-    if (m_toAnimate != null){
-      m_candle.animate(m_toAnimate);
+  private void checkLEDStates(){
+    for (LEDState LEDStateI : m_LEDStates){
+      if (LEDStateI.isActive()){
+        m_candle.setLEDs(
+          LEDStateI.getR(),
+          LEDStateI.getG(),
+          LEDStateI.getB()
+        );
+
+        return;
+      }
     }
   }
 
