@@ -15,8 +15,6 @@ public class SolidAnimation extends AnimationBase{
     m_color = color;
   }
 
-
-
   public void update(){
     if (!animating){
       return;

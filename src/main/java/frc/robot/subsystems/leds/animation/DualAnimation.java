@@ -31,6 +31,7 @@ public class DualAnimation extends AnimationBase {
       c1 = m_color1;
       c2 = m_color2;
     }
+    
     double progress = (currentTime % time) / time;
     int startingLed = (int) (count * progress) + offset;
     
