@@ -65,19 +65,23 @@ public class LEDSubsystem extends SubsystemBase{
 
   // change color values
   
-  private Color hasNoteColor = new Color(255, 0, 50);
+  private Color hasNoteColor = new Color(255, 50, 0);
 
-  private Color shootingSpeakerColor = new Color(255, 255, 255);
-  private Color shootingAmpColor = new Color(255, 255, 255);
+  private Color shootingSpeakerColor = new Color(255, 0, 200);
+  private Color shootingAmpColor = new Color(0, 255, 0);
 
-  private Color pivotDownColor = new Color(255, 255, 255);
+  private Color pivotDownColor = new Color(0, 255, 150);
+
   private Color climbersUpColor = new Color(255, 0, 255);
+  private Color climbersUpSecondaryColor = new Color(255, 0, 255);
+
+  private LEDState currentLEDState;
 
 
   private Color fieldColor = new Color(
-    fieldColorSup(255, 0, 255), // r
-    fieldColorSup(0, 0, 255), // g
-    fieldColorSup(0, 255, 255) // b
+    fieldColorSup(100, 0, 100), // r
+    fieldColorSup(0, 0, 100), // g
+    fieldColorSup(0, 100, 100) // b
   );
 
   public LEDSubsystem() {
@@ -88,7 +92,9 @@ public class LEDSubsystem extends SubsystemBase{
 
     m_LEDStates.add(new LEDState(hasNoteSupplier, new SolidAnimation(m_candle, hasNoteColor)));
 
-    m_LEDStates.add(new LEDState(climbersUpSupplier, new SolidAnimation(m_candle, climbersUpColor)));
+    m_LEDStates.add(new LEDState(intakeGroundSupplier, new DualAnimation(m_candle, fieldColor, pivotDownColor)));
+
+    m_LEDStates.add(new LEDState(climbersUpSupplier, new DualAnimation(m_candle, climbersUpColor, climbersUpSecondaryColor)));
 
     m_LEDStates.add(new LEDState(trueSupplier, new SolidAnimation(m_candle, fieldColor)));
   }
@@ -109,11 +115,16 @@ public class LEDSubsystem extends SubsystemBase{
   }
 
   private void checkLEDStates(){
+    if (currentLEDState != null){
+      currentLEDState.update();
+    }
+
     m_LEDStates.forEach(ledState -> { ledState.stop(); }); // stops all states to ensure that one is active
 
     for (LEDState LEDStateI : m_LEDStates){
 
       if (!LEDStateI.checkStatus()){continue;} // skips over non-active states and runs the ones that are.
+      currentLEDState = LEDStateI;
       return;
     }
   }

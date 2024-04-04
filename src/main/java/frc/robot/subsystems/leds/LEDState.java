@@ -46,6 +46,10 @@ public class LEDState {
     return active;
   }
   
+  public void update(){
+    m_animation.update();
+  }
+
   public void stop(){
     m_animation.stop();
   }

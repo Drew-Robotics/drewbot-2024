@@ -198,7 +198,7 @@ public final class Constants {
     public static final double kAmpPivotI = 30;
     public static final double kAmpPivotD = 0.15;
 
-    public static final double kAmpPivotPIDTolerance =  1d / 360d;
+    public static final double kAmpPivotPIDTolerance =  10d / 360d;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;

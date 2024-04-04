@@ -8,7 +8,6 @@ public class AnimationBase{
   protected int numLeds = 25;
   protected int count = 25;
   protected int offset = 12;
-  protected double time = 5;
 
   protected CANdle m_candle;
   protected boolean animating = false;
@@ -17,8 +16,8 @@ public class AnimationBase{
     m_candle = candle;
   }
 
-  public void update() throws Exception{
-    throw new Exception("override this");
+  public void update(){
+    System.out.println("override this");
   }
 
   protected void setPixel(Color color, int from, int to){
