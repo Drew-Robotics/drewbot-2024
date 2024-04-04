@@ -19,6 +19,7 @@ import javax.lang.model.element.ModuleElement;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule {
@@ -181,5 +182,9 @@ public class MAXSwerveModule {
 
   public void setDriveToVoltage(double volts) {
     m_drivingSparkMax.setVoltage(volts);
+  }
+
+  public double getDriveShaftRadians() {
+    return ((m_drivingEncoder.getPosition() / m_drivingEncoder.getPositionConversionFactor()) * (2 * Math.PI)) * ModuleConstants.kDrivingMotorReduction;
   }
 }

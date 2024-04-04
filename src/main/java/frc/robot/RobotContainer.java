@@ -212,6 +212,9 @@ public class RobotContainer {
         .y()
         .and(m_sysidController.rightBumper())
         .whileTrue(m_drive.driveDRev());
+
+    m_sysidController.start().whileTrue(m_drive.wheelRad(true));
+    m_sysidController.back().whileTrue(m_drive.wheelRad(false));
   }
 
   private void configureOperatorCommands(){

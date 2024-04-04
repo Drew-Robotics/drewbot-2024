@@ -5,6 +5,7 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -81,6 +83,18 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
+  private class WheelRadCharData {
+    public double lastGyroYaw = 0;
+    public double accumGyroYaw = 0;
+    public double[] startWheelPositions = new double[4];
+    public double effectiveWheelRadius = 0;
+    SlewRateLimiter omegaLimiter = new SlewRateLimiter(1);
+  };
+
+  private final double driveRadius = Math.sqrt(Math.pow(DriveConstants.kTrackWidth, 2) + Math.pow(DriveConstants.kWheelBase, 2));
+
+  WheelRadCharData wheelData = new WheelRadCharData();
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -126,7 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
         new PIDConstants(3, 0, 0), // Translation PID constants
         new PIDConstants(0.5, 0.2, 0.1), // Rotation PID constants
         5.28, // Max module speed, in m/s
-        Math.sqrt(Math.pow(DriveConstants.kTrackWidth, 2) + Math.pow(DriveConstants.kWheelBase, 2)), // Drive base radius in meters. Distance from robot center to furthest module.
+        driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
         new ReplanningConfig() // Default path replanning config. See the API for the options here
       ),
         () -> {
@@ -481,5 +495,46 @@ public class DriveSubsystem extends SubsystemBase {
   }
   public Command driveDRev() {
     return driveRoutine.dynamic(SysIdRoutine.Direction.kReverse);
+  }
+
+  public Command wheelRad(boolean fwd) {
+    return Commands.sequence(
+      Commands.runOnce(() -> {
+        wheelData.lastGyroYaw = Math.toRadians(getAngle());
+        wheelData.accumGyroYaw = 0;
+        wheelData.startWheelPositions[0] = m_frontLeft.getDriveShaftRadians();
+        wheelData.startWheelPositions[1] = m_frontRight.getDriveShaftRadians();
+        wheelData.startWheelPositions[2] = m_rearLeft.getDriveShaftRadians();
+        wheelData.startWheelPositions[3] = m_rearRight.getDriveShaftRadians();
+        wheelData.omegaLimiter.reset(0);
+        wheelData.effectiveWheelRadius = 0;
+      }, this),
+      Commands.runEnd(
+      () -> {
+        double dirMulti = 1.0;
+        if(!fwd) {
+          dirMulti = -1.0;
+        }
+        double currentYawRad = Math.toRadians(getAngle());
+        drive(0, 0, wheelData.omegaLimiter.calculate(1 * dirMulti), false, false);
+        wheelData.accumGyroYaw += MathUtil.angleModulus(currentYawRad - wheelData.lastGyroYaw);
+        wheelData.lastGyroYaw = currentYawRad;
+        double avgWheelPos = 0;
+        double[] currentPos = new double[4];
+        currentPos[0] = m_frontLeft.getDriveShaftRadians();
+        currentPos[1] = m_frontRight.getDriveShaftRadians();
+        currentPos[2] = m_rearLeft.getDriveShaftRadians();
+        currentPos[3] = m_rearRight.getDriveShaftRadians();
+        for(int i = 0; i < 4; i++) {
+          avgWheelPos += Math.abs(currentPos[i] - wheelData.startWheelPositions[i]);
+        }
+        avgWheelPos /= 4.0;
+        wheelData.effectiveWheelRadius = (wheelData.accumGyroYaw * driveRadius) / avgWheelPos;
+      }, 
+      () -> {
+        drive(0, 0, 0, false, false);
+        System.out.println("WHEEL RADIUS METERS: " + wheelData.effectiveWheelRadius + "\n\n\n\n\n\n");
+      }, this)
+    ).withName("Wheel Radius Cmd");
   }
 }
