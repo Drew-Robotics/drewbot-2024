@@ -306,10 +306,10 @@ public final class Constants {
     public static final String BL_CAM_NAME = "str_bl_cam";
     public static final String BR_CAM_NAME = "str_br_cam";
 
-    public static final Transform3d flRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(30)));
-    public static final Transform3d frRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-30)));
-    public static final Transform3d blRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)));
-    public static final Transform3d brRobotToCam = new Transform3d(new Translation3d(), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-150)));
+    public static final Transform3d flRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(12.275412), Units.inchesToMeters(12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(30)));
+    public static final Transform3d frRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(12.275412), Units.inchesToMeters(-12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-30)));
+    public static final Transform3d blRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(-12.275412), Units.inchesToMeters(12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)));
+    public static final Transform3d brRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(-12.275412), Units.inchesToMeters(-12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-150)));
 
   }
 }
