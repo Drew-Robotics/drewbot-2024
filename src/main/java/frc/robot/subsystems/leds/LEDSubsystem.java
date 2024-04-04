@@ -2,19 +2,16 @@ package frc.robot.subsystems.leds;
 
 import java.time.Period;
 import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.RainbowAnimation;
 
-import edu.wpi.first.networktables.BooleanSubscriber;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -24,12 +21,12 @@ import frc.robot.subsystems.ClimberSubsystem.ClimbersState;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
 import frc.robot.subsystems.ShooterSubsystem.ShooterState;
+import frc.robot.subsystems.leds.animation.DualAnimation;
+import frc.robot.subsystems.leds.animation.SolidAnimation;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class LEDSubsystem extends SubsystemBase{
   private final CANdle m_candle = new CANdle(LEDConstants.CANdleID, "rio");
-
-  // private Animation m_toAnimate = null;
 
   private DriveSubsystem m_drive = DriveSubsystem.getInstance();
   private IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
@@ -41,15 +38,14 @@ public class LEDSubsystem extends SubsystemBase{
   private ArrayList<LEDState> m_LEDStates = new ArrayList<LEDState>();
 
   BooleanSupplier trueSupplier = () -> true;
-  BooleanSupplier shooterAmpSupplier = () -> m_shooter.getShooterState() == ShooterState.AMP;
-  BooleanSupplier shooterSpeakSupplier = () -> m_shooter.getShooterState() == ShooterState.SPEAKER;
+  BooleanSupplier shooterRevvingSupplier = () -> m_shooter.getShooterState() == ShooterState.SPEAKER;
 
 
-  BooleanSupplier shooterSpeakerShootingSupplier = () -> 
+  BooleanSupplier shootingSpeakerSupplier = () -> 
     (m_intake.getIntakeState() == IntakeState.FEED_SPEAKER_SHOOTER) &&
     (m_shooter.getShooterState() == ShooterState.SPEAKER);
 
-  BooleanSupplier intakeHasNoteSupplier = m_intake::hasNote;
+  BooleanSupplier hasNoteSupplier = m_intake::hasNote;
   BooleanSupplier intakeAmpSupplier = () -> m_intake.getPivotState() == PivotState.AMP;
   BooleanSupplier intakeGroundSupplier = () -> m_intake.getPivotState() == PivotState.GROUND;
 
@@ -66,24 +62,45 @@ public class LEDSubsystem extends SubsystemBase{
     return m_instance;
   }
 
+
+  // change color values
+  
+  private Color hasNoteColor = new Color(255, 0, 50);
+
+  private Color shootingSpeakerColor = new Color(255, 255, 255);
+  private Color shootingAmpColor = new Color(255, 255, 255);
+
+  private Color pivotDownColor = new Color(255, 255, 255);
+  private Color climbersUpColor = new Color(255, 0, 255);
+
+
+  private Color fieldColor = new Color(
+    fieldColorSup(255, 0, 255), // r
+    fieldColorSup(0, 0, 255), // g
+    fieldColorSup(0, 255, 255) // b
+  );
+
   public LEDSubsystem() {
-    m_LEDStates.add(new LEDState(shooterSpeakerShootingSupplier, 231, 130, 132));
-    m_LEDStates.add(new LEDState(shooterSpeakSupplier, 186, 187, 241));
+    m_candle.setLEDs(0, 0, 0);
+    
+    m_LEDStates.add(new LEDState(shootingSpeakerSupplier, new SolidAnimation(m_candle, shootingSpeakerColor)));
+    m_LEDStates.add(new LEDState(shooterRevvingSupplier, new DualAnimation(m_candle, shootingSpeakerColor, hasNoteColor)));
 
-    m_LEDStates.add(new LEDState(intakeHasNoteSupplier, 129, 200, 190));
+    m_LEDStates.add(new LEDState(hasNoteSupplier, new SolidAnimation(m_candle, hasNoteColor)));
 
-    m_LEDStates.add(new LEDState(climbersUpSupplier, 202, 158, 230));
-    m_LEDStates.add(new LEDState(trueSupplier, 166, 209, 137));
+    m_LEDStates.add(new LEDState(climbersUpSupplier, new SolidAnimation(m_candle, climbersUpColor)));
+
+    m_LEDStates.add(new LEDState(trueSupplier, new SolidAnimation(m_candle, fieldColor)));
   }
 
-  public Command setLEDCommand() {
-    return new RunCommand(
-      () -> m_candle.setLEDs(255, 255, 255),
-      m_instance
-    ).withTimeout(1).andThen(
-      () -> m_candle.setLEDs(0, 0, 0),
-      m_instance
-    );
+  private IntSupplier fieldColorSup(int r, int b, int none){
+    return () -> {
+      Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()){
+        return (alliance.get() == DriverStation.Alliance.Red) ? r : b;
+      }
+      return none;
+    };
   }
 
   @Override
@@ -92,18 +109,12 @@ public class LEDSubsystem extends SubsystemBase{
   }
 
   private void checkLEDStates(){
-    for (LEDState LEDStateI : m_LEDStates){
-      if (LEDStateI.isActive()){
-        m_candle.setLEDs(
-          LEDStateI.getR(),
-          LEDStateI.getG(),
-          LEDStateI.getB()
-        );
+    m_LEDStates.forEach(ledState -> { ledState.stop(); }); // stops all states to ensure that one is active
 
-        return;
-      }
+    for (LEDState LEDStateI : m_LEDStates){
+
+      if (!LEDStateI.checkStatus()){continue;} // skips over non-active states and runs the ones that are.
+      return;
     }
   }
-
-
 }

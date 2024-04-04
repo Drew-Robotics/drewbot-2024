@@ -233,7 +233,7 @@ public final class Constants {
 
     public static final int kTimeOfFlightSensorID = 40;
 
-    public static final double kNoteIntakedSensorValue = 300;
+    public static final double kNoteIntakedSensorValue = 150;
     
   }
 

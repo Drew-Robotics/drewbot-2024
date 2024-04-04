@@ -1,81 +1,52 @@
 package frc.robot.subsystems.leds;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
-import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.CANdle;
+
+import frc.robot.subsystems.leds.animation.AnimationBase;
+import frc.robot.subsystems.leds.animation.SolidAnimation;
 
 public class LEDState {
 
   private BooleanSupplier m_isActive;
 
-  public enum LEDStateType {
-    COLOR,
-    ANIMATION
-  }
-  private LEDStateType m_ledStateType;
+  private AnimationBase m_animation;
 
-  private Integer m_r, m_g, m_b;
-  private Animation m_Animation;
-  private IntSupplier m_rSupplier, m_gSupplier, m_bSupplier;
+  // private Color m_color;
+  // private Supplier<Color> m_colorSupplier;
 
-  public LEDState(BooleanSupplier isActive, Integer r, Integer g, Integer b){
+  public LEDState(BooleanSupplier isActive, AnimationBase animation){
     m_isActive = isActive;
-
-    m_ledStateType = LEDStateType.COLOR;
-    m_r = r;
-    m_g = g;
-    m_b = b;
+    m_animation = animation;
   }
 
-  public LEDState(BooleanSupplier isActive, IntSupplier rSupplier, IntSupplier gSupplier, IntSupplier bSupplier){
-    m_isActive = isActive;
+  // public Color getColor(){
+  //   if (m_color != null){
+  //     return m_color;
+  //   } else if (m_colorSupplier != null){
+  //     return m_colorSupplier.get();
+  //   }
+  //   return null;
+  // }
 
-    m_ledStateType = LEDStateType.COLOR;
-    m_rSupplier = rSupplier;
-    m_gSupplier = gSupplier;
-    m_bSupplier = bSupplier;
+  public AnimationBase getAnimation(){
+    return m_animation;
   }
 
-  public LEDState(BooleanSupplier isActive, Animation animation){
-    m_isActive = isActive;
-
-    m_ledStateType = LEDStateType.ANIMATION;
-    m_Animation = animation;
-  }
-
-  public Integer getR(){
-    if (m_r != null){
-      return m_r;
-    } else if (m_rSupplier != null){
-      return m_rSupplier.getAsInt();
+  public boolean checkStatus(){
+    boolean active = m_isActive.getAsBoolean();
+    if (active){
+      m_animation.start();
+    } else{
+      m_animation.stop();
     }
-    return null;
-  }
 
-  public Integer getG(){
-    if (m_g != null){
-      return m_g;
-    } else if (m_gSupplier != null){
-      return m_gSupplier.getAsInt();
-    }
-    return null;
-  }
-
-  public Integer getB(){
-    if (m_b != null){
-      return m_b;
-    } else if (m_bSupplier != null){
-      return m_bSupplier.getAsInt();
-    }
-    return null;
+    return active;
   }
   
-  public boolean isActive(){
-    return m_isActive.getAsBoolean();
-  }
-
-  public Animation getAnimation(){
-    return m_Animation;
+  public void stop(){
+    m_animation.stop();
   }
 }
