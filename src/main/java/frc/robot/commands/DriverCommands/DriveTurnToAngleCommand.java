@@ -22,21 +22,21 @@ public class DriveTurnToAngleCommand extends Command {
   public DriveTurnToAngleCommand(double angle) {
     m_drive = DriveSubsystem.getInstance();
 
-    //m_target_angle = clamp_180(m_drive.getYaw() + angle);
-    m_target_angle = angle;
+    // //m_target_angle = clamp_180(m_drive.getYaw() + angle);
+    // m_target_angle = angle;
 
-    m_pid = new PIDController(
-      DriveConstants.kP,
-      DriveConstants.kI,
-      DriveConstants.kD
-    );
+    // m_pid = new PIDController(
+    //   DriveConstants.kP,
+    //   DriveConstants.kI,
+    //   DriveConstants.kD
+    // );
 
-    m_pid.setTolerance(5d);
+    // m_pid.setTolerance(5d);
 
-    SmartDashboard.putData("Turn to Angle PID Controller", m_pid);
+    // SmartDashboard.putData("Turn to Angle PID Controller", m_pid);
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_drive);
+    // // Use addRequirements() here to declare subsystem dependencies.
+    // addRequirements(m_drive);
   }
 
   // Called when the command is initially scheduled.
@@ -80,15 +80,15 @@ public class DriveTurnToAngleCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double pid_out = m_pid.calculate(m_target_angle-angle_dif(m_drive.getAngle(), m_target_angle), m_target_angle);
-    SmartDashboard.putNumber("pid_out", pid_out);
-    SmartDashboard.putNumber("target angle", m_target_angle);
-    SmartDashboard.putNumber("current angle", m_target_angle-angle_dif(m_drive.getAngle(), m_target_angle));
-    SmartDashboard.putNumber("pid pos error", m_pid.getPositionError());
+    // double pid_out = m_pid.calculate(m_target_angle-angle_dif(m_drive.getAngle(), m_target_angle), m_target_angle);
+    // SmartDashboard.putNumber("pid_out", pid_out);
+    // SmartDashboard.putNumber("target angle", m_target_angle);
+    // SmartDashboard.putNumber("current angle", m_target_angle-angle_dif(m_drive.getAngle(), m_target_angle));
+    // SmartDashboard.putNumber("pid pos error", m_pid.getPositionError());
 
     // I don't like doing this but it must be done.
-    DriverController driverController = RobotContainer.getInstance().getDriverContoller();
-    m_drive.drive(driverController.getXSpeed(), driverController.getYSpeed(), -pid_out/100, false, true);
+    // DriverController driverController = RobotContainer.getInstance().getDriverContoller();
+    // m_drive.drive(driverController.getXSpeed(), driverController.getYSpeed(), -pid_out/100, false, true);
   }
   
   // Called once the command ends or is interrupted.

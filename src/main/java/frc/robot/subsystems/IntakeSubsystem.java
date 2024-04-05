@@ -75,6 +75,9 @@ public class IntakeSubsystem extends SubsystemBase{
   private final ProfiledPIDController m_pivotAmpPID =
       new ProfiledPIDController(IntakeConstants.kAmpPivotP, IntakeConstants.kAmpPivotI, IntakeConstants.kAmpPivotD, m_constraints, TimedRobot.kDefaultPeriod);
 
+  private boolean atSetpoint = false;
+  private boolean pivotMoving = false;
+
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
@@ -110,6 +113,7 @@ public class IntakeSubsystem extends SubsystemBase{
    */
   private IntakeSubsystem() {
     m_pivotPID.setTolerance(IntakeConstants.kPivotPIDTolerance);
+    m_pivotAmpPID.setTolerance(IntakeConstants.kAmpPivotPIDTolerance);
 
     // Intake Motor
     m_intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorID, MotorType.kBrushless);
@@ -177,7 +181,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
     // double pivotFF = m_pivotFF.calculate(targetPivotRot * 2 * Math.PI, targetPivotRot - m_currentPivotPosRot);
     double pivotNonAmpVoltage = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
-    double pivotAmpVoltage = m_pivotPID.calculate(m_currentPivotPosRot, targetPivotRot);
+    double pivotAmpVoltage = m_pivotAmpPID.calculate(m_currentPivotPosRot, targetPivotRot);
 
     m_pivotVoltage = (m_pivotTarget == PivotState.AMP) ? pivotAmpVoltage : pivotNonAmpVoltage;
 
@@ -189,12 +193,18 @@ public class IntakeSubsystem extends SubsystemBase{
       m_intakeMotor.set(m_intakeSpeed);
     }
 
-    if (m_pivotTarget == PivotState.AMP){
-      m_pivotState = m_pivotAmpPID.atSetpoint() ? m_pivotTarget : m_pivotState;
-    } else{
-      m_pivotState = m_pivotPID.atSetpoint() ? m_pivotTarget : m_pivotState;
+    if (!atSetpoint && !pivotPidAtSetpoint()){
+      pivotMoving = true;
     }
 
+    if (pivotMoving && pivotPidAtSetpoint()){
+      atSetpoint = true;
+      pivotMoving = false;
+    }
+
+    if (atSetpoint){
+      m_pivotState = m_pivotTarget;
+    }
 
     SmartDashboard.putNumber("Intake Pivot Target", targetPivotRot);
     SmartDashboard.putString("Intake Pivot State", m_pivotState.toString());
@@ -210,6 +220,13 @@ public class IntakeSubsystem extends SubsystemBase{
     // (double) SmartDashboard.getEntry("Pivot FF: kV").getValue().getValue());
 
     m_prevPivotPosRot = m_currentPivotPosRot;
+  }
+
+  private boolean pivotPidAtSetpoint(){
+    if (m_pivotTarget == PivotState.AMP){
+      return m_pivotAmpPID.atSetpoint();
+    }
+    return m_pivotPID.atSetpoint();
   }
 
   // - - - - - - - - - - PRIVATE FUNCTIONS - - - - - - - - - -
@@ -290,6 +307,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
   public void setPivotTarget(PivotState target){
     m_pivotTarget = target;
+    atSetpoint = false;
   }
 
   public PivotState getPivotState(){

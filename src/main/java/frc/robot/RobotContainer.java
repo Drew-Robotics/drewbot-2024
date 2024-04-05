@@ -118,7 +118,10 @@ public class RobotContainer {
     );
 
     // Intake
-    NamedCommands.registerCommand("intakeDown", new IntakeDownCommand());
+    NamedCommands.registerCommand("intakeDown", new IntakeDownCommand()
+      .andThen(IntakeSubsystem.stateCommand(IntakeState.HOLD))
+    );
+    
     NamedCommands.registerCommand("intakeEject", new IntakeEjectCommand());
     NamedCommands.registerCommand("intakeAmpShoot", new IntakeAmpShootCommand());
 

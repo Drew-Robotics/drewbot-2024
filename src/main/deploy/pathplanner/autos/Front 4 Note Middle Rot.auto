@@ -26,7 +26,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.3
           }
         },
         {
@@ -40,9 +40,16 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "intakeDown"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeDown"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -50,15 +57,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
-                      "data": {
-                        "pathName": "mStartToF2"
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
                         "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "mStartToF2"
                       }
                     },
                     {
@@ -90,9 +97,16 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "intakeDown"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeDown"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -100,15 +114,72 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "mStartToF1Rot"
+                        "name": "shootSpeakerRev"
                       }
                     },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "mStartToF3Rot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "f3ToMStartRot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "driveBack"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeDown"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
                     {
                       "type": "named",
                       "data": {
                         "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "mStartToF1Rot"
                       }
                     },
                     {
@@ -136,53 +207,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeDown"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "mStartToF3Rot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shootSpeakerRev"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "f3ToMStartRot"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "driveBack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
+            "pathName": "3m Forward"
           }
         }
       ]
