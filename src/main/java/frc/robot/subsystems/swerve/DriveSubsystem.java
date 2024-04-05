@@ -13,6 +13,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -20,6 +21,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.networktables.StructSubscriber;
+import edu.wpi.first.networktables.StructTopic;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,6 +36,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.utils.SwerveUtils;
 
 import static edu.wpi.first.units.Units.Rotation;
@@ -120,6 +127,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   SendableChooser<Double> m_offsetChooser = new SendableChooser<Double>();
 
+  final StructTopic<Pose2d> visionTopic;
+  final StructPublisher<Pose2d> visionPub;
+
   /** 
    * Constructor.
    */
@@ -129,6 +139,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_offsetChooser.addOption("Top", 60d);
 
     m_offsetChooser.setDefaultOption("Middle", 0d);
+
+    visionTopic = NetworkTableInstance.getDefault().getStructTopic("Vision/PoseToAdd", Pose2d.struct);
+    visionPub = visionTopic.publish();
 
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
@@ -219,6 +232,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void AddVisionMeasurement(Pose2d poseToAdd, double timestamp, Matrix<N3, N1> stdDevs) {
+    if(poseToAdd.getX() < 0 || getPose().getY() < 0) {
+      return;
+    }
+    if(poseToAdd.getX() > VisionConstants.LAYOUT.getFieldLength() || poseToAdd.getY() > VisionConstants.LAYOUT.getFieldWidth()) {
+      return;
+    }
+    visionPub.set(poseToAdd);
     m_PoseEstimator.addVisionMeasurement(poseToAdd, timestamp, stdDevs);
   }
 
