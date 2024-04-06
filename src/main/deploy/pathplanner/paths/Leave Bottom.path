@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8500000000000001,
+        "x": 0.8499999999999996,
         "y": 2.5
       },
       "isLocked": false,
@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "leave",
+  "folder": "Leave",
   "previewStartingState": {
     "rotation": -60.0,
     "velocity": 0.0

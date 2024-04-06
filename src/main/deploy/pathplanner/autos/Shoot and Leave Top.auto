@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 12.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Leave Top"

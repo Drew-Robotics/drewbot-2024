@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.31,
-      "y": 5.55
+      "x": 0.85,
+      "y": 4.5
     },
-    "rotation": 0.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -40,16 +40,9 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intakeDown"
-                      }
-                    }
-                  ]
+                  "name": "intakeDown"
                 }
               },
               {
@@ -65,13 +58,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "mStartToF2"
+                        "pathName": "bStartToB5"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "f2ToMStart"
+                        "pathName": "b5ToBStart"
                       }
                     }
                   ]
@@ -97,16 +90,9 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intakeDown"
-                      }
-                    }
-                  ]
+                  "name": "intakeDown"
                 }
               },
               {
@@ -122,13 +108,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "mStartToF3Rot"
+                        "pathName": "bStartToF4"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "f3ToMStartRot"
+                        "pathName": "B4ToBStart"
                       }
                     }
                   ]
@@ -150,24 +136,17 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intakeDown"
-                      }
-                    }
-                  ]
+                  "name": "intakeDown"
                 }
               },
               {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
                     {
@@ -179,13 +158,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "mStartToF1Rot"
+                        "pathName": "bStartToB3"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "f1ToMStartRot"
+                        "pathName": "b3ToBStart"
                       }
                     }
                   ]
@@ -203,18 +182,12 @@
         {
           "type": "named",
           "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "3m Forward"
+            "name": "shootSpeakerRev"
           }
         }
       ]
     }
   },
-  "folder": "Front 4 Note",
+  "folder": null,
   "choreoAuto": false
 }

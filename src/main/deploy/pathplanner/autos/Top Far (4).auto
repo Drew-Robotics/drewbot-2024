@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.85,
-      "y": 4.5
+      "y": 6.6
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -58,13 +58,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "bStartToFar5"
+                        "pathName": "tStartToF1"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "far5ToBStart"
+                        "pathName": "f1ToTStart"
                       }
                     }
                   ]
@@ -108,13 +108,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "bStartToFar4"
+                        "pathName": "tStartToB1"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "far4ToBStart"
+                        "pathName": "b1ToTStart"
                       }
                     }
                   ]
@@ -134,10 +134,60 @@
           "data": {
             "name": "shootSpeaker"
           }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeDown"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeakerRev"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "tStartToB2"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b2ToTStart"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "driveBack"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeakerRev"
+          }
         }
       ]
     }
   },
-  "folder": "Far Notes",
+  "folder": null,
   "choreoAuto": false
 }
