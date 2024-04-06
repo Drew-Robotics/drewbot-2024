@@ -3,6 +3,7 @@
   "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
+    "Far",
     "forward",
     "leave",
     "mStarToFRot",
@@ -10,7 +11,9 @@
   ],
   "autoFolders": [
     "Front 4 Note",
-    "Shoot and Leave"
+    "Far Notes",
+    "Shoot and Leave",
+    "Testing"
   ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,

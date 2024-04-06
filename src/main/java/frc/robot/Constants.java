@@ -207,7 +207,7 @@ public final class Constants {
     public static final double kAmpPivotI = 30;
     public static final double kAmpPivotD = 0.15;
 
-    public static final double kAmpPivotPIDTolerance =  10d / 360d;
+    public static final double kAmpPivotPIDTolerance =  5d / 360d;
     
     // Motor IDs
     public static final int kIntakeMotorID = 10;
@@ -278,18 +278,6 @@ public final class Constants {
     public static final int CANdleID = 50;
   }
 
-  public static final class AmpBarConstants {
-    public static final int kAmpBarPivotSparkCANId = 25;
-    public static final boolean kAmpSparkInverted = false;
-    public static final double kAmpBarGearReduction = 100;
-    public static final double kAmpBarStowAngleRadians = 0;
-    public static final double kAmpBarOutAngleRadians = 1.22173;
-    public static final double kAmpBarAllowableError = 0.0349066; //2 deg
-    public static final double kAmpBarP = 1;
-    public static final double kAmpBarI = 0;
-    public static final double kAmpBarD = 0;
-  }
-
   public static final class VisionConstants {
     public static final AprilTagFieldLayout LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
@@ -298,12 +286,12 @@ public final class Constants {
     public static final String FL_CAM_NAME = "str_fl_cam";
     public static final String FR_CAM_NAME = "str_fr_cam";
     public static final String BL_CAM_NAME = "str_bl_cam";
-    public static final String BR_CAM_NAME = "str_br_cam";
+    //public static final String BR_CAM_NAME = "str_br_cam";
 
     public static final Transform3d flRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(12.275412), Units.inchesToMeters(12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(30)));
     public static final Transform3d frRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(12.275412), Units.inchesToMeters(-12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-30)));
     public static final Transform3d blRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(-12.275412), Units.inchesToMeters(12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(150)));
-    public static final Transform3d brRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(-12.275412), Units.inchesToMeters(-12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-150)));
+    //public static final Transform3d brRobotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(-12.275412), Units.inchesToMeters(-12.265), Units.inchesToMeters(8.430661)), new Rotation3d(0, Math.toRadians(-28.125), Math.toRadians(-150)));
 
   }
 }

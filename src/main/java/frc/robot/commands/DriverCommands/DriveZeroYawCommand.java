@@ -24,8 +24,8 @@ public class DriveZeroYawCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_drive.zeroYaw();
-    m_drive.setAngleAdjustment(m_offSet);
+    //m_drive.zeroYaw();
+    //m_drive.setAngleAdjustment(m_offSet);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

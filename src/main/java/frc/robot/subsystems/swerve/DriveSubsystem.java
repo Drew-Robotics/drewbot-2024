@@ -207,7 +207,7 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     m_PoseEstimator.update(
-      Rotation2d.fromRotations(getAngle()),
+      Rotation2d.fromDegrees(getAngle()),
       new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -232,14 +232,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void AddVisionMeasurement(Pose2d poseToAdd, double timestamp, Matrix<N3, N1> stdDevs) {
-    if(poseToAdd.getX() < 0 || getPose().getY() < 0) {
+    Pose2d poseToAdd2 = new Pose2d(poseToAdd.getTranslation(), poseToAdd.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+    visionPub.set(poseToAdd2);
+    if(poseToAdd2.getX() < 0 || poseToAdd2.getY() < 0) {
       return;
     }
-    if(poseToAdd.getX() > VisionConstants.LAYOUT.getFieldLength() || poseToAdd.getY() > VisionConstants.LAYOUT.getFieldWidth()) {
+    if(poseToAdd2.getX() > VisionConstants.LAYOUT.getFieldLength() || poseToAdd2.getY() > VisionConstants.LAYOUT.getFieldWidth()) {
       return;
     }
-    visionPub.set(poseToAdd);
-    m_PoseEstimator.addVisionMeasurement(poseToAdd, timestamp, stdDevs);
+    m_PoseEstimator.addVisionMeasurement(poseToAdd2, timestamp, stdDevs);
   }
 
 
@@ -339,6 +340,9 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
+    //DREW
+    m_gyro.zeroYaw();
+    m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());
     m_odometry.resetPosition(
       Rotation2d.fromDegrees(getAngle()),
       new SwerveModulePosition[] {
