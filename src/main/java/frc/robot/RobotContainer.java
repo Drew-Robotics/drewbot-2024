@@ -41,6 +41,7 @@ import frc.robot.commands.DriverCommands.DriveCommand;
 import frc.robot.commands.DriverCommands.DriveStopCommand;
 import frc.robot.commands.DriverCommands.DriveTurnToAngleCommand;
 import frc.robot.commands.DriverCommands.DriveZeroYawCommand;
+import frc.robot.commands.DriverCommands.DriveZeroYawCommand1;
 import frc.robot.commands.OperatorCommands.IntakeAmpShootCommand;
 import frc.robot.commands.OperatorCommands.IntakeDownCommand;
 import frc.robot.commands.OperatorCommands.IntakeEjectCommand;
@@ -158,8 +159,7 @@ public class RobotContainer {
     m_drive.setDefaultCommand(defaultDriveCommand);
 
     // Configure buttons
-    // m_driverController.getZeroYawButton().onTrue(new DriveZeroYawCommand());
-    SmartDashboard.putData("Zero Yaw", new DriveZeroYawCommand());
+    SmartDashboard.putData("Zero Yaw 1", new DriveZeroYawCommand1());
     m_driverController.getTurnToZeroButton().whileTrue(new DriveTurnToAngleCommand(0));
     m_driverController.getStopButton().onTrue(new DriveStopCommand());
 

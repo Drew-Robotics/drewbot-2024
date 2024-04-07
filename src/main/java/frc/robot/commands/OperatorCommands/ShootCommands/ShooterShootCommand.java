@@ -16,19 +16,21 @@ public class ShooterShootCommand extends ParallelCommandGroup{
   
   public ShooterShootCommand(ShooterState target){
     addCommands(
-      Commands.sequence(
-        IntakeSubsystem.stateCommand(
-          target == ShooterState.SPEAKER ? 
-            IntakeState.FEED_SPEAKER_SHOOTER : 
-            IntakeState.FEED_AMP_SHOOTER
+      Commands.parallel(
+        Commands.sequence(
+          IntakeSubsystem.stateCommand(
+            target == ShooterState.SPEAKER ? 
+              IntakeState.FEED_SPEAKER_SHOOTER : 
+              IntakeState.FEED_AMP_SHOOTER
+          ),
+          new WaitCommand(0.4),
+          IntakeSubsystem.stateCommand(IntakeState.NONE)
         ),
-        new WaitCommand(0.5),
-        IntakeSubsystem.stateCommand(IntakeState.NONE)
-      ),
-      Commands.sequence(
-        ShooterSubsystem.shooterCommand(target),
-        new WaitCommand(0.5),
-        ShooterSubsystem.shooterCommand(ShooterState.NONE)
+        Commands.sequence(
+          ShooterSubsystem.shooterCommand(target),
+          new WaitCommand(0.4),
+          ShooterSubsystem.shooterCommand(ShooterState.NONE)
+        )
       )
     );
   }

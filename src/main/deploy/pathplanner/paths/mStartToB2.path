@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3100000000000005,
-        "y": 5.55
+        "x": 2.176025403784438,
+        "y": 6.05
       },
       "isLocked": false,
       "linkedName": "Start Middle"
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 6.7
+        "x": 7.75,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 2.5292893218813455,
-        "y": 6.629289321881346
+        "x": 6.883974596215562,
+        "y": 6.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.1,
-      "rotationDegrees": 0.0,
+      "waypointRelativePos": 0.65,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
@@ -44,14 +44,14 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 60.0,
+    "velocity": 1.0,
+    "rotation": -30.0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "Front Middle",
+  "folder": "Back Middle",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

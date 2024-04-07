@@ -235,7 +235,7 @@ public final class Constants {
     public static final double kFeedSpeakerShooterSpeed = -1;
     public static final double kFeedAmpShooterSpeed = -1;
     public static final double kAmpSpeed = -0.5;
-    public static final double kIntakeHoldSpeed = 0.1;
+    public static final double kIntakeHoldSpeed = 0.2;
 
     public static final int kIntakeDefaultAmps = 40;
     public static final int kIntakeHoldAmps = 1;

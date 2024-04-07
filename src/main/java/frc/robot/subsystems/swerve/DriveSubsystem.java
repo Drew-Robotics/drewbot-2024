@@ -42,6 +42,7 @@ import frc.utils.SwerveUtils;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.sql.Driver;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -232,7 +233,16 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void AddVisionMeasurement(Pose2d poseToAdd, double timestamp, Matrix<N3, N1> stdDevs) {
-    Pose2d poseToAdd2 = new Pose2d(poseToAdd.getTranslation(), poseToAdd.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+    Pose2d poseToAdd2;
+    if(DriverStation.getAlliance().isPresent()) {
+      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        poseToAdd2 = poseToAdd;
+      }
+      else {
+        poseToAdd2 = new Pose2d(poseToAdd.getTranslation(), poseToAdd.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+      }
+    }
+    poseToAdd2 = poseToAdd;
     visionPub.set(poseToAdd2);
     if(poseToAdd2.getX() < 0 || poseToAdd2.getY() < 0) {
       return;

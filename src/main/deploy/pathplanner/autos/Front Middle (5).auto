@@ -81,15 +81,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "driveBack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "driveBack"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              }
+            ]
           }
         },
         {
@@ -138,15 +145,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "driveBack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "driveBack"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              }
+            ]
           }
         },
         {
@@ -195,19 +209,26 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "driveBack"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "driveBack"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -217,7 +238,7 @@
                 }
               },
               {
-                "type": "parallel",
+                "type": "sequential",
                 "data": {
                   "commands": [
                     {
@@ -245,15 +266,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "driveBack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "driveBack"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              }
+            ]
           }
         }
       ]
