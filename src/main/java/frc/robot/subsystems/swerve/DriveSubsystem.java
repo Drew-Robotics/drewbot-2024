@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.AutoConstants;
@@ -131,6 +132,11 @@ public class DriveSubsystem extends SubsystemBase {
   final StructTopic<Pose2d> visionTopic;
   final StructPublisher<Pose2d> visionPub;
 
+  final StructTopic<Pose2d> robotPoseTopic;
+  final StructPublisher<Pose2d> robotPosePub;
+
+  final StructTopic<Pose2d> robotOdomTopic;
+  final StructPublisher<Pose2d> robotOdomPub;
   /** 
    * Constructor.
    */
@@ -143,6 +149,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     visionTopic = NetworkTableInstance.getDefault().getStructTopic("Vision/PoseToAdd", Pose2d.struct);
     visionPub = visionTopic.publish();
+
+    robotPoseTopic = NetworkTableInstance.getDefault().getStructTopic("Vision/RobotPosition", Pose2d.struct);
+    robotPosePub = robotPoseTopic.publish();
+
+    robotOdomTopic = NetworkTableInstance.getDefault().getStructTopic("Vision/RobotOdom", Pose2d.struct);
+    robotOdomPub = robotOdomTopic.publish();
 
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
@@ -193,8 +205,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("IMU Connected", m_gyro.isConnected());
     SmartDashboard.putNumber("IMU Angle", getAngleClamped());
     SmartDashboard.putData("IMU Angle Offset Chooser", m_offsetChooser);
+    robotPosePub.set(m_PoseEstimator.getEstimatedPosition());
+    robotOdomPub.set(m_odometry.getPoseMeters());
 
-    setAngleAdjustment(m_offsetChooser.getSelected());
+    if(RobotState.isTeleop()) {
+      setAngleAdjustment(m_offsetChooser.getSelected());
+    }
 
 
     // Update the odometry in the periodic block
@@ -234,15 +250,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void AddVisionMeasurement(Pose2d poseToAdd, double timestamp, Matrix<N3, N1> stdDevs) {
     Pose2d poseToAdd2;
-    if(DriverStation.getAlliance().isPresent()) {
-      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-        poseToAdd2 = poseToAdd;
-      }
-      else {
-        poseToAdd2 = new Pose2d(poseToAdd.getTranslation(), poseToAdd.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
-      }
-    }
-    poseToAdd2 = poseToAdd;
+    poseToAdd2 = new Pose2d(poseToAdd.getTranslation(), poseToAdd.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
     visionPub.set(poseToAdd2);
     if(poseToAdd2.getX() < 0 || poseToAdd2.getY() < 0) {
       return;
