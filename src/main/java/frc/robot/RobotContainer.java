@@ -44,6 +44,7 @@ import frc.robot.commands.DriverCommands.DriveZeroYawCommand;
 import frc.robot.commands.DriverCommands.DriveZeroYawCommand1;
 import frc.robot.commands.OperatorCommands.IntakeAmpShootCommand;
 import frc.robot.commands.OperatorCommands.IntakeDownCommand;
+import frc.robot.commands.OperatorCommands.IntakeDownCommandAuto;
 import frc.robot.commands.OperatorCommands.IntakeEjectCommand;
 import frc.robot.commands.OperatorCommands.ShootCommands.ShooterRevCommand;
 import frc.robot.commands.OperatorCommands.ShootCommands.ShooterShootCommand;
@@ -117,7 +118,7 @@ public class RobotContainer {
     );
 
     // Intake
-    NamedCommands.registerCommand("intakeDown", new IntakeDownCommand()
+    NamedCommands.registerCommand("intakeDown", new IntakeDownCommandAuto()
       .andThen(IntakeSubsystem.stateCommand(IntakeState.HOLD))
     );
     
