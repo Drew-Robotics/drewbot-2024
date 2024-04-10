@@ -220,7 +220,7 @@ public final class Constants {
 
     public static final int kPivotEncoderID = 0;
 
-    public static final double kPivotStowRotRaw = 0.67; // rotations
+    public static final double kPivotStowRotRaw = 0.69; // rotations
     
     // This is any point that the robot can't reach.
 

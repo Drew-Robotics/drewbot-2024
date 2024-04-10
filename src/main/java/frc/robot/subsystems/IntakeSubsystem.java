@@ -211,6 +211,8 @@ public class IntakeSubsystem extends SubsystemBase{
     SmartDashboard.putBoolean("Intake Pivot At Setpoint", m_pivotPID.atSetpoint());
     SmartDashboard.putBoolean("Intake Amp Pivot At Setpoint", m_pivotAmpPID.atSetpoint());
 
+    SmartDashboard.putNumber("Intake Encoder Raw", m_pivotEncoder.getOutput());
+
     SmartDashboard.putData("Intake Pivot PID", m_pivotPID);
     
     SmartDashboard.putNumber("Intake Sensor Range", getTimeOfFlightRange());
