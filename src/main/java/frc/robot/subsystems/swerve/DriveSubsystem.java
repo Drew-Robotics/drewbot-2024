@@ -427,6 +427,10 @@ public class DriveSubsystem extends SubsystemBase {
     double xSpeedCommanded;
     double ySpeedCommanded;
 
+    xSpeed *= DriveConstants.kTranslationScalar;
+    ySpeed *= DriveConstants.kTranslationScalar;
+    rot *= DriveConstants.kRotationScalar;
+
     SmartDashboard.putNumber("X Speed", xSpeed);
     SmartDashboard.putNumber("Y Speed", ySpeed);
     SmartDashboard.putNumber("Rotation", rot);

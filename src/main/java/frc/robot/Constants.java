@@ -76,8 +76,8 @@ public final class Constants {
 
     public static final boolean kGyroReversed = true;
 
-    public static final double RotationCoeff = 0.65;
-
+    public static final double kTranslationScalar = 0.3;
+    public static final double kRotationScalar = 0.3;
   }
 
   public static final class ModuleConstants {
@@ -197,9 +197,11 @@ public final class Constants {
     public static final double kMaxVelocityRps = 1.0;
     public static final double kMaxAccelerationRpsps = 100.0;
 
-    public static final double kPivotP = 45;
-    public static final double kPivotI = 25;
-    public static final double kPivotD = 3.5;
+    public static final double kSlowIntake = 5;
+
+    public static final double kPivotP = 45 / kSlowIntake;
+    public static final double kPivotI = 25 / kSlowIntake;
+    public static final double kPivotD = 3.5 / kSlowIntake;
 
     public static final double kPivotPIDTolerance = 10d / 360d;
 

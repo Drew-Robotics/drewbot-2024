@@ -37,7 +37,7 @@ public class DriverController extends Controller{
   }
 
   public double getRotation(){
-    return -MathUtil.applyDeadband(this.getRightX(), OIConstants.kDriveDeadband) * DriveConstants.RotationCoeff;
+    return -MathUtil.applyDeadband(this.getRightX(), OIConstants.kDriveDeadband);
   }
 
   public Trigger getTurnToZeroButton(){
